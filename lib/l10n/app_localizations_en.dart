@@ -584,4 +584,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get languageModelDownloaded =>
       'Language pack downloaded successfully.';
+
+  @override
+  String get reportSafetyConcern => 'Report a Safety Concern';
+
+  @override
+  String get reportSafetyConcernSubtitle =>
+      'Contact us to report any safety issues or violations';
 }

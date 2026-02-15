@@ -11,6 +11,7 @@ import '../../domain/models/categories.dart';
 import '../places/place_details_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/translation_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
@@ -74,6 +75,50 @@ class MoreScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           _MoreItem(
+            icon: Icons.people_outline,
+            title: l10n.committees,
+            subtitle: l10n.committeesSubtitle,
+            onTap: () {
+              context.push(const ContributorsTimelineRoute().location);
+            },
+          ),
+          const SizedBox(height: 12),
+          _MoreItem(
+            icon: Icons.shield_outlined,
+            title: l10n.oversight,
+            subtitle: l10n.oversightSubtitle,
+            onTap: () {
+              context.push(const OversightCommitteesTimelineRoute().location);
+            },
+          ),
+          const SizedBox(height: 12),
+          _MoreItem(
+            icon: Icons.report_outlined,
+            title: l10n.reportSafetyConcern,
+            subtitle: l10n.reportSafetyConcernSubtitle,
+            onTap: () async {
+              final Uri emailLaunchUri = Uri(
+                scheme: 'mailto',
+                path: 'ahm3dbusinesss@gmail.com',
+                query: 'subject=Report Safety Concern / إبلاغ عن مشكلة أمان',
+              );
+              try {
+                if (await canLaunchUrl(emailLaunchUri)) {
+                   await launchUrl(emailLaunchUri);
+                } else {
+                   if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Could not launch email client')),
+                    );
+                   }
+                }
+              } catch (e) {
+                 // Ignore
+              }
+            },
+          ),
+          const SizedBox(height: 12),
+          _MoreItem(
             icon: _getThemeIcon(themeMode),
             title: l10n.appearance,
             subtitle: _getThemeLabel(context, themeMode),
@@ -96,24 +141,7 @@ class MoreScreen extends ConsumerWidget {
               );
             },
           ),
-          const SizedBox(height: 12),
-          _MoreItem(
-            icon: Icons.people_outline,
-            title: l10n.committees,
-            subtitle: l10n.committeesSubtitle,
-            onTap: () {
-              context.push(const ContributorsTimelineRoute().location);
-            },
-          ),
-          const SizedBox(height: 12),
-          _MoreItem(
-            icon: Icons.shield_outlined,
-            title: l10n.oversight,
-            subtitle: l10n.oversightSubtitle,
-            onTap: () {
-              context.push(const OversightCommitteesTimelineRoute().location);
-            },
-          ),
+
         ],
       ),
     );

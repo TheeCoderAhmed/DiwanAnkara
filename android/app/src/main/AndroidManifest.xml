@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     
     <application
-        android:label="YCApp"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/launcher_icon">

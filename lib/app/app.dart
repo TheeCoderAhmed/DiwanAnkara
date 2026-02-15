@@ -19,7 +19,7 @@ class YCAnkaraApp extends ConsumerWidget {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Yemeni Student Community - Ankara',
+      title: 'ديوان أنقرة',
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: [

@@ -579,4 +579,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get languageModelDownloaded => 'تم تحميل حزمة اللغة بنجاح.';
+
+  @override
+  String get reportSafetyConcern => 'الإبلاغ عن محتوى أو انتهاك';
+
+  @override
+  String get reportSafetyConcernSubtitle =>
+      'تواصل معنا للإبلاغ عن أي مخاوف تتعلق بالسلامة';
 }

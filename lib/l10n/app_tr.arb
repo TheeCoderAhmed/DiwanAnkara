@@ -243,5 +243,7 @@
   "eventCategoryReligious": "Dini",
   "eventCategoryOther": "Diğer",
   "downloadingLanguageModel": "Dil paketi indiriliyor...",
-  "languageModelDownloaded": "Dil paketi başarıyla indirildi."
+  "languageModelDownloaded": "Dil paketi başarıyla indirildi.",
+  "reportSafetyConcern": "Güvenlik Sorunu Bildir",
+  "reportSafetyConcernSubtitle": "Herhangi bir güvenlik sorunu veya ihlalini bildirmek için bize ulaşın"
 }

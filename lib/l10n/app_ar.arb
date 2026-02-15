@@ -243,5 +243,7 @@
   "eventCategoryReligious": "ديني",
   "eventCategoryOther": "عام",
   "downloadingLanguageModel": "جاري تحميل حزمة اللغة...",
-  "languageModelDownloaded": "تم تحميل حزمة اللغة بنجاح."
+  "languageModelDownloaded": "تم تحميل حزمة اللغة بنجاح.",
+  "reportSafetyConcern": "الإبلاغ عن محتوى أو انتهاك",
+  "reportSafetyConcernSubtitle": "تواصل معنا للإبلاغ عن أي مخاوف تتعلق بالسلامة"
 }

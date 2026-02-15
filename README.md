@@ -1,13 +1,14 @@
 <div align="center">
 
-# 🇾🇪 YC Ankara App
+# 🇾🇪 Diwan Ankara | ديوان أنقرة
 
-**Connecting the Yemeni Community in Ankara, Turkey.**
+**The Official App of the Union of Yemeni Students in Ankara.**
 `<br>`
-**همزة وصل للجالية اليمنية في أنقرة، تركيا**
+**التطبيق الرسمي لاتحاد الطلاب اليمنيين في أنقرة**
 
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)]()
+[![Google Play](https://img.shields.io/badge/Google%20Play-Coming%20Soon-00ADF2?style=for-the-badge&logo=google-play&logoColor=white)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 [English](#-english) | [العربية](#-arabic)
@@ -22,29 +23,32 @@
 
 ### ✨ About the Project
 
-Welcome to the **YC Ankara App**, a dedicated platform built to serve and connect the Yemeni community residing in Ankara. This application acts as a digital bridge, providing essential resources, real-time updates, and a unified space for community interaction.
+Welcome to **Diwan Ankara**, the official platform of the **Union of Yemeni Students in Ankara (اتحاد الطلاب اليمنيين)**. This application acts as a digital bridge, providing essential resources, real-time updates, and a unified space for the Yemeni student community and residents in Ankara.
 
-Whether you are looking for the latest announcements, upcoming cultural events, or a directory of local services, YC Ankara App has you covered.
+Whether you are looking for the latest university news, community events, or a directory of local services, **Diwan Ankara** has you covered.
+
+> [!TIP]
+> **🚀 Coming Soon:** We are working hard to bring **Diwan Ankara** to the **Google Play Store** very soon! Stay tuned!
 
 ### 🚀 Key Features
 
-The app is packed with features designed to make life easier and more connected:
+The app is packed with features designed to support the student community:
 
-* **📢 Announcements Hook**: Instantly receive the latest news, official statements, and important updates from community leaders.
-* **📅 Dynamic Events Calendar**: Keep track of workshops, gatherings, and celebrations. Never miss a community event again!
-* **📒 Digital Directory**: A comprehensive guide to Yemeni businesses, student services, and essential contacts in Ankara.
-* **📍 Places & Guidance**: Discover recommended locations, mosques, restaurants, and cultural centers.
-* **🔔 Smart Notifications**: Real-time push notifications ensure you're always in the loop, even when the app is closed.
-* **📄 Resource Library**: Access and view important PDFs, guides, and documentation directly within the app.
-* **🏗️ Projects & Committees**: Transparency is key. View ongoing community projects and meet the oversight committees.
-* **🌍 Multi-Language Support**: Fully localized to support the community's diverse needs (Arabic & English & turkish).
+*   **📢 Announcements Hook**: Instantly receive the latest news, official statements, and important updates from community leaders.
+*   **📅 Dynamic Events Calendar**: Keep track of workshops, gatherings, and celebrations. Never miss a community event again!
+*   **📒 Digital Directory**: A comprehensive guide to Yemeni businesses, student services, and essential contacts in Ankara.
+*   **📍 Places & Guidance**: Discover recommended locations, mosques, restaurants, and cultural centers.
+*   **🔔 Smart Notifications**: Real-time push notifications ensure you're always in the loop, even when the app is closed.
+*   **📄 Resource Library**: Access and view important PDFs, guides, and documentation directly within the app.
+*   **🏗️ Projects & Committees**: Transparency is key. View ongoing community projects and meet the oversight committees.
+*   **🌍 Multi-Language Support**: Fully localized to support the community's diverse needs (Arabic & English & turkish).
 
 ### 🛠️ Built With
 
 We use a modern, robust tech stack to ensure performance, scalability, and a beautiful user experience:
 
 | Category                   | Technology                                                                                                                         |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
 | **Framework**        | ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat&logo=Flutter&logoColor=white) **Flutter** (Dart)      |
 | **State Management** | ![Riverpod](https://img.shields.io/badge/Riverpod-%232D3748.svg?style=flat&logo=riverpod&logoColor=white) **flutter_riverpod** |
 | **Backend / BaaS**   | ![Firebase](https://img.shields.io/badge/Firebase-%23039BE5.svg?style=flat&logo=firebase) **Firestore, Cloud Messaging**       |
@@ -54,22 +58,22 @@ We use a modern, robust tech stack to ensure performance, scalability, and a bea
 
 ### 🏁 Getting Started
 
-1. **Clone the repository**
+1.  **Clone the repository**
 
-   ```bash
-   git clone https://github.com/your-username/yc_ankara_app.git
-   cd yc_ankara_app
-   ```
-2. **Install dependencies**
+    ```bash
+    git clone https://github.com/your-username/yc_ankara_app.git
+    cd yc_ankara_app
+    ```
+2.  **Install dependencies**
 
-   ```bash
-   flutter pub get
-   ```
-3. **Run the application**
+    ```bash
+    flutter pub get
+    ```
+3.  **Run the application**
 
-   ```bash
-   flutter run
-   ```
+    ```bash
+    flutter run
+    ```
 
 ---
 
@@ -79,9 +83,12 @@ We use a modern, robust tech stack to ensure performance, scalability, and a bea
 
 ### ✨ عن المشروع
 
-مرحبًا بكم في **تطبيق الجالية اليمنية في أنقرة**، المنصة المخصصة لخدمة وربط أبناء الجالية اليمنية المقيمين في أنقرة. يعمل هذا التطبيق كجسر رقمي يوفر الموارد الأساسية، والتحديثات الفورية، ومساحة موحدة للتفاعل المجتمعي.
+مرحبًا بكم في **ديوان أنقرة**، المنصة الرسمية لـ **اتحاد الطلاب اليمنيين في أنقرة**. يعمل هذا التطبيق كجسر رقمي يوفر الموارد التعليمية والخدمية، والتحديثات الفورية، ومساحة موحدة للتفاعل بين الطلاب وأبناء الجالية اليمنية المقيمين في أنقرة.
 
-سواء كنت تبحث عن آخر الإعلانات، أو الفعاليات الثقافية القادمة، أو دليل للخدمات المحلية، فإن تطبيق الجالية هو رفيقك الأمثل.
+سواء كنت تبحث عن آخر أخبار المنح والجامعات، أو الفعاليات الثقافية، أو دليل للخدمات المحلية، فإن **ديوان أنقرة** هو رفيقك الأمثل.
+
+> [!TIP]
+> **🚀 قريباً:** نحن نعمل بجد لإطلاق **ديوان أنقرة** على **متجر جوجل بلاي** في القريب العاجل! انتظرونا!
 
 ### 🚀 المميزات الرئيسية
 

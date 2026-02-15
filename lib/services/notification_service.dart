@@ -244,12 +244,14 @@ class NotificationService {
 
   /// Subscribe to topic
   Future<void> subscribeToTopic(String topic) async {
+    if (kIsWeb) return;
     await _firebaseMessaging.subscribeToTopic(topic);
     debugPrint('Subscribed to topic: $topic');
   }
 
   /// Unsubscribe from topic
   Future<void> unsubscribeFromTopic(String topic) async {
+    if (kIsWeb) return;
     await _firebaseMessaging.unsubscribeFromTopic(topic);
     debugPrint('Unsubscribed from topic: $topic');
   }

@@ -243,5 +243,7 @@
   "eventCategoryReligious": "Religious",
   "eventCategoryOther": "Other",
   "downloadingLanguageModel": "Downloading language pack...",
-  "languageModelDownloaded": "Language pack downloaded successfully."
+  "languageModelDownloaded": "Language pack downloaded successfully.",
+  "reportSafetyConcern": "Report a Safety Concern",
+  "reportSafetyConcernSubtitle": "Contact us to report any safety issues or violations"
 }

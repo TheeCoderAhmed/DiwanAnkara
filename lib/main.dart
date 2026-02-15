@@ -11,6 +11,7 @@ import 'app/app.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'settings/theme_controller.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
   runZonedGuarded(
@@ -72,12 +73,14 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       }
       
       // Initialize Firebase In-App Messaging
-      try {
-        FirebaseInAppMessaging.instance.setMessagesSuppressed(false);
-        FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
-        debugPrint('Firebase In-App Messaging initialized');
-      } catch (e) {
-        debugPrint('Firebase In-App Messaging initialization failed: $e');
+      if (!kIsWeb) {
+        try {
+          FirebaseInAppMessaging.instance.setMessagesSuppressed(false);
+          FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
+          debugPrint('Firebase In-App Messaging initialized');
+        } catch (e) {
+          debugPrint('Firebase In-App Messaging initialization failed: $e');
+        }
       }
       
       // Load SharedPreferences
@@ -145,7 +148,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'جاري التحميل...',
+                  'ديوان أنقرة...',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 16,

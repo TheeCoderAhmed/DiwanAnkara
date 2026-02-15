@@ -1209,6 +1209,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم تحميل حزمة اللغة بنجاح.'**
   String get languageModelDownloaded;
+
+  /// No description provided for @reportSafetyConcern.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإبلاغ عن محتوى أو انتهاك'**
+  String get reportSafetyConcern;
+
+  /// No description provided for @reportSafetyConcernSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تواصل معنا للإبلاغ عن أي مخاوف تتعلق بالسلامة'**
+  String get reportSafetyConcernSubtitle;
 }
 
 class _AppLocalizationsDelegate

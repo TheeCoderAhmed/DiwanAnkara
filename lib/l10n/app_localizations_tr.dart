@@ -584,4 +584,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get languageModelDownloaded => 'Dil paketi başarıyla indirildi.';
+
+  @override
+  String get reportSafetyConcern => 'Güvenlik Sorunu Bildir';
+
+  @override
+  String get reportSafetyConcernSubtitle =>
+      'Herhangi bir güvenlik sorunu veya ihlalini bildirmek için bize ulaşın';
 }
