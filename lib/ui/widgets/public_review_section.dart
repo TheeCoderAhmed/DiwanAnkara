@@ -1,0 +1,532 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../data/firestore/firestore_providers.dart';
+import '../../domain/models/comment.dart';
+
+class PublicReviewSection extends ConsumerStatefulWidget {
+  const PublicReviewSection({
+    super.key,
+    required this.targetId,
+    required this.targetType,
+    required this.targetName,
+  });
+
+  final String targetId;
+  final String targetType; // 'university', 'hospital', 'mall', etc.
+  final String targetName; // For display in empty state
+
+  @override
+  ConsumerState<PublicReviewSection> createState() =>
+      _PublicReviewSectionState();
+}
+
+class _PublicReviewSectionState extends ConsumerState<PublicReviewSection> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _commentController = TextEditingController();
+  bool _isSubmitting = false;
+  bool _showForm = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitReview() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    // Rate limiting check
+    final prefs = await SharedPreferences.getInstance();
+    final lastCommentTime = prefs.getString('last_comment_time');
+
+    if (lastCommentTime != null) {
+      final lastTime = DateTime.parse(lastCommentTime);
+      final now = DateTime.now();
+      final difference = now.difference(lastTime);
+
+      if (difference.inHours < 1) {
+        final remainingMinutes = 60 - difference.inMinutes;
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.timer_outlined, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'يرجى الانتظار $remainingMinutes دقيقة قبل إرسال تعليق آخر',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final submitComment = ref.read(submitCommentProvider);
+      final success = await submitComment(
+        announcementId: widget.targetId,
+        userName: _nameController.text.trim(),
+        commentText: _commentController.text.trim(),
+        targetType: widget.targetType,
+      );
+
+      if (!mounted) return;
+
+      if (success) {
+        await prefs.setString('last_comment_time', DateTime.now().toIso8601String());
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'تم إرسال تقييمك بنجاح! سيتم نشره بعد المراجعة.',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Color(0xFF0D9488),
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+
+        // Clear form and hide it
+        _nameController.clear();
+        _commentController.clear();
+        _formKey.currentState!.reset();
+        setState(() => _showForm = false);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'حدث خطأ. يرجى المحاولة مرة أخرى.',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final reviewsAsync = ref.watch(publicReviewsProvider(widget.targetId));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section Header
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.star_rounded,
+                      color: Color(0xFF0D9488),
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'التقييمات',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'شارك تجربتك مع الآخرين',
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Reviews List
+        reviewsAsync.when(
+          data: (reviews) {
+            if (reviews.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.rate_review_outlined,
+                        size: 64,
+                        color: Colors.grey.shade400,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'لا توجد تقييمات بعد',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'كن أول من يشارك تجربته!',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: reviews.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final review = reviews[index];
+                return _ReviewBubble(review: review, isDark: isDark);
+              },
+            );
+          },
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (error, _) => Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              'خطأ في تحميل التقييمات',
+              style: TextStyle(color: Colors.red.shade700),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // Add Review Button / Form
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _showForm
+              ? _buildReviewForm(isDark)
+              : OutlinedButton.icon(
+                  onPressed: () => setState(() => _showForm = true),
+                  icon: const Icon(Icons.add_comment),
+                  label: const Text('إضافة تقييم'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+        ),
+
+        const SizedBox(height: 32),
+      ],
+    );
+  }
+
+  Widget _buildReviewForm(bool isDark) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Name Field
+          TextFormField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              labelText: 'الاسم',
+              hintText: 'أدخل اسمك',
+              prefixIcon: const Icon(Icons.person),
+              filled: true,
+              fillColor: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.grey.withValues(alpha: 0.1),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.grey.withValues(alpha: 0.3),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: Color(0xFF0D9488),
+                  width: 2,
+                ),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'الرجاء إدخال الاسم';
+              }
+              if (value.trim().length < 2 || value.trim().length > 50) {
+                return 'الاسم يجب أن يكون بين 2-50 حرفاً';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          // Review Field
+          TextFormField(
+            controller: _commentController,
+            maxLines: 4,
+            maxLength: 500,
+            decoration: InputDecoration(
+              labelText: 'التقييم',
+              hintText: 'اكتب تقييمك هنا...',
+              alignLabelWithHint: true,
+              filled: true,
+              fillColor: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.grey.withValues(alpha: 0.1),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.grey.withValues(alpha: 0.3),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: Color(0xFF0D9488),
+                  width: 2,
+                ),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'الرجاء إدخال التقييم';
+              }
+              if (value.trim().length < 10) {
+                return 'التقييم يجب أن يكون على الأقل 10 أحرف';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          // Action Buttons
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    _nameController.clear();
+                    _commentController.clear();
+                    _formKey.currentState?.reset();
+                    setState(() => _showForm = false);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('إلغاء'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: FilledButton(
+                  onPressed: _isSubmitting ? null : _submitReview,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D9488),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'إرسال التقييم',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReviewBubble extends StatelessWidget {
+  const _ReviewBubble({
+    required this.review,
+    required this.isDark,
+  });
+
+  final Comment review;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.grey.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.grey.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header: Name and Date
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: const Color(0xFF0D9488).withValues(alpha: 0.2),
+                child: Text(
+                  review.userName.isNotEmpty
+                      ? review.userName[0].toUpperCase()
+                      : '?',
+                  style: const TextStyle(
+                    color: Color(0xFF0D9488),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      review.userName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      DateFormat('dd/MM/yyyy', 'ar').format(review.timestamp),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.verified,
+                size: 20,
+                color: const Color(0xFF0D9488).withValues(alpha: 0.7),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // Review Text
+          Text(
+            review.commentText,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.6,
+              color: isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
