@@ -6,6 +6,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../routing/app_router.dart';
 import '../../services/onboarding_service.dart';
 import '../../settings/theme_controller.dart';
+import '../../settings/locale_controller.dart';
+import '../../l10n/app_localizations.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -18,26 +20,36 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingSlide> _slides = [
-    OnboardingSlide(
-      icon: LucideIcons.mapPin,
-      title: 'مرحباً بكم في أنقرة',
-      description: 'دليلك الشامل للمدينة - اكتشف الجامعات، المستشفيات، المولات والمزيد',
-      color: const Color(0xFF0D9488),
-    ),
-    OnboardingSlide(
-      icon: LucideIcons.search,
-      title: 'اعثر على كل شيء',
-      description: 'ابحث واستكشف جميع الأماكن المهمة في أنقرة بسهولة',
-      color: const Color(0xFF8B5CF6),
-    ),
-    OnboardingSlide(
-      icon: LucideIcons.bell,
-      title: 'ابقَ على اطلاع',
-      description: 'احصل على إشعارات حول الفعاليات والأخبار المهمة',
-      color: const Color(0xFFEF4444),
-    ),
-  ];
+  List<OnboardingSlide> _getSlides(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      OnboardingSlide(
+        icon: LucideIcons.languages,
+        title: l10n.onboardingLanguageTitle,
+        description: l10n.onboardingLanguageDesc,
+        color: const Color(0xFF06B6D4),
+        isLanguageSelector: true,
+      ),
+      OnboardingSlide(
+        icon: LucideIcons.mapPin,
+        title: l10n.onboarding1Title,
+        description: l10n.onboarding1Desc,
+        color: const Color(0xFF0D9488),
+      ),
+      OnboardingSlide(
+        icon: LucideIcons.search,
+        title: l10n.onboarding2Title,
+        description: l10n.onboarding2Desc,
+        color: const Color(0xFF8B5CF6),
+      ),
+      OnboardingSlide(
+        icon: LucideIcons.bell,
+        title: l10n.onboarding3Title,
+        description: l10n.onboarding3Desc,
+        color: const Color(0xFFEF4444),
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -57,30 +69,33 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final slides = _getSlides(context);
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             // Skip button
             Align(
-              alignment: Alignment.topLeft,
+              alignment: Alignment.centerLeft,
               child: TextButton(
                 onPressed: _completeOnboarding,
-                child: const Text('تخطي'),
+                child: Text(l10n.onboardingSkip),
               ),
             ),
             // Page view
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: _slides.length,
+                itemCount: slides.length,
                 onPageChanged: (index) {
                   setState(() {
                     _currentPage = index;
                   });
                 },
                 itemBuilder: (context, index) {
-                  return _buildSlide(_slides[index]);
+                  return _buildSlide(slides[index]);
                 },
               ),
             ),
@@ -90,7 +105,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
-                  _slides.length,
+                  slides.length,
                   (index) => Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     width: _currentPage == index ? 24 : 8,
@@ -112,7 +127,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () {
-                    if (_currentPage < _slides.length - 1) {
+                    if (_currentPage < slides.length - 1) {
                       _pageController.nextPage(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.ease,
@@ -129,7 +144,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     ),
                   ),
                   child: Text(
-                    _currentPage < _slides.length - 1 ? 'التالي' : 'ابدأ',
+                    _currentPage < slides.length - 1 ? l10n.onboardingNext : l10n.onboardingStart,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -146,7 +161,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _buildSlide(OnboardingSlide slide) {
     return Padding(
-      padding: const EdgeInsets.all(40),
+      padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -178,7 +193,66 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
             textAlign: TextAlign.center,
           ),
+          if (slide.isLanguageSelector) ...[
+            const SizedBox(height: 48),
+            _buildLanguageOption('ar', 'العربية', '🇸🇦'),
+            const SizedBox(height: 12),
+            _buildLanguageOption('en', 'English', '🇺🇸'),
+            const SizedBox(height: 12),
+            _buildLanguageOption('tr', 'Türkçe', '🇹🇷'),
+          ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(String code, String name, String flag) {
+    final currentLocale = ref.watch(localeControllerProvider);
+    final isSelected = currentLocale?.languageCode == code;
+
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () {
+          ref.read(localeControllerProvider.notifier).setLocale(Locale(code));
+          // Provide subtle haptic feedback or just move to next page
+          Future.delayed(const Duration(milliseconds: 300), () {
+             if (_currentPage == 0 && mounted) {
+                _pageController.nextPage(
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
+                );
+             }
+          });
+        },
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          side: BorderSide(
+            color: isSelected ? const Color(0xFF0D9488) : Colors.grey.withValues(alpha: 0.3),
+            width: isSelected ? 2 : 1,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: isSelected ? const Color(0xFF0D9488).withValues(alpha: 0.05) : null,
+        ),
+        child: Row(
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 24)),
+            const SizedBox(width: 16),
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? const Color(0xFF0D9488) : null,
+              ),
+            ),
+            const Spacer(),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: Color(0xFF0D9488)),
+          ],
+        ),
       ),
     );
   }
@@ -189,11 +263,13 @@ class OnboardingSlide {
   final String title;
   final String description;
   final Color color;
+  final bool isLanguageSelector;
 
   const OnboardingSlide({
     required this.icon,
     required this.title,
     required this.description,
     required this.color,
+    this.isLanguageSelector = false,
   });
 }

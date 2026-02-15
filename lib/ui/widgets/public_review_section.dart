@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/firestore/firestore_providers.dart';
 import '../../domain/models/comment.dart';
+import '../../services/translation_service.dart';
 
 class PublicReviewSection extends ConsumerStatefulWidget {
   const PublicReviewSection({
@@ -441,7 +442,7 @@ class _PublicReviewSectionState extends ConsumerState<PublicReviewSection> {
   }
 }
 
-class _ReviewBubble extends StatelessWidget {
+class _ReviewBubble extends StatefulWidget {
   const _ReviewBubble({
     required this.review,
     required this.isDark,
@@ -451,16 +452,57 @@ class _ReviewBubble extends StatelessWidget {
   final bool isDark;
 
   @override
+  State<_ReviewBubble> createState() => _ReviewBubbleState();
+}
+
+class _ReviewBubbleState extends State<_ReviewBubble> {
+  String? _translatedText;
+  bool _isTranslating = false;
+
+  Future<void> _translateComment() async {
+    if (_translatedText != null) return;
+
+    setState(() => _isTranslating = true);
+
+    try {
+      final service = TranslationService();
+      final targetLang = Localizations.localeOf(context).languageCode;
+      
+      // Attempt to translate. Assuming source is auto-detected or defaults to 'ar' 
+      // if not specified. Ideally we'd detect language, but for now we rely on 
+      // the service's robust handling (it defaults source to 'ar').
+      final result = await service.translate(
+        widget.review.commentText, 
+        targetLang,
+        // We don't specify source to let it default to 'ar' or use detection logic if added.
+        // If the comment is already in target language, result should be same.
+      );
+
+      if (mounted) {
+        setState(() {
+          _translatedText = result;
+          _isTranslating = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error translating comment: $e');
+      if (mounted) {
+        setState(() => _isTranslating = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark
+        color: widget.isDark
             ? Colors.white.withValues(alpha: 0.05)
             : Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark
+          color: widget.isDark
               ? Colors.white.withValues(alpha: 0.1)
               : Colors.grey.withValues(alpha: 0.2),
         ),
@@ -475,8 +517,8 @@ class _ReviewBubble extends StatelessWidget {
                 radius: 18,
                 backgroundColor: const Color(0xFF0D9488).withValues(alpha: 0.2),
                 child: Text(
-                  review.userName.isNotEmpty
-                      ? review.userName[0].toUpperCase()
+                  widget.review.userName.isNotEmpty
+                      ? widget.review.userName[0].toUpperCase()
                       : '?',
                   style: const TextStyle(
                     color: Color(0xFF0D9488),
@@ -490,14 +532,14 @@ class _ReviewBubble extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      review.userName,
+                      widget.review.userName,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      DateFormat('dd/MM/yyyy', 'ar').format(review.timestamp),
+                      DateFormat('dd/MM/yyyy', 'ar').format(widget.review.timestamp),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
@@ -506,6 +548,25 @@ class _ReviewBubble extends StatelessWidget {
                   ],
                 ),
               ),
+              // Translate Button
+              IconButton(
+                icon: _isTranslating 
+                    ? const SizedBox(
+                        width: 16, 
+                        height: 16, 
+                        child: CircularProgressIndicator(strokeWidth: 2)
+                      )
+                    : Icon(
+                        Icons.translate,
+                        size: 20,
+                        color: _translatedText != null 
+                            ? const Color(0xFF0D9488) 
+                            : Colors.grey.shade400,
+                      ),
+                tooltip: 'Translate',
+                onPressed: _isTranslating ? null : _translateComment,
+              ),
+              const SizedBox(width: 4),
               Icon(
                 Icons.verified,
                 size: 20,
@@ -518,13 +579,25 @@ class _ReviewBubble extends StatelessWidget {
 
           // Review Text
           Text(
-            review.commentText,
+            _translatedText ?? widget.review.commentText,
             style: TextStyle(
               fontSize: 14,
               height: 1.6,
-              color: isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black87,
+              color: widget.isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black87,
             ),
           ),
+          
+          if (_translatedText != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              '(Translated by Google)',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.grey.shade500,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ],
       ),
     );

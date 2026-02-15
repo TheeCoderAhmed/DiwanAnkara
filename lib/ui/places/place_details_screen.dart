@@ -27,18 +27,20 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   static const int _maxDescriptionLines = 4;
   
   String? _translatedDescription;
+  String? _translatedKnownFor;
+  String? _translatedHistory;
+  List<PlaceSection>? _translatedSections;
   bool _isTranslating = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _translateDescription();
+    _translateContent();
   }
   
-  Future<void> _translateDescription() async {
+  Future<void> _translateContent() async {
     final placesAsync = ref.read(placesStreamProvider);
     
-    // Simple check to find current place - ideally pass Place object or use provider family
     placesAsync.whenData((places) {
        final place = places.where((p) => p.id == widget.placeId).firstOrNull;
        if (place == null) return;
@@ -46,22 +48,83 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
        final currentLocale = Localizations.localeOf(context).languageCode;
        
        // Only translate if not Arabic (source) and not already translated
-       // And strictly if the description is Arabic (which we assume for descriptionAr)
-       if (currentLocale != 'ar' && _translatedDescription == null) {
+       if (currentLocale != 'ar' && !_isTranslating) {
+          // If we already have translations for this locale, don't re-run
+          if (_translatedDescription != null) return;
+
           setState(() {
              _isTranslating = true;
           });
           
-          TranslationService().translate(place.descriptionAr, currentLocale).then((result) {
+          final service = TranslationService();
+
+          Future.wait([
+            // 1. Description (Always exists as Ar)
+            service.translate(place.descriptionAr, currentLocale),
+            
+            // 2. KnownFor
+            place.knownFor != null 
+                ? service.translate(place.knownFor!, currentLocale)
+                : Future.value(null),
+
+            // 3. History (Translate AR if TR is missing)
+            (place.historyTr == null && place.historyAr != null)
+                ? service.translate(place.historyAr!, currentLocale)
+                : Future.value(null),
+                
+            // 4. Sections
+            if (place.sections != null && place.sections!.isNotEmpty)
+               _translateSectionsList(place.sections!, currentLocale)
+            else
+               Future.value(null)
+
+          ]).then((results) {
              if (mounted) {
                 setState(() {
-                   _translatedDescription = result;
+                   _translatedDescription = results[0] as String;
+                   _translatedKnownFor = results[1] as String?;
+                   _translatedHistory = results[2] as String?;
+                   if (results[3] != null) {
+                     _translatedSections = results[3] as List<PlaceSection>;
+                   }
                    _isTranslating = false;
                 });
+             }
+          }).catchError((e) {
+             debugPrint("Error in translation: $e");
+             if (mounted) {
+               setState(() {
+                 _isTranslating = false;
+               });
              }
           });
        }
     });
+  }
+
+  Future<List<PlaceSection>> _translateSectionsList(List<PlaceSection> sections, String targetLang) async {
+    final service = TranslationService();
+    
+    // Flatten the list: [title1, content1, title2, content2, ...]
+    final List<String> inputs = [];
+    for (final sec in sections) {
+        inputs.add(sec.title);
+        inputs.add(sec.content);
+    }
+    
+    // Batch translate
+    // Uses default source (Arabic) which matches original behavior
+    final results = await service.translateList(inputs, targetLang);
+    
+    final List<PlaceSection> processed = [];
+    for (int i = 0; i < results.length; i += 2) {
+        processed.add(PlaceSection(
+            title: results[i], 
+            content: (i + 1 < results.length) ? results[i+1] : ''
+        ));
+    }
+    
+    return processed;
   }
 
   @override
@@ -184,20 +247,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
              )).toList();
              
              // Create a new Place instance with the merged documents
-             place = Place(
-               id: place.id,
-               category: place.category,
-               nameTr: place.nameTr,
-               descriptionAr: place.descriptionAr,
-               lat: place.lat,
-               lng: place.lng,
-               imageAsset: place.imageAsset,
-               isPopular: place.isPopular,
+             place = place.copyWith(
                documents: [...place.documents, ...extraDocuments],
-               pdfUrl: place.pdfUrl,
-               docUrl: place.docUrl,
-               mapsLink: place.mapsLink,
-               order: place.order,
              );
            }
         }
@@ -336,7 +387,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+                          color: const Color(0xFF0D9488).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -357,14 +408,48 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                             ),
                       ),
                       const SizedBox(height: 16),
+                      
+                      // Stats Row (Type, Established, Known For)
+                      _buildPlaceStats(context, place),
+                      const SizedBox(height: 24),
 
-                      // Description with fade effect
                       _isTranslating 
                           ? const Padding(
                               padding: EdgeInsets.all(20.0),
                               child: Center(child: CircularProgressIndicator()),
                             )
                           : _buildDescription(context, _translatedDescription ?? place.descriptionAr, isDark),
+                      const SizedBox(height: 24),
+
+                      // History section if available
+                      _buildHistorySection(context, place, _translatedHistory),
+                      const SizedBox(height: 12),
+
+                      // New: Sections Accordion (for Transport Guide, etc.)
+                      _buildSectionsAccordion(context, place, _translatedSections),
+                      const SizedBox(height: 12),
+                      
+                      // Known For section if available and not shown in stats
+                      if (place.knownFor != null && place.knownFor!.isNotEmpty) ...[
+                        Text(
+                          AppLocalizations.of(context).knownFor,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF0D9488),
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _translatedKnownFor ?? place.knownFor!,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontStyle: FontStyle.italic,
+                              ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+
+
+
                       const SizedBox(height: 24),
 
                       // Navigate button (use mapsLink if available, otherwise use coords)
@@ -557,6 +642,131 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
+  Widget _buildPlaceStats(BuildContext context, Place place) {
+    return Row(
+      children: [
+        // Show Hospital Type only for Hospitals
+        if (place.type != null && place.category == PlaceCategory.hospital)
+          Expanded(
+            child: _buildStatItem(
+              context,
+              LucideIcons.building2,
+              AppLocalizations.of(context).hospitalType,
+              place.type!,
+            ),
+          ),
+        
+        // Show Establishment only for Hospitals and Universities
+        if (place.establishment != null && 
+           (place.category == PlaceCategory.hospital || place.category == PlaceCategory.university))
+          Expanded(
+            child: _buildStatItem(
+              context,
+              LucideIcons.calendar,
+              AppLocalizations.of(context).established,
+              place.establishment.toString(),
+            ),
+          ),
+        
+        // Show Entry Fee only for Parks and Activities
+        if (place.entryFeeAr != null && 
+           (place.category == PlaceCategory.parks || place.category == PlaceCategory.activities))
+          Expanded(
+            child: _buildStatItem(
+              context,
+              LucideIcons.ticket,
+              AppLocalizations.of(context).entryFee,
+              Localizations.localeOf(context).languageCode == 'ar' ? place.entryFeeAr! : (place.entryFeeTr ?? place.entryFeeAr!),
+            ),
+          ),
+        
+        // Show Barbecue only for Parks and Activities
+        if (place.barbecueAr != null && 
+           (place.category == PlaceCategory.parks || place.category == PlaceCategory.activities))
+          Expanded(
+            child: _buildStatItem(
+              context,
+              LucideIcons.flame,
+              AppLocalizations.of(context).barbecue,
+              Localizations.localeOf(context).languageCode == 'ar' ? place.barbecueAr! : (place.barbecueTr ?? place.barbecueAr!),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildHistorySection(BuildContext context, Place place, String? translatedHistory) {
+    // If we have a translation, use it.
+    // Otherwise check TR fallback, then AR.
+    // But if we are in 'ar', we just use historyAr.
+    
+    String? history;
+    final locale = Localizations.localeOf(context).languageCode;
+    
+    if (locale == 'ar') {
+      history = place.historyAr;
+    } else {
+      // Use translated if available, otherwise fallback to TR or AR
+      history = translatedHistory ?? (place.historyTr ?? place.historyAr);
+    }
+
+    if (history == null || history.isEmpty) return const SizedBox.shrink();
+    
+    // Show only for Parks and Activities
+    if (place.category != PlaceCategory.parks && place.category != PlaceCategory.activities) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context).history,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF0D9488),
+              ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          history,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                height: 1.5,
+              ),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildStatItem(BuildContext context, IconData icon, String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 16, color: const Color(0xFF0D9488)),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.grey,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+      ],
+    );
+  }
+
+
   /// Builds a placeholder when no image is available.
   /// Shows document icon if the item is a PDF-only entry.
   Widget _buildImagePlaceholder(bool isPdfItem) {
@@ -569,6 +779,94 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           size: 48,
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionsAccordion(BuildContext context, Place place, List<PlaceSection>? translatedSections) {
+    final sectionsToUse = translatedSections ?? place.sections;
+    
+    if (sectionsToUse == null || sectionsToUse.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: sectionsToUse.map((section) {
+        // Check for 'advice' or 'معلومة' in title. 
+        // Note: Translation might change the title, but we assume the meaning is preserved.
+        final isAdvice = section.title.toLowerCase().contains('advice') || 
+                         section.title.contains('معلومة') ||
+                         section.title.toLowerCase().contains('tavsiye') || // TR
+                         section.title.toLowerCase().contains('info');
+        
+        if (isAdvice) {
+          // "Advices keep it in one slide" - Render as a static card instead of expandable
+          return Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            elevation: 0,
+            color: const Color(0xFF0D9488).withValues(alpha: 0.05),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Color(0xFF0D9488), width: 1),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(LucideIcons.lightbulb, color: Color(0xFF0D9488), size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          section.title,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF0D9488),
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    section.content,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+          ),
+          child: Theme(
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              iconColor: const Color(0xFF0D9488),
+              collapsedIconColor: Colors.grey,
+              title: Text(
+                section.title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              expandedAlignment: Alignment.topLeft,
+              children: [
+                Text(
+                  section.content,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

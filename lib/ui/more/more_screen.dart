@@ -396,5 +396,3 @@ String _getLocaleLabel(Locale? locale) {
     _ => locale.languageCode,
   };
 }
-
-

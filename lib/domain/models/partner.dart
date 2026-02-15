@@ -22,4 +22,13 @@ class Partner {
       order: (json['order'] as num?)?.toInt(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'logo_url': logoAsset,
+      'order': order,
+    };
+  }
 }

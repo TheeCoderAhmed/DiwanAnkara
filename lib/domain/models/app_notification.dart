@@ -53,7 +53,7 @@ class AppNotification {
       body: json['body'] as String,
       timestamp: DateTime.parse(json['timestamp'] as String),
       isRead: json['isRead'] as bool? ?? false,
-      data: json['data'] as Map<String, dynamic>?,
+      data: json['data'] != null ? Map<String, dynamic>.from(json['data'] as Map) : null,
     );
   }
 

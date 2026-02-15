@@ -16,11 +16,14 @@ import 'package:yc_ankara_app/l10n/app_localizations.dart';
 import '../../data/firestore/firestore_providers.dart';
 import '../../domain/models/announcement.dart';
 import '../../domain/models/categories.dart';
-import '../../domain/models/place.dart';
 import '../../domain/models/partner.dart';
+import '../../domain/models/place.dart';
 import '../../domain/models/project.dart';
+import '../../domain/models/university_model.dart';
 import '../../routing/app_router.dart';
-import '../../services/notification_controller.dart'; // Add import
+import 'home_providers.dart';
+
+import '../../services/notification_controller.dart';
 import '../projects/project_details_page.dart';
 import '../shared/ambient_background.dart';
 import '../shared/cached_image_widget.dart';
@@ -33,7 +36,6 @@ import '../widgets/place_card.dart';
 import '../widgets/student_hacks_widget.dart';
 import '../widgets/events_preview_widget.dart';
 import '../widgets/offline_banner.dart';
-import 'home_providers.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -113,6 +115,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final announcementsAsync = ref.watch(announcementsStreamProvider);
     final partnersAsync = ref.watch(partnersStreamProvider);
     final projectsAsync = ref.watch(projectsStreamProvider);
+    final universitiesAsync = ref.watch(universitiesStreamProvider);
     
     // Notification count
     final notifications = ref.watch(notificationControllerProvider);
@@ -181,22 +184,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
-                            IconButton(
-                              onPressed: () {
-                                HapticFeedback.lightImpact();
-                                context.push(const NotificationsRoute().location);
-                              },
-                              icon: Badge(
-                                isLabelVisible: unreadCount > 0,
-                                label: Text('$unreadCount'),
-                                child: const Icon(LucideIcons.bell),
-                              ),
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.white.withValues(alpha: 0.1),
-                                foregroundColor: Theme.of(context).colorScheme.onSurface,
-                                minimumSize: const Size(48, 48),
-                                padding: EdgeInsets.zero,
-                              ),
+                            Row(
+                              children: [
+
+                                IconButton(
+                                  onPressed: () {
+                                    HapticFeedback.lightImpact();
+                                    context.push(const NotificationsRoute().location);
+                                  },
+                                  icon: Badge(
+                                    isLabelVisible: unreadCount > 0,
+                                    label: Text('$unreadCount'),
+                                    child: const Icon(LucideIcons.bell),
+                                  ),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.white.withValues(alpha: 0.1),
+                                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                                    minimumSize: const Size(48, 48),
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -265,7 +273,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               horizontal: 20,
                               vertical: 8,
                             ),
-                            child: _SearchResultTile(place: p),
+                            child: _SearchResultTile(
+                              place: p,
+                              universities: universitiesAsync.valueOrNull ?? [],
+                            ),
                           ),
                         ),
                       const SizedBox(height: 100), // Bottom padding for navbar
@@ -558,8 +569,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
     ],
   ),
-);
-}
+
+    );
+  }
 
   Widget _buildPartnersGrid(BuildContext context, List<Partner> partners) {
     // Modern horizontal scroll with circular avatars
@@ -664,7 +676,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
         
         if (mounted) {
           setState(() {
-            final rates = usdData['rates'] as Map<String, dynamic>;
+            final rates = Map<String, dynamic>.from(usdData['rates'] as Map);
             final usdToTry = (rates['TRY'] as num).toDouble();
             
             // Define the currencies we want to track
@@ -1076,13 +1088,14 @@ class _ModernPartnerLogo extends StatelessWidget {
   }
 }
 
-class _SearchResultTile extends StatelessWidget {
-  const _SearchResultTile({required this.place});
+class _SearchResultTile extends ConsumerWidget {
+  const _SearchResultTile({required this.place, required this.universities});
 
   final Place place;
+  final List<UniversityModel> universities;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -1108,6 +1121,19 @@ class _SearchResultTile extends StatelessWidget {
         trailing: const Icon(LucideIcons.chevronLeft),
         onTap: () {
           HapticFeedback.selectionClick();
+          if (place.category == PlaceCategory.university) {
+            final uni = universities.firstWhere(
+              (u) => u.id == place.id,
+              orElse: () => UniversityModel(id: '', name: place.nameTr),
+            );
+            if (uni.id.isNotEmpty) {
+              context.push(
+                const UniversityDetailsRoute().location(id: uni.id),
+                extra: uni,
+              );
+              return;
+            }
+          }
           context.push(const PlaceDetailsRoute().location(id: place.id));
         },
       ),
@@ -1115,32 +1141,11 @@ class _SearchResultTile extends StatelessWidget {
   }
 
   Widget _buildImage(String rawPath) {
-    final path = rawPath.trim();
-    if (path.isEmpty) {
-      return Container(
-        color: Colors.grey[200],
-        child: const Icon(LucideIcons.image, size: 24, color: Colors.grey),
-      );
-    }
-    if (path.startsWith('http')) {
-      return Image.network(
-        path,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
-          color: Colors.grey[200],
-          child: const Icon(LucideIcons.alertTriangle, size: 24, color: Colors.red),
-        ),
-      );
-    } else {
-      return Image.asset(
-        path,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
-          color: Colors.grey[200],
-          child: const Icon(LucideIcons.imageOff, size: 24, color: Colors.grey),
-        ),
-      );
-    }
+    return CachedImageWidget(
+      imageUrl: rawPath,
+      fit: BoxFit.cover,
+      errorIcon: LucideIcons.imageOff,
+    );
   }
 }
 

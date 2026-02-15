@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 
 import 'app/app.dart';
@@ -59,6 +60,10 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
     try {
       // Initialize DotEnv
       await dotenv.load(fileName: ".env");
+
+      // Initialize Hive
+      await Hive.initFlutter();
+      await Hive.openBox('app_cache');
 
       // Initialize Firebase
       await Firebase.initializeApp(

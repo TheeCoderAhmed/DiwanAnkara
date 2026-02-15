@@ -10,6 +10,7 @@ enum PlaceCategory {
   transport,
   govOffice,
   parks,
+  activities,
   housing,
   partners,
   about,  // Who We Are (من نحن)
@@ -27,6 +28,7 @@ extension PlaceCategoryX on PlaceCategory {
         PlaceCategory.transport => 'transport',
         PlaceCategory.govOffice => 'gov_office',
         PlaceCategory.parks => 'parks',
+        PlaceCategory.activities => 'activities',
         PlaceCategory.housing => 'housing',
         PlaceCategory.partners => 'partners',
         PlaceCategory.about => 'about',
@@ -45,6 +47,7 @@ extension PlaceCategoryX on PlaceCategory {
       PlaceCategory.transport => l10n.catTransport,
       PlaceCategory.govOffice => l10n.catGovOffice,
       PlaceCategory.parks => l10n.catParks,
+      PlaceCategory.activities => l10n.catActivities,
       PlaceCategory.housing => l10n.catHousing,
       PlaceCategory.partners => l10n.catPartners,
       PlaceCategory.about => l10n.catAbout,
@@ -62,6 +65,7 @@ extension PlaceCategoryX on PlaceCategory {
         PlaceCategory.transport => 'المواصلات',
         PlaceCategory.govOffice => 'الدوائر الحكومية',
         PlaceCategory.parks => 'الحدائق',
+        PlaceCategory.activities => 'الأنشطة والترفيه',
         PlaceCategory.housing => 'دليل السكنات',
         PlaceCategory.partners => 'شركاء النجاح',
         PlaceCategory.about => 'من نحن',
@@ -82,6 +86,7 @@ extension PlaceCategoryX on PlaceCategory {
       'transport' => PlaceCategory.transport,
       'gov_office' => PlaceCategory.govOffice,
       'parks' => PlaceCategory.parks,
+      'activities' => PlaceCategory.activities,
       'housing' => PlaceCategory.housing,
       'partners' => PlaceCategory.partners,
       'about' => PlaceCategory.about,
@@ -112,6 +117,8 @@ extension PlaceCategoryX on PlaceCategory {
       // Parks - Check both variants
       'الحدائق' => PlaceCategory.parks,  // with definite article
       'حدائق' => PlaceCategory.parks,    // without definite article
+      'الأنشطة والترفيه' => PlaceCategory.activities,
+      'أنشطة' => PlaceCategory.activities,
       
       // Government Offices
       'المعاملات الحكومية' => PlaceCategory.govOffice,  // matches Python script

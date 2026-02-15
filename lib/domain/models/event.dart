@@ -98,6 +98,19 @@ class AppEvent {
       url: s('url'),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'date': date.toIso8601String(),
+      'location': location,
+      'category': category.name,
+      'image_url': imageAsset,
+      'url': url,
+    };
+  }
 }
 
 

@@ -39,4 +39,16 @@ class Announcement {
       order: (json['order'] as num?)?.toInt(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'link': link,
+      'date': date.toIso8601String(),
+      'image_url': imageUrl,
+      'order': order,
+    };
+  }
 }

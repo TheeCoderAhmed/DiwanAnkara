@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import '../../services/translation_service.dart';
 import '../shared/cached_image_widget.dart';
+
+import 'package:yc_ankara_app/l10n/app_localizations.dart';
 
 class StudentHacksWidget extends StatelessWidget {
   const StudentHacksWidget({super.key});
@@ -32,7 +34,7 @@ class StudentHacksWidget extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Text(
-                'مصادر مفيدة للطلاب',
+                AppLocalizations.of(context).studentResources,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -149,10 +151,55 @@ class _StudentHack {
   final String? backgroundImage;
 }
 
-class _HackCard extends StatelessWidget {
+class _HackCard extends StatefulWidget {
   const _HackCard({required this.hack});
 
   final _StudentHack hack;
+
+  @override
+  State<_HackCard> createState() => _HackCardState();
+}
+
+class _HackCardState extends State<_HackCard> {
+  String? _translatedTitle;
+  String? _translatedDesc;
+  bool _isTranslating = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkAndTranslate();
+  }
+
+  Future<void> _checkAndTranslate() async {
+    final languageCode = Localizations.localeOf(context).languageCode;
+    
+    // Only translate if not Arabic (assuming source is Arabic) and not already translated
+    if (languageCode != 'ar' && 
+        (_translatedTitle == null || _translatedDesc == null) && 
+        !_isTranslating) {
+        
+      if (mounted) setState(() => _isTranslating = true);
+
+      try {
+        final service = TranslationService();
+        // Batch translate title and description
+        final texts = [widget.hack.title, widget.hack.description];
+        final results = await service.translateList(texts, languageCode);
+        
+        if (mounted && results.length == 2) {
+          setState(() {
+            _translatedTitle = results[0];
+            _translatedDesc = results[1];
+            _isTranslating = false;
+          });
+        }
+      } catch (e) {
+        debugPrint('Error translating hack card: $e');
+        if (mounted) setState(() => _isTranslating = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,8 +207,8 @@ class _HackCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () async {
-        if (hack.url.isEmpty) return;
-        final uri = Uri.parse(hack.url);
+        if (widget.hack.url.isEmpty) return;
+        final uri = Uri.parse(widget.hack.url);
         try {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         } catch (e) {
@@ -188,34 +235,34 @@ class _HackCard extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: isDark
                         ? [
-                            hack.gradient[0].withValues(alpha: 0.3),
-                            hack.gradient[1].withValues(alpha: 0.2),
+                            widget.hack.gradient[0].withValues(alpha: 0.3),
+                            widget.hack.gradient[1].withValues(alpha: 0.2),
                           ]
                         : [
-                            hack.gradient[0].withValues(alpha: 0.8),
-                            hack.gradient[1].withValues(alpha: 0.6),
+                            widget.hack.gradient[0].withValues(alpha: 0.8),
+                            widget.hack.gradient[1].withValues(alpha: 0.6),
                           ],
                   ),
                   border: Border.all(
                     color: isDark
                         ? Colors.white.withValues(alpha: 0.1)
-                        : hack.gradient[0].withValues(alpha: 0.3),
+                        : widget.hack.gradient[0].withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
               ),
 
               // Optional Background Image
-              if (hack.backgroundImage != null && hack.backgroundImage!.isNotEmpty)
+              if (widget.hack.backgroundImage != null && widget.hack.backgroundImage!.isNotEmpty)
                 CachedImageWidget(
-                  imageUrl: hack.backgroundImage!,
+                  imageUrl: widget.hack.backgroundImage!,
                   fit: BoxFit.cover,
                   width: 300,
                   height: 180,
                 ),
 
               // Overlay for readability if image exists
-              if (hack.backgroundImage != null && hack.backgroundImage!.isNotEmpty)
+              if (widget.hack.backgroundImage != null && widget.hack.backgroundImage!.isNotEmpty)
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -243,24 +290,24 @@ class _HackCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
-                        hack.icon,
-                        color: isDark ? Colors.white : hack.gradient[0],
+                        widget.hack.icon,
+                        color: isDark ? Colors.white : widget.hack.gradient[0],
                         size: 24,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      hack.title,
+                      _translatedTitle ?? widget.hack.title,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                    ),
+                    ).animate(target: _isTranslating ? 0 : 1).fadeIn(),
                     const SizedBox(height: 8),
                     Flexible(
                       child: Text(
-                        hack.description,
+                        _translatedDesc ?? widget.hack.description,
                         style: TextStyle(
                           fontSize: 13,
                           color: isDark
@@ -271,7 +318,7 @@ class _HackCard extends StatelessWidget {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
+                    ).animate(target: _isTranslating ? 0 : 1).fadeIn(),
                   ],
                 ),
               ),

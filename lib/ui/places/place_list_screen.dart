@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../data/firestore/firestore_providers.dart';
 import '../../domain/models/categories.dart';
-import '../../domain/models/place.dart';
 import '../../routing/app_router.dart';
+import '../shared/cached_image_widget.dart';
+import 'widgets/medical_advice_modal.dart';
+import 'widgets/park_advice_modal.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
 
 class PlaceListScreen extends ConsumerWidget {
@@ -16,6 +19,9 @@ class PlaceListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isHospital = category == 'hospital';
+    final isActivity = category == 'activities';
+    
     // Special handling for universities - fetch from universities collection
     if (category == 'university') {
       final universitiesAsync = ref.watch(universitiesStreamProvider);
@@ -44,63 +50,22 @@ class PlaceListScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final uni = universities[index];
                 return ListTile(
-                  leading: uni.logoUrl != null && uni.logoUrl!.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            uni.logoUrl!,
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _buildPlaceholder(false),
-                          ),
-                        )
-                      : _buildPlaceholder(false),
+                  leading: CachedImageWidget(
+                    imageUrl: uni.logoUrl,
+                    width: 48,
+                    height: 48,
+                    borderRadius: BorderRadius.circular(8),
+                    errorIcon: Icons.school_outlined,
+                  ),
                   title: Text(uni.name),
                   subtitle: Text(AppLocalizations.of(context).university),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    // Convert UniversityModel to Place for navigation
-                    final documents = <PlaceDocument>[];
-                    
-                    // Add introduction document if available
-                    if (uni.introductionDocUrl != null && uni.introductionDocUrl!.isNotEmpty) {
-                      documents.add(PlaceDocument(
-                        title: AppLocalizations.of(context).universityIntroduction,
-                        filePath: uni.introductionDocUrl!,
-                      ));
-                    }
-                    
-                    // Add bachelor document if available
-                    if (uni.bachelorDocUrl != null && uni.bachelorDocUrl!.isNotEmpty) {
-                      documents.add(PlaceDocument(
-                        title: AppLocalizations.of(context).bachelorPrograms,
-                        filePath: uni.bachelorDocUrl!,
-                      ));
-                    }
-                    
-                    // Add associate document if available
-                    if (uni.associateDocUrl != null && uni.associateDocUrl!.isNotEmpty) {
-                      documents.add(PlaceDocument(
-                        title: AppLocalizations.of(context).associatePrograms,
-                        filePath: uni.associateDocUrl!,
-                      ));
-                    }
-                    
-                    final place = Place(
-                      id: 'uni_${uni.name.hashCode}',
-                      category: PlaceCategory.university,
-                      nameTr: uni.name,
-                      descriptionAr: AppLocalizations.of(context).universityInTurkey,
-                      lat: 0,
-                      lng: 0,
-                      imageAsset: uni.logoUrl ?? '',
-                      isPopular: false,
-                      documents: documents,
+                    // Navigate to our new enriched UniversityDetailScreen
+                    context.push(
+                      const UniversityDetailsRoute().location(id: uni.id),
+                      extra: uni,
                     );
-                    
-                    // Navigate to details screen
-                    context.push(const PlaceDetailsRoute().location(id: place.id));
                   },
                 );
               },
@@ -125,12 +90,63 @@ class PlaceListScreen extends ConsumerWidget {
     final placesAsync = ref.watch(placesStreamProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(_localizedCategory(context, category))),
+      appBar: AppBar(
+        title: Text(_localizedCategory(context, category)),
+        actions: [
+          if (isHospital)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: InkWell(
+                onTap: () => MedicalAdviceModal.show(context),
+                borderRadius: BorderRadius.circular(8),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'معلومة',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF0D9488),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(LucideIcons.info, size: 20, color: Color(0xFF0D9488)),
+                  ],
+                ),
+              ),
+            ),
+          if (isActivity)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: InkWell(
+                onTap: () => ParkAdviceModal.show(context),
+                borderRadius: BorderRadius.circular(8),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'معلومة',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF0D9488),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(LucideIcons.info, size: 20, color: Color(0xFF0D9488)),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
       body: placesAsync.when(
         data: (places) {
-          // Filter places by category (comparing enum jsonValue to route param)
+          // Filter places by category
+          // ALSO: Filter out the 'medical_advice' entry from the list as it's now in the header icon
           final filteredPlaces = places
-              .where((p) => p.category.jsonValue == category)
+              .where((p) => p.category.jsonValue == category && p.id != 'medical_advice')
               .toList();
           
           if (filteredPlaces.isEmpty) {
@@ -200,44 +216,12 @@ class PlaceListScreen extends ConsumerWidget {
   /// Builds a leading image widget for the list tile.
   /// Shows network image, asset image, or placeholder icon.
   Widget _buildLeadingImage(String imageAsset, bool isPdfItem) {
-    if (imageAsset.isNotEmpty && imageAsset.startsWith('http')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          imageAsset,
-          width: 48,
-          height: 48,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _buildPlaceholder(isPdfItem),
-        ),
-      );
-    } else if (imageAsset.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.asset(
-          imageAsset,
-          width: 48,
-          height: 48,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _buildPlaceholder(isPdfItem),
-        ),
-      );
-    }
-    return _buildPlaceholder(isPdfItem);
-  }
-
-  Widget _buildPlaceholder(bool isPdfItem) {
-    return Container(
+    return CachedImageWidget(
+      imageUrl: imageAsset,
       width: 48,
       height: 48,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B).withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(
-        isPdfItem ? Icons.description_outlined : Icons.place_outlined,
-        color: const Color(0xFF1E293B),
-      ),
+      borderRadius: BorderRadius.circular(8),
+      errorIcon: isPdfItem ? Icons.description_outlined : Icons.place_outlined,
     );
   }
 }

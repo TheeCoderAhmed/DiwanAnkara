@@ -38,4 +38,15 @@ class Project {
       order: json['order'] as int?,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'image_url': imageUrl,
+      'description_ar': description,
+      'contact_phone': contactPhone,
+      'order': order,
+    };
+  }
 }

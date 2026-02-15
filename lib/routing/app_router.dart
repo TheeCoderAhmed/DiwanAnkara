@@ -5,10 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../ui/home/home_screen.dart';
 import '../ui/directory/directory_screen.dart';
 import '../ui/more/more_screen.dart';
+import '../ui/universities/university_detail_screen.dart';
 import '../ui/shared/not_found_screen.dart';
 import '../ui/pdf/pdf_viewer_screen.dart';
 import '../ui/places/place_details_screen.dart';
 import '../ui/places/place_list_screen.dart';
+import '../domain/models/university_model.dart';
 import '../ui/places/saved_places_screen.dart';
 import '../ui/contributors/contributors_timeline_screen.dart';
 import '../ui/oversight_committees/oversight_committees_timeline_screen.dart';
@@ -103,6 +105,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   final id = state.pathParameters['id'] ?? '';
                   return PlaceDetailsScreen(placeId: id);
+                },
+              ),
+              GoRoute(
+                path: const UniversityDetailsRoute().path,
+                name: const UniversityDetailsRoute().name,
+                builder: (context, state) {
+                  final university = state.extra as UniversityModel;
+                  return UniversityDetailScreen(university: university);
                 },
               ),
               GoRoute(
@@ -279,6 +289,13 @@ class PlaceDetailsRoute {
   String get name => 'place_details';
   String get path => '/places/:id';
   String location({required String id}) => '/places/$id';
+}
+
+class UniversityDetailsRoute {
+  const UniversityDetailsRoute();
+  String get name => 'university_details';
+  String get path => '/universities/:id';
+  String location({required String id}) => '/universities/$id';
 }
 
 class EventDetailsRoute {

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 /// Reusable cached image widget with shimmer placeholder and error handling.
-/// Supports 30-day cache duration for improved performance.
+/// Supports both network URLs and asset paths.
 class CachedImageWidget extends StatelessWidget {
   final String? imageUrl;
   final double? width;
   final double? height;
   final BoxFit fit;
   final BorderRadius? borderRadius;
+  final IconData? errorIcon;
 
   const CachedImageWidget({
     super.key,
@@ -20,47 +20,56 @@ class CachedImageWidget extends StatelessWidget {
     this.height,
     this.fit = BoxFit.cover,
     this.borderRadius,
+    this.errorIcon,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Handle null or empty URLs
     if (imageUrl == null || imageUrl!.isEmpty) {
-      return _buildErrorWidget();
+      return _buildErrorWidget(context);
     }
 
-    final widget = CachedNetworkImage(
-      imageUrl: imageUrl!,
-      width: width,
-      height: height,
-      fit: fit,
-      // 30-day cache duration
-      cacheKey: imageUrl,
-      maxHeightDiskCache: 1000,
-      maxWidthDiskCache: 1000,
-      fadeInDuration: const Duration(milliseconds: 300),
-      fadeOutDuration: const Duration(milliseconds: 100),
-      placeholder: (context, url) => _buildShimmerPlaceholder(),
-      errorWidget: (context, url, error) {
-        HapticFeedback.heavyImpact();
-        return _buildErrorWidget();
-      },
-    );
+    final isNetwork = imageUrl!.startsWith('http');
+    
+    Widget imageWidget;
+    if (isNetwork) {
+      imageWidget = CachedNetworkImage(
+        imageUrl: imageUrl!,
+        width: width,
+        height: height,
+        fit: fit,
+        cacheKey: imageUrl,
+        maxWidthDiskCache: 1000,
+        maxHeightDiskCache: 1000,
+        fadeInDuration: const Duration(milliseconds: 400),
+        placeholder: (context, url) => _buildShimmerPlaceholder(context),
+        errorWidget: (context, url, error) => _buildErrorWidget(context),
+      );
+    } else {
+      imageWidget = Image.asset(
+        imageUrl!,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => _buildErrorWidget(context),
+      );
+    }
 
     if (borderRadius != null) {
       return ClipRRect(
         borderRadius: borderRadius!,
-        child: widget,
+        child: imageWidget,
       );
     }
 
-    return widget;
+    return imageWidget;
   }
 
-  Widget _buildShimmerPlaceholder() {
+  Widget _buildShimmerPlaceholder(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: isDark ? Colors.white10 : Colors.grey[300]!,
+      highlightColor: isDark ? Colors.white24 : Colors.grey[100]!,
       child: Container(
         width: width,
         height: height,
@@ -69,16 +78,17 @@ class CachedImageWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorWidget() {
+  Widget _buildErrorWidget(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: width,
       height: height,
-      color: Colors.grey[200],
+      color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey[200],
       child: Center(
         child: Icon(
-          LucideIcons.imageOff,
-          color: Colors.grey[400],
-          size: 32,
+          errorIcon ?? LucideIcons.imageOff,
+          color: isDark ? Colors.white24 : Colors.grey[400],
+          size: (width != null && width! < 50) ? 20 : 32,
         ),
       ),
     );

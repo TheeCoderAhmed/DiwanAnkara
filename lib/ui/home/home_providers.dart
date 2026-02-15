@@ -10,15 +10,15 @@ final mappedUniversitiesProvider = Provider<List<Place>>((ref) {
   final universities = ref.watch(universitiesStreamProvider).valueOrNull ?? [];
   
   return universities.map((u) => Place(
-    id: 'uni_${u.name.hashCode}', // IMPORTANT: Must match PlaceDetails logic
+    id: u.id,
     category: PlaceCategory.university,
     nameTr: u.name,
-    descriptionAr: 'جامعة في تركيا',
-    lat: 0,
-    lng: 0,
+    descriptionAr: u.descriptionAr ?? 'جامعة في تركيا',
+    lat: u.lat ?? 0,
+    lng: u.lng ?? 0,
     imageAsset: u.logoUrl ?? '',
     isPopular: false,
-    documents: const [], // Empty documents list for university places
+    documents: const [],
     pdfUrl: u.introductionDocUrl,
     docUrl: u.bachelorDocUrl, 
   )).toList();

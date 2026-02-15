@@ -10,14 +10,27 @@ import '../../domain/models/project.dart';
 import '../../domain/models/university_model.dart';
 import '../../domain/models/comment.dart';
 import 'firestore_repository.dart';
+import '../local/local_repository.dart';
 
 final firestoreRepositoryProvider = Provider<FirestoreRepository>((ref) {
   return FirestoreRepository();
 });
 
-final placesStreamProvider = StreamProvider<List<Place>>((ref) {
+final placesStreamProvider = StreamProvider<List<Place>>((ref) async* {
+  yield LocalRepository.getCachedData<Place>(
+    key: 'places',
+    fromJson: (json) => Place.fromJson(json),
+  );
+
   final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchPlaces();
+  await for (final items in repo.watchPlaces()) {
+    await LocalRepository.cacheData<Place>(
+      key: 'places',
+      items: items,
+      toJson: (item) => item.toJson(),
+    );
+    yield items;
+  }
 });
 
 final contributorsStreamProvider = StreamProvider<List<Contributor>>((ref) {
@@ -35,29 +48,92 @@ final contributorYearsProvider = FutureProvider<List<int>>((ref) async {
   return repo.getContributorYears();
 });
 
-final partnersStreamProvider = StreamProvider<List<Partner>>((ref) {
+final partnersStreamProvider = StreamProvider<List<Partner>>((ref) async* {
+  yield LocalRepository.getCachedData<Partner>(
+    key: 'partners',
+    fromJson: (json) => Partner.fromJson(json),
+  );
+
   final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchPartners();
+  await for (final items in repo.watchPartners()) {
+    await LocalRepository.cacheData<Partner>(
+      key: 'partners',
+      items: items,
+      toJson: (item) => item.toJson(),
+    );
+    yield items;
+  }
 });
 
-final projectsStreamProvider = StreamProvider<List<Project>>((ref) {
+final projectsStreamProvider = StreamProvider<List<Project>>((ref) async* {
+  yield LocalRepository.getCachedData<Project>(
+    key: 'projects',
+    fromJson: (json) => Project.fromJson(json),
+  );
+
   final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchProjects();
+  await for (final items in repo.watchProjects()) {
+    await LocalRepository.cacheData<Project>(
+      key: 'projects',
+      items: items,
+      toJson: (item) => item.toJson(),
+    );
+    yield items;
+  }
 });
 
-final eventsStreamProvider = StreamProvider<List<AppEvent>>((ref) {
+final eventsStreamProvider = StreamProvider<List<AppEvent>>((ref) async* {
+  yield LocalRepository.getCachedData<AppEvent>(
+    key: 'events',
+    fromJson: (json) => AppEvent.fromJson(json),
+  );
+
   final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchEvents();
+  await for (final items in repo.watchEvents()) {
+    await LocalRepository.cacheData<AppEvent>(
+      key: 'events',
+      items: items,
+      toJson: (item) => item.toJson(),
+    );
+    yield items;
+  }
 });
 
-final universitiesStreamProvider = StreamProvider<List<UniversityModel>>((ref) {
+final universitiesStreamProvider = StreamProvider<List<UniversityModel>>((ref) async* {
+  // 1. Emitting cached data immediately
+  yield LocalRepository.getCachedData<UniversityModel>(
+    key: 'universities',
+    fromJson: (json) => UniversityModel.fromJson(json, id: json['id'] as String?),
+  );
+
   final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchUniversities();
+  
+  // 2. Sync with Firestore
+  await for (final unis in repo.watchUniversities()) {
+    await LocalRepository.cacheData<UniversityModel>(
+      key: 'universities',
+      items: unis,
+      toJson: (uni) => uni.toJson(),
+    );
+    yield unis;
+  }
 });
 
-final announcementsStreamProvider = StreamProvider<List<Announcement>>((ref) {
+final announcementsStreamProvider = StreamProvider<List<Announcement>>((ref) async* {
+  yield LocalRepository.getCachedData<Announcement>(
+    key: 'announcements',
+    fromJson: (json) => Announcement.fromJson(json),
+  );
+
   final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchAnnouncements();
+  await for (final items in repo.watchAnnouncements()) {
+    await LocalRepository.cacheData<Announcement>(
+      key: 'announcements',
+      items: items,
+      toJson: (item) => item.toJson(),
+    );
+    yield items;
+  }
 });
 
 final announcementByIdProvider = FutureProvider.family<Announcement?, String>((ref, id) async {

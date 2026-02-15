@@ -53,7 +53,7 @@ class FirestoreRepository {
           .snapshots()
           .map((snapshot) {
             final list = snapshot.docs
-                .map((doc) => Contributor.fromJson(doc.data()))
+                .map((doc) => Contributor.fromJson({...doc.data(), 'id': doc.id}))
                 .toList();
             // Sort by order field
             list.sort((a, b) => (a.order ?? 999).compareTo(b.order ?? 999));
@@ -73,7 +73,7 @@ class FirestoreRepository {
           .snapshots()
           .map((snapshot) {
             final list = snapshot.docs
-                .map((doc) => Contributor.fromJson(doc.data()))
+                .map((doc) => Contributor.fromJson({...doc.data(), 'id': doc.id}))
                 .toList();
             // Sort by order field
             list.sort((a, b) => (a.order ?? 999).compareTo(b.order ?? 999));
@@ -165,7 +165,7 @@ class FirestoreRepository {
           .snapshots()
           .map((snapshot) {
             final list = snapshot.docs
-                .map((doc) => UniversityModel.fromJson(doc.data()))
+                .map((doc) => UniversityModel.fromJson(doc.data(), id: doc.id))
                 .toList();
             // Sort by order field
             list.sort((a, b) => (a.order ?? 999).compareTo(b.order ?? 999));
@@ -225,7 +225,7 @@ class FirestoreRepository {
           .snapshots()
           .map((snapshot) {
             final list = snapshot.docs
-                .map((doc) => OversightCommittee.fromJson(doc.data()))
+                .map((doc) => OversightCommittee.fromJson({...doc.data(), 'id': doc.id}))
                 .toList();
             // Sort by order field
             list.sort((a, b) => (a.order ?? 999).compareTo(b.order ?? 999));
@@ -245,7 +245,7 @@ class FirestoreRepository {
           .snapshots()
           .map((snapshot) {
             final list = snapshot.docs
-                .map((doc) => OversightCommittee.fromJson(doc.data()))
+                .map((doc) => OversightCommittee.fromJson({...doc.data(), 'id': doc.id}))
                 .toList();
             // Sort by order field
             list.sort((a, b) => (a.order ?? 999).compareTo(b.order ?? 999));

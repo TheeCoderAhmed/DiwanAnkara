@@ -20,6 +20,8 @@ class DirectoryScreen extends ConsumerWidget {
     'Libraries',
     'Transport',
     'Government Offices',
+    'Parks',
+    'Activities',
     'Housing',
     'Residency Guide',
   ];
@@ -183,6 +185,8 @@ class DirectoryScreen extends ConsumerWidget {
                     'Transport' => PlaceCategory.transport,
                     'Government Offices' => PlaceCategory.govOffice,
                     'Housing' => PlaceCategory.housing,
+                    'Parks' => PlaceCategory.parks,
+                    'Activities' => PlaceCategory.activities,
                     _ => null,
                   };
                   if (placeCategory != null) {
@@ -213,6 +217,8 @@ class DirectoryScreen extends ConsumerWidget {
       'Transport' => l10n.catTransport,
       'Government Offices' => l10n.catGovOffice,
       'Housing' => l10n.housingGuide,
+      'Parks' => l10n.catParks,
+      'Activities' => l10n.catActivities,
       'Residency Guide' => l10n.residencyGuide,
       _ => key,
     };
@@ -229,6 +235,8 @@ class DirectoryScreen extends ConsumerWidget {
       'Transport' => Icons.directions_bus_outlined,
       'Government Offices' => Icons.apartment_outlined,
       'Housing' => Icons.home_outlined,
+      'Parks' => Icons.park_outlined,
+      'Activities' => Icons.celebration_outlined,
       'Residency Guide' => Icons.picture_as_pdf_outlined,
       _ => Icons.grid_view_outlined,
     };

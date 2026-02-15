@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../domain/models/place.dart'; // Corrected path
-import '../places/place_details_screen.dart'; // Corrected path
+import '../../domain/models/place.dart';
+import '../places/place_details_screen.dart';
+import '../shared/cached_image_widget.dart';
 
 class PlaceCard extends StatelessWidget {
   final Place place;
@@ -89,38 +90,11 @@ class PlaceCard extends StatelessWidget {
 
   // THE MAGIC FIX: Checks if it is a URL or a Local Asset
   Widget _buildImage(String rawPath) {
-    final path = rawPath.trim(); // FORCE TRIM to handle database spaces
-    if (path.isEmpty) {
-      return Container(
-        color: Colors.grey[200],
-        child: const Center(child: Icon(LucideIcons.image, size: 40, color: Colors.grey)),
-      );
-    }
-
-    if (path.startsWith('http')) {
-      return Image.network(
-        path,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            color: Colors.grey[200],
-            child: const Center(child: Icon(LucideIcons.alertTriangle, color: Colors.red)),
-          );
-        },
-      );
-    } else {
-      return Image.asset(
-        path,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            color: Colors.grey[200],
-            child: const Center(child: Icon(LucideIcons.imageOff, color: Colors.grey)),
-          );
-        },
-      );
-    }
+    return CachedImageWidget(
+      imageUrl: rawPath,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorIcon: LucideIcons.imageOff,
+    );
   }
 }
