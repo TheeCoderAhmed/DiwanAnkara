@@ -139,7 +139,7 @@ class _FluidShaderBackgroundState extends State<FluidShaderBackground>
           BoxShadow(
             color: const Color(0xFF2A3A4F).withValues(alpha: 0.3),
             offset: const Offset(-20, -20),
-            blurRadius: 60,
+            blurRadius: 20,
             spreadRadius: 0,
           ),
           // Dark shadow - creates depth from bottom-right

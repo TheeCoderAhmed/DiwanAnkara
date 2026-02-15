@@ -121,7 +121,7 @@ class NeumorphicBackground extends StatelessWidget {
           BoxShadow(
             color: _highlightColor,
             offset: const Offset(-20, -20),
-            blurRadius: 60,
+            blurRadius: 20,
             spreadRadius: 0,
           ),
           // Dark shadow - creates depth from bottom-right

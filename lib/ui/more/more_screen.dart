@@ -28,7 +28,7 @@ class MoreScreen extends ConsumerWidget {
         title: Text(l10n.more),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         children: [
           _MoreItem(
             icon: Icons.bookmark_outline,

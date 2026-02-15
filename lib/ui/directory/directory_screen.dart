@@ -29,7 +29,7 @@ class DirectoryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context).directory)),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         children: [
           SectionHeader(title: AppLocalizations.of(context).sections),
           GridView.builder(

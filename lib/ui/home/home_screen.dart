@@ -33,6 +33,7 @@ import '../widgets/place_card.dart';
 import '../widgets/student_hacks_widget.dart';
 import '../widgets/events_preview_widget.dart';
 import '../widgets/offline_banner.dart';
+import 'home_providers.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -44,7 +45,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _searchCtrl = TextEditingController();
   final _scrollController = ScrollController();
-  double _scrollOffset = 0.0;
+  final _scrollOffset = ValueNotifier<double>(0.0);
   
   // Debouncing and background filtering
   Timer? _debounce;
@@ -89,9 +90,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _onScroll() {
-    setState(() {
-      _scrollOffset = _scrollController.offset;
-    });
+    _scrollOffset.value = _scrollController.offset;
   }
 
   @override
@@ -100,6 +99,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _connectivitySubscription?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _scrollOffset.dispose();
     _searchCtrl.removeListener(_onSearchChanged);
     _searchCtrl.dispose();
     super.dispose();
@@ -122,31 +122,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          AmbientBackground(
-            scrollOffset: _scrollOffset,
+          ValueListenableBuilder<double>(
+            valueListenable: _scrollOffset,
+            builder: (context, offset, child) {
+              return AmbientBackground(
+                scrollOffset: offset,
+                child: child!,
+              );
+            },
             child: placesAsync.when(
           data: (places) {
           final popularPlaces =
               places.where((p) => p.isPopular).toList(growable: false);
           
-          // Get universities and map to Places
-          final universities = ref.watch(universitiesStreamProvider).valueOrNull ?? [];
-          final mappedUniversities = universities.map((u) => Place(
-            id: 'uni_${u.name.hashCode}', // IMPORTANT: Must match PlaceDetails logic
-            category: PlaceCategory.university,
-            nameTr: u.name,
-            descriptionAr: 'جامعة في تركيا',
-            lat: 0,
-            lng: 0,
-            imageAsset: u.logoUrl ?? '',
-            isPopular: false,
-            documents: const [], // Empty documents list for university places
-            // Map docs for search result context if needed, though mostly visual
-            pdfUrl: u.introductionDocUrl,
-            docUrl: u.bachelorDocUrl, 
-          )).toList();
+          // Use the memoized universities provider
+          final mappedUniversities = ref.watch(mappedUniversitiesProvider);
 
-          // Merge lists for search
+          // Merge lists for search - memoized if possible or simple merge
           final allSearchablePlaces = [...places, ...mappedUniversities];
           
           // Background filtering with debouncing
@@ -306,19 +298,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          CarouselSlider.builder(
-                            itemCount: announcements.length,
-                            options: CarouselOptions(
-                              height: 200,
-                              autoPlay: true,
-                              enlargeCenterPage: true,
-                              viewportFraction: 0.9,
-                              autoPlayInterval: const Duration(seconds: 4),
-                              autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                          RepaintBoundary(
+                            child: CarouselSlider.builder(
+                              itemCount: announcements.length,
+                              options: CarouselOptions(
+                                height: 200,
+                                autoPlay: true,
+                                enlargeCenterPage: true,
+                                viewportFraction: 0.9,
+                                autoPlayInterval: const Duration(seconds: 4),
+                                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                              ),
+                              itemBuilder: (context, index, realIndex) {
+                                return _AnnouncementCardFromFirebase(announcement: announcements[index]);
+                              },
                             ),
-                            itemBuilder: (context, index, realIndex) {
-                              return _AnnouncementCardFromFirebase(announcement: announcements[index]);
-                            },
                           ),
                           const SizedBox(height: 24),
                         ],
@@ -345,17 +339,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        SizedBox(
-                          height: 260,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            itemCount: popularPlaces.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: 12),
-                            itemBuilder: (context, index) {
-                              final p = popularPlaces[index];
-                              return PlaceCard(place: p, isHorizontal: true);
-                            },
+                        RepaintBoundary(
+                          child: SizedBox(
+                            height: 260,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              itemCount: popularPlaces.length,
+                              separatorBuilder: (_, __) => const SizedBox(width: 12),
+                              itemBuilder: (context, index) {
+                                final p = popularPlaces[index];
+                                return PlaceCard(place: p, isHorizontal: true);
+                              },
+                            ),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -368,7 +364,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    child: IkametTrackerWidget(),
+                    child: RepaintBoundary(child: IkametTrackerWidget()),
                   ),
                 ),
 
@@ -376,7 +372,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    child: EventsPreviewWidget(),
+                    child: RepaintBoundary(child: EventsPreviewWidget()),
                   ),
                 ),
 
@@ -392,13 +388,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: CurrencyExchangeWidget(),
+                    child: RepaintBoundary(child: CurrencyExchangeWidget()),
                   ),
                 ),
 
                 // Student Hacks Widget
                 const SliverToBoxAdapter(
-                  child: StudentHacksWidget(),
+                  child: RepaintBoundary(child: StudentHacksWidget()),
                 ),
 
                 // Projects Section
@@ -420,16 +416,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          SizedBox(
-                            height: 160,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              itemCount: projects.length,
-                              separatorBuilder: (_, __) => const SizedBox(width: 12),
-                              itemBuilder: (context, index) {
-                                return _ProjectCard(project: projects[index]);
-                              },
+                          RepaintBoundary(
+                            child: SizedBox(
+                              height: 160,
+                              child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                itemCount: projects.length,
+                                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                                itemBuilder: (context, index) {
+                                  return _ProjectCard(project: projects[index]);
+                                },
+                              ),
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -466,7 +464,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             )
                           else
-                            _buildPartnersGrid(context, partners),
+                            RepaintBoundary(child: _buildPartnersGrid(context, partners)),
                           const SizedBox(height: 100), // Bottom padding for navbar
                         ],
                       );
@@ -551,17 +549,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       ),
-          if (_isOffline)
-            const Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: OfflineBanner(),
-            ),
-        ],
-      ),
-    );
-  }
+      if (_isOffline)
+        const Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: OfflineBanner(),
+        ),
+    ],
+  ),
+);
+}
 
   Widget _buildPartnersGrid(BuildContext context, List<Partner> partners) {
     // Modern horizontal scroll with circular avatars
