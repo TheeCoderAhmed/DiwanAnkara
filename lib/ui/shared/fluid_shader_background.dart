@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// 
 /// NO lines, NO patterns, NO grid - just pure seamless gradients with soft 3D shapes.
 /// Center: Dark Slate Blue (#1e2f42) → Edges: Pure Black (#000000)
-class FluidShaderBackground extends StatefulWidget {
+class FluidShaderBackground extends StatelessWidget {
   const FluidShaderBackground({
     super.key,
     this.scrollOffset = 0.0,
@@ -16,114 +16,91 @@ class FluidShaderBackground extends StatefulWidget {
   final double scrollOffset;
 
   @override
-  State<FluidShaderBackground> createState() => _FluidShaderBackgroundState();
-}
-
-class _FluidShaderBackgroundState extends State<FluidShaderBackground>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 25), // Very slow, barely perceptible
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     // Calculate parallax offsets (different speeds for depth)
-    final parallax1 = widget.scrollOffset * 0.15; // Slowest (farthest)
-    final parallax2 = widget.scrollOffset * 0.25;
-    final parallax3 = widget.scrollOffset * 0.35;
-    final parallax4 = widget.scrollOffset * 0.20; // Medium speed
+    final parallax1 = scrollOffset * 0.15; // Slowest (farthest)
+    final parallax2 = scrollOffset * 0.25;
+    final parallax3 = scrollOffset * 0.35;
+    final parallax4 = scrollOffset * 0.20; // Medium speed
 
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Stack(
-          children: [
-            // Base gradient background
-            CustomPaint(
-              painter: _SmoothGradientPainter(time: _controller.value),
-              size: Size.infinite,
+    return Stack(
+      children: [
+        // Base gradient background - Now static (time = 0)
+        CustomPaint(
+          painter: _SmoothGradientPainter(time: 0),
+          size: Size.infinite,
+        ),
+        
+        // Parallax shapes layer
+        // Shape 1 - Top Left (Large Circle)
+        Positioned(
+          top: -screenHeight * 0.15 + parallax1,
+          left: -screenWidth * 0.2,
+          child: Transform.rotate(
+            angle: 0.3,
+            child: _buildDarkNeumorphicShape(
+              context,
+              width: screenWidth * 0.6,
+              height: screenWidth * 0.6,
+              borderRadius: 80,
             ),
-            
-            // Parallax shapes layer
-            // Shape 1 - Top Left (Large Circle)
-            Positioned(
-              top: -screenHeight * 0.15 + parallax1,
-              left: -screenWidth * 0.2,
-              child: Transform.rotate(
-                angle: 0.3,
-                child: _buildDarkNeumorphicShape(
-                  width: screenWidth * 0.6,
-                  height: screenWidth * 0.6,
-                  borderRadius: 80,
-                ),
-              ),
-            ),
+          ),
+        ),
 
-            // Shape 2 - Top Right (Rounded Rectangle)
-            Positioned(
-              top: screenHeight * 0.1 + parallax2,
-              right: -screenWidth * 0.25,
-              child: Transform.rotate(
-                angle: -0.5,
-                child: _buildDarkNeumorphicShape(
-                  width: screenWidth * 0.55,
-                  height: screenHeight * 0.35,
-                  borderRadius: 60,
-                ),
-              ),
+        // Shape 2 - Top Right (Rounded Rectangle)
+        Positioned(
+          top: screenHeight * 0.1 + parallax2,
+          right: -screenWidth * 0.25,
+          child: Transform.rotate(
+            angle: -0.5,
+            child: _buildDarkNeumorphicShape(
+              context,
+              width: screenWidth * 0.55,
+              height: screenHeight * 0.35,
+              borderRadius: 60,
             ),
+          ),
+        ),
 
-            // Shape 3 - Bottom Left (Rounded Square)
-            Positioned(
-              bottom: -screenHeight * 0.1 - parallax3,
-              left: -screenWidth * 0.15,
-              child: Transform.rotate(
-                angle: 0.7,
-                child: _buildDarkNeumorphicShape(
-                  width: screenWidth * 0.5,
-                  height: screenWidth * 0.5,
-                  borderRadius: 70,
-                ),
-              ),
+        // Shape 3 - Bottom Left (Rounded Square)
+        Positioned(
+          bottom: -screenHeight * 0.1 - parallax3,
+          left: -screenWidth * 0.15,
+          child: Transform.rotate(
+            angle: 0.7,
+            child: _buildDarkNeumorphicShape(
+              context,
+              width: screenWidth * 0.5,
+              height: screenWidth * 0.5,
+              borderRadius: 70,
             ),
+          ),
+        ),
 
-            // Shape 4 - Bottom Right (Elongated Rounded Rectangle)
-            Positioned(
-              bottom: screenHeight * 0.15 - parallax4,
-              right: -screenWidth * 0.3,
-              child: Transform.rotate(
-                angle: -0.4,
-                child: _buildDarkNeumorphicShape(
-                  width: screenWidth * 0.65,
-                  height: screenHeight * 0.25,
-                  borderRadius: 75,
-                ),
-              ),
+        // Shape 4 - Bottom Right (Elongated Rounded Rectangle)
+        Positioned(
+          bottom: screenHeight * 0.15 - parallax4,
+          right: -screenWidth * 0.3,
+          child: Transform.rotate(
+            angle: -0.4,
+            child: _buildDarkNeumorphicShape(
+              context,
+              width: screenWidth * 0.65,
+              height: screenHeight * 0.25,
+              borderRadius: 75,
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 
   /// Builds a single dark neumorphic shape with subtle shadows.
-  Widget _buildDarkNeumorphicShape({
+  Widget _buildDarkNeumorphicShape(
+    BuildContext context, {
     required double width,
     required double height,
     required double borderRadius,
@@ -180,7 +157,7 @@ class _SmoothGradientPainter extends CustomPainter {
     );
     canvas.drawRect(rect, Paint()..shader = baseGradient.createShader(rect));
 
-    // Layer 2: Subtle animated teal glow (top-left area)
+    // Layer 2: Subtle static teal glow (top-left area)
     _drawSmoothGlow(
       canvas, size,
       centerX: size.width * (0.2 + 0.1 * math.sin(t * 0.3)),
@@ -189,7 +166,7 @@ class _SmoothGradientPainter extends CustomPainter {
       color: _accentTeal.withValues(alpha: 0.25),
     );
 
-    // Layer 3: Subtle animated warm glow (bottom-right area)
+    // Layer 3: Subtle static warm glow (bottom-right area)
     _drawSmoothGlow(
       canvas, size,
       centerX: size.width * (0.75 + 0.08 * math.cos(t * 0.35)),
@@ -198,7 +175,7 @@ class _SmoothGradientPainter extends CustomPainter {
       color: _accentWarm.withValues(alpha: 0.2),
     );
 
-    // Layer 4: Central highlight (breathing effect)
+    // Layer 4: Central highlight
     final breathe = 0.5 + 0.5 * math.sin(t * 0.5);
     _drawSmoothGlow(
       canvas, size,
