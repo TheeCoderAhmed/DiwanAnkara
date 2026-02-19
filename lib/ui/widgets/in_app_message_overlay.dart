@@ -26,9 +26,9 @@ class InAppMessageOverlay extends ConsumerWidget {
           child,
           messagesAsync.when(
             data: (messages) {
-              // Filter out dismissed messages
+              // Filter out dismissed messages AND inactive messages
               final visible = messages
-                  .where((m) => !dismissedIds.contains(m.id))
+                  .where((m) => m.isActive && !dismissedIds.contains(m.id))
                   .toList();
 
               debugPrint('🎯 InAppMessageOverlay: ${messages.length} total, ${visible.length} visible, ${dismissedIds.length} dismissed');
@@ -244,7 +244,10 @@ class _ModalMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bgColor = _parseColor(message.backgroundColor);
     final txtColor = _parseColor(message.textColor, Colors.black);
-    final hasImage = message.portraitImageUrl.isNotEmpty;
+    final imageUrl = message.portraitImageUrl.isNotEmpty
+        ? message.portraitImageUrl
+        : message.landscapeImageUrl;
+    final hasImage = imageUrl.isNotEmpty;
 
     return Positioned.fill(
       child: GestureDetector(
@@ -298,7 +301,7 @@ class _ModalMessage extends StatelessWidget {
                       // Image
                       if (hasImage)
                         CachedNetworkImage(
-                          imageUrl: message.portraitImageUrl,
+                          imageUrl: imageUrl,
                           width: double.infinity,
                           fit: BoxFit.cover,
                           placeholder: (_, __) => Container(
@@ -483,7 +486,10 @@ class _CardMessageState extends State<_CardMessage>
     final msg = widget.message;
     final bgColor = _parseColor(msg.backgroundColor);
     final txtColor = _parseColor(msg.textColor, Colors.black);
-    final hasImage = msg.portraitImageUrl.isNotEmpty;
+    final imageUrl = msg.portraitImageUrl.isNotEmpty
+        ? msg.portraitImageUrl
+        : msg.landscapeImageUrl;
+    final hasImage = imageUrl.isNotEmpty;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Positioned(
@@ -513,7 +519,7 @@ class _CardMessageState extends State<_CardMessage>
                 children: [
                   if (hasImage)
                     CachedNetworkImage(
-                      imageUrl: msg.portraitImageUrl,
+                      imageUrl: imageUrl,
                       width: double.infinity,
                       height: 140,
                       fit: BoxFit.cover,

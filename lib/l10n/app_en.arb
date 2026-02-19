@@ -127,6 +127,8 @@
   "catAbout": "About Us",
   "catProject": "Our Projects",
   "catActivities": "Activities & Recreation",
+  "catRestaurant": "Restaurants",
+  "catMarket": "Markets",
   "noAnnouncementFound": "Announcement not found",
   "shareYourOpinion": "Share your thoughts or inquiries about this news",
   "pleaseEnterName": "Please enter your name",
@@ -643,5 +645,10 @@
   "onboardingLanguageDesc": "Please choose the language you would like to use in the app",
   "onboardingSkip": "Skip",
   "onboardingNext": "Next",
-  "onboardingStart": "Get Started"
+  "onboardingStart": "Get Started",
+  "onboardingThemeTitle": "Choose Theme",
+  "onboardingThemeDesc": "Select the appearance that suits you best",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System Default"
 }

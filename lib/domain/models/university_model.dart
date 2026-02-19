@@ -2,6 +2,7 @@ class UniversityModel {
   final String id;
   final String name;
   final String? logoUrl;
+  final String? campusUrl;
   final String? descriptionAr;
   final String? descriptionTr;
   final String? history;
@@ -23,6 +24,7 @@ class UniversityModel {
     required this.id,
     required this.name,
     this.logoUrl,
+    this.campusUrl,
     this.descriptionAr,
     this.descriptionTr,
     this.history,
@@ -46,6 +48,7 @@ class UniversityModel {
       id: id ?? json['id'] as String? ?? '',
       name: json['name'] as String? ?? '',
       logoUrl: json['logo_url'] as String?,
+      campusUrl: json['campus_url'] as String?,
       descriptionAr: json['description_ar'] as String?,
       descriptionTr: json['description_tr'] as String?,
       history: json['history'] as String?,
@@ -78,6 +81,7 @@ class UniversityModel {
       'id': id,
       'name': name,
       'logo_url': logoUrl,
+      'campus_url': campusUrl,
       'description_ar': descriptionAr,
       'description_tr': descriptionTr,
       'history': history,

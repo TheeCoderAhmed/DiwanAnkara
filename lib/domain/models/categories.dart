@@ -13,6 +13,8 @@ enum PlaceCategory {
   activities,
   housing,
   partners,
+  restaurant,
+  market,
   about,  // Who We Are (من نحن)
   project, // Our Projects
   other, // Fallback for unknown categories
@@ -31,6 +33,8 @@ extension PlaceCategoryX on PlaceCategory {
         PlaceCategory.activities => 'activities',
         PlaceCategory.housing => 'housing',
         PlaceCategory.partners => 'partners',
+        PlaceCategory.restaurant => 'restaurant',
+        PlaceCategory.market => 'market',
         PlaceCategory.about => 'about',
         PlaceCategory.project => 'project',
         PlaceCategory.other => 'other',
@@ -50,6 +54,8 @@ extension PlaceCategoryX on PlaceCategory {
       PlaceCategory.activities => l10n.catActivities,
       PlaceCategory.housing => l10n.catHousing,
       PlaceCategory.partners => l10n.catPartners,
+      PlaceCategory.restaurant => l10n.catRestaurant,
+      PlaceCategory.market => l10n.catMarket,
       PlaceCategory.about => l10n.catAbout,
       PlaceCategory.project => l10n.catProject,
       PlaceCategory.other => '',
@@ -68,6 +74,8 @@ extension PlaceCategoryX on PlaceCategory {
         PlaceCategory.activities => 'الأنشطة والترفيه',
         PlaceCategory.housing => 'دليل السكنات',
         PlaceCategory.partners => 'شركاء النجاح',
+        PlaceCategory.restaurant => 'مطاعم',
+        PlaceCategory.market => 'أسواق',
         PlaceCategory.about => 'من نحن',
         PlaceCategory.project => 'مشاريعنا',
         PlaceCategory.other => '',
@@ -89,6 +97,8 @@ extension PlaceCategoryX on PlaceCategory {
       'activities' => PlaceCategory.activities,
       'housing' => PlaceCategory.housing,
       'partners' => PlaceCategory.partners,
+      'restaurant' => PlaceCategory.restaurant,
+      'market' => PlaceCategory.market,
       'about' => PlaceCategory.about,
       'project' => PlaceCategory.project,
       'other' => PlaceCategory.other,
@@ -152,6 +162,15 @@ extension PlaceCategoryX on PlaceCategory {
       
       // Projects
       'مشاريعنا' => PlaceCategory.project,  // matches Python script
+      
+      // Restaurants
+      'المطاعم' => PlaceCategory.restaurant,
+      'مطاعم' => PlaceCategory.restaurant,
+      
+      // Markets
+      'الأسواق' => PlaceCategory.market,
+      'أسواق' => PlaceCategory.market,
+      'ماركت' => PlaceCategory.market,
       
       // About Us / Who We Are
       'من نحن' => PlaceCategory.about,  // matches Python script

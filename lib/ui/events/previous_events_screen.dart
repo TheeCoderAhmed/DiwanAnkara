@@ -22,8 +22,9 @@ class PreviousEventsScreen extends ConsumerWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
+        preferredSize: Size.fromHeight(kToolbarHeight + MediaQuery.paddingOf(context).top),
         child: GlassmorphismHeader(
+          height: kToolbarHeight + MediaQuery.paddingOf(context).top,
           child: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,

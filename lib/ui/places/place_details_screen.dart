@@ -485,7 +485,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
                       // Documents Section (Unified)
                       _buildDocuments(context, place),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 132),
                     ],
                   ),
                 ),
@@ -502,7 +502,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
               // Extra bottom padding for better scrollability
               const SliverToBoxAdapter(
-                child: SizedBox(height: 100),
+                child: SizedBox(height: 200),
               ),
             ],
           ),

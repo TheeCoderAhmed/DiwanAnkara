@@ -21,6 +21,7 @@ import '../../domain/models/place.dart';
 import '../../domain/models/project.dart';
 import '../../domain/models/university_model.dart';
 import '../../routing/app_router.dart';
+// import '../../tools/data_seeder.dart';
 import 'home_providers.dart';
 
 import '../../services/notification_controller.dart';
@@ -171,7 +172,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               SliverToBoxAdapter(
                 child: GlassmorphismHeader(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+                    padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 16, 20, 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -279,7 +280,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                         ),
-                      const SizedBox(height: 100), // Bottom padding for navbar
+                      const SizedBox(height: 140), // Bottom padding for navbar
                     ],
                   ),
                 ),
@@ -371,14 +372,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
 
 
-                // Ikamet Tracker Widget
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    child: RepaintBoundary(child: IkametTrackerWidget()),
-                  ),
-                ),
-
                 // Upcoming Events Preview Widget
                 const SliverToBoxAdapter(
                   child: Padding(
@@ -392,6 +385,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     child: PreviousEventsWidget(),
+                  ),
+                ),
+                
+                 // Ikamet Tracker Widget
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    child: RepaintBoundary(child: IkametTrackerWidget()),
                   ),
                 ),
 
@@ -476,7 +477,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             )
                           else
                             RepaintBoundary(child: _buildPartnersGrid(context, partners)),
-                          const SizedBox(height: 100), // Bottom padding for navbar
+                          const SizedBox(height: 140), // Bottom padding for navbar
                         ],
                       );
                     },
@@ -499,7 +500,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+                  padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 16, 20, 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

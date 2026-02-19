@@ -127,13 +127,11 @@ final notificationListenerProvider = Provider<void>((ref) {
     );
   });
 
-  // Listen to Firestore In-App messages
   ref.listen(inAppMessagesProvider, (previous, next) {
     final messages = next.valueOrNull ?? [];
     for (final msg in messages) {
-      if (msg.isActive) {
-        controller.addFromInAppMessage(msg);
-      }
+      // Add all recent messages to history, even if inactive for the popup
+      controller.addFromInAppMessage(msg);
     }
   });
   

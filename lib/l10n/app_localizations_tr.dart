@@ -404,6 +404,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get catActivities => 'الأنشطة والترفيه';
 
   @override
+  String get catRestaurant => 'Restoranlar';
+
+  @override
+  String get catMarket => 'Marketler';
+
+  @override
   String get noAnnouncementFound => 'Duyuru bulunamadı';
 
   @override
@@ -1988,4 +1994,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboardingStart => 'Başlat';
+
+  @override
+  String get onboardingThemeTitle => 'Tema Seçin';
+
+  @override
+  String get onboardingThemeDesc => 'Size en uygun görünümü seçin';
+
+  @override
+  String get themeLight => 'Açık';
+
+  @override
+  String get themeDark => 'Koyu';
+
+  @override
+  String get themeSystem => 'Sistem Varsayılanı';
 }

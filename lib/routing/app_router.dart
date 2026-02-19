@@ -92,30 +92,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 },
               ),
               GoRoute(
-                path: const PlaceListRoute().path,
-                name: const PlaceListRoute().name,
-                builder: (context, state) {
-                  final cat = state.uri.queryParameters['category'] ?? '';
-                  return PlaceListScreen(category: cat);
-                },
-              ),
-              GoRoute(
-                path: const PlaceDetailsRoute().path,
-                name: const PlaceDetailsRoute().name,
-                builder: (context, state) {
-                  final id = state.pathParameters['id'] ?? '';
-                  return PlaceDetailsScreen(placeId: id);
-                },
-              ),
-              GoRoute(
-                path: const UniversityDetailsRoute().path,
-                name: const UniversityDetailsRoute().name,
-                builder: (context, state) {
-                  final university = state.extra as UniversityModel;
-                  return UniversityDetailScreen(university: university);
-                },
-              ),
-              GoRoute(
                 path: const EventDetailsRoute().path,
                 name: const EventDetailsRoute().name,
                 builder: (context, state) {
@@ -165,6 +141,30 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: const DirectoryScreenRoute().path,
                 name: const DirectoryScreenRoute().name,
                 builder: (_, __) => const DirectoryScreen(),
+              ),
+              GoRoute(
+                path: const PlaceListRoute().path,
+                name: const PlaceListRoute().name,
+                builder: (context, state) {
+                  final cat = state.uri.queryParameters['category'] ?? '';
+                  return PlaceListScreen(category: cat);
+                },
+              ),
+              GoRoute(
+                path: const PlaceDetailsRoute().path,
+                name: const PlaceDetailsRoute().name,
+                builder: (context, state) {
+                  final id = state.pathParameters['id'] ?? '';
+                  return PlaceDetailsScreen(placeId: id);
+                },
+              ),
+              GoRoute(
+                path: const UniversityDetailsRoute().path,
+                name: const UniversityDetailsRoute().name,
+                builder: (context, state) {
+                  final university = state.extra as UniversityModel;
+                  return UniversityDetailScreen(university: university);
+                },
               ),
             ],
           ),
@@ -343,15 +343,12 @@ class AppShell extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
   void _onDestinationSelected(BuildContext context, int index) {
-    // If Directory tab (index 1) is tapped while already active, pop to root
-    if (index == 1 && navigationShell.currentIndex == 1) {
-      // Pop all routes in the Directory branch to return to root
-      while (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-    }
-    // Navigate to the selected branch
-    navigationShell.goBranch(index);
+    // If it's the Directory tab (index 1), always reset to its root categories list.
+    // Also reset any other tab if it's already active.
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == 1 || index == navigationShell.currentIndex,
+    );
   }
 
   @override

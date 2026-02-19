@@ -403,6 +403,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catActivities => 'Activities & Recreation';
 
   @override
+  String get catRestaurant => 'Restaurants';
+
+  @override
+  String get catMarket => 'Markets';
+
+  @override
   String get noAnnouncementFound => 'Announcement not found';
 
   @override
@@ -2095,4 +2101,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingStart => 'Get Started';
+
+  @override
+  String get onboardingThemeTitle => 'Choose Theme';
+
+  @override
+  String get onboardingThemeDesc => 'Select the appearance that suits you best';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeSystem => 'System Default';
 }

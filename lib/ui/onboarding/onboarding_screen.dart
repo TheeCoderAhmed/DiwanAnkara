@@ -21,7 +21,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _currentPage = 0;
 
   List<OnboardingSlide> _getSlides(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return [
       OnboardingSlide(
         icon: LucideIcons.languages,
@@ -29,6 +29,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         description: l10n.onboardingLanguageDesc,
         color: const Color(0xFF06B6D4),
         isLanguageSelector: true,
+      ),
+      OnboardingSlide(
+        icon: LucideIcons.palette,
+        title: l10n.onboardingThemeTitle,
+        description: l10n.onboardingThemeDesc,
+        color: const Color(0xFFF59E0B),
+        isThemeSelector: true,
+      ),
+      OnboardingSlide(
+        icon: LucideIcons.brush,
+        title: 'اختر مظهرك المفضل',
+        description: 'خصص تجربة استخدام التطبيق بأحد الأنماط الفريدة التي صممناها لك.',
+        color: const Color(0xFF8B5CF6),
+        isStyleSelector: true,
       ),
       OnboardingSlide(
         icon: LucideIcons.mapPin,
@@ -70,7 +84,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final slides = _getSlides(context);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -201,7 +215,84 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             const SizedBox(height: 12),
             _buildLanguageOption('tr', 'Türkçe', '🇹🇷'),
           ],
+          if (slide.isThemeSelector) ...[
+            const SizedBox(height: 48),
+            _buildThemeOption(ThemeMode.system, AppLocalizations.of(context).themeSystem, Icons.brightness_auto),
+            const SizedBox(height: 12),
+            _buildThemeOption(ThemeMode.light, AppLocalizations.of(context).themeLight, Icons.light_mode),
+            const SizedBox(height: 12),
+            _buildThemeOption(ThemeMode.dark, AppLocalizations.of(context).themeDark, Icons.dark_mode),
+          ],
+          if (slide.isStyleSelector) ...[
+            const SizedBox(height: 32),
+            _buildStyleOption(AppStyle.classic, 'النمط الكلاسيكي', 'عصري وحيوي', LucideIcons.appWindow),
+            const SizedBox(height: 12),
+            _buildStyleOption(AppStyle.paper, 'الورق والحبر', 'أنيق وخالد', LucideIcons.pencil),
+            const SizedBox(height: 12),
+            _buildStyleOption(AppStyle.nordic, 'اللمسة الشمالية', 'تقني ونظيف', LucideIcons.snowflake),
+          ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildStyleOption(AppStyle style, String title, String subtitle, IconData icon) {
+    final themeState = ref.watch(themeControllerProvider);
+    final isSelected = themeState.style == style;
+
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () {
+          ref.read(themeControllerProvider.notifier).setStyle(style);
+        },
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          side: BorderSide(
+            color: isSelected ? const Color(0xFF0D9488) : Colors.grey.withValues(alpha: 0.3),
+            width: isSelected ? 2 : 1,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: isSelected ? const Color(0xFF0D9488).withValues(alpha: 0.05) : null,
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFF0D9488).withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: isSelected ? const Color(0xFF0D9488) : Colors.grey),
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected ? const Color(0xFF0D9488) : null,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: Color(0xFF0D9488)),
+          ],
+        ),
       ),
     );
   }
@@ -256,6 +347,57 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       ),
     );
   }
+
+  Widget _buildThemeOption(ThemeMode mode, String name, IconData icon) {
+    final themeState = ref.watch(themeControllerProvider);
+    final isSelected = themeState.mode == mode;
+
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () {
+          ref.read(themeControllerProvider.notifier).setThemeMode(mode);
+          // Provide subtle haptic feedback or just move to next page
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (_currentPage == 1 && mounted) {
+              _pageController.nextPage(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            }
+          });
+        },
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          side: BorderSide(
+            color: isSelected ? const Color(0xFF0D9488) : Colors.grey.withValues(alpha: 0.3),
+            width: isSelected ? 2 : 1,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: isSelected ? const Color(0xFF0D9488).withValues(alpha: 0.05) : null,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: isSelected ? const Color(0xFF0D9488) : Colors.grey),
+            const SizedBox(width: 16),
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? const Color(0xFF0D9488) : null,
+              ),
+            ),
+            const Spacer(),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: Color(0xFF0D9488)),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class OnboardingSlide {
@@ -264,6 +406,8 @@ class OnboardingSlide {
   final String description;
   final Color color;
   final bool isLanguageSelector;
+  final bool isThemeSelector;
+  final bool isStyleSelector;
 
   const OnboardingSlide({
     required this.icon,
@@ -271,5 +415,7 @@ class OnboardingSlide {
     required this.description,
     required this.color,
     this.isLanguageSelector = false,
+    this.isThemeSelector = false,
+    this.isStyleSelector = false,
   });
 }

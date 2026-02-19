@@ -16,6 +16,8 @@ class DirectoryScreen extends ConsumerWidget {
     'Universities',
     'Hospitals',
     'Malls',
+    'Restaurants',
+    'Markets',
     'Historic',
     'Libraries',
     'Transport',
@@ -31,7 +33,7 @@ class DirectoryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context).directory)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 116),
         children: [
           SectionHeader(title: AppLocalizations.of(context).sections),
           GridView.builder(
@@ -180,6 +182,8 @@ class DirectoryScreen extends ConsumerWidget {
                     'Universities' => PlaceCategory.university,
                     'Hospitals' => PlaceCategory.hospital,
                     'Malls' => PlaceCategory.mall,
+                    'Restaurants' => PlaceCategory.restaurant,
+                    'Markets' => PlaceCategory.market,
                     'Historic' => PlaceCategory.historic,
                     'Libraries' => PlaceCategory.library,
                     'Transport' => PlaceCategory.transport,
@@ -212,6 +216,8 @@ class DirectoryScreen extends ConsumerWidget {
       'Universities' => l10n.catUniversity,
       'Hospitals' => l10n.catHospital,
       'Malls' => l10n.catMall,
+      'Restaurants' => l10n.catRestaurant,
+      'Markets' => l10n.catMarket,
       'Historic' => l10n.catHistoric,
       'Libraries' => l10n.catLibrary,
       'Transport' => l10n.catTransport,
@@ -230,6 +236,8 @@ class DirectoryScreen extends ConsumerWidget {
       'Universities' => Icons.school_outlined,
       'Hospitals' => Icons.local_hospital_outlined,
       'Malls' => Icons.storefront_outlined,
+      'Restaurants' => Icons.restaurant_outlined,
+      'Markets' => Icons.shopping_basket_outlined,
       'Historic' => Icons.account_balance_outlined,
       'Libraries' => Icons.local_library_outlined,
       'Transport' => Icons.directions_bus_outlined,

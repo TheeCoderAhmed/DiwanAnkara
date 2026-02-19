@@ -26,6 +26,40 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   CalendarFormat _calendarFormat = CalendarFormat.month;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final offset = _scrollController.offset;
+    if (offset > 40 && _calendarFormat == CalendarFormat.month) {
+      setState(() {
+        _calendarFormat = CalendarFormat.twoWeeks;
+      });
+    } else if (offset < 50 && _calendarFormat == CalendarFormat.twoWeeks) {
+      setState(() {
+        _calendarFormat = CalendarFormat.month;
+      });
+    }
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +69,9 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
+        preferredSize: Size.fromHeight(kToolbarHeight + MediaQuery.paddingOf(context).top),
         child: GlassmorphismHeader(
+          height: kToolbarHeight + MediaQuery.paddingOf(context).top,
           child: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -90,70 +125,75 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
               child: Column(
                 children: [
                   // Calendar Section
-                  Container(
-                    margin: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: TableCalendar<AppEvent>(
-                      firstDay: DateTime.utc(2024, 1, 1),
-                      lastDay: DateTime.utc(2030, 12, 31),
-                      focusedDay: _focusedDay,
-                      calendarFormat: _calendarFormat,
-                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                      eventLoader: (day) {
-                        final d = DateTime(day.year, day.month, day.day);
-                        return eventsByDay[d] ?? [];
-                      },
-                      startingDayOfWeek: StartingDayOfWeek.monday,
-                      calendarStyle: CalendarStyle(
-                        outsideDaysVisible: false,
-                        weekendTextStyle: TextStyle(color: Colors.red.shade400),
-                        todayDecoration: BoxDecoration(
-                          color: const Color(0xFF0D9488).withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        selectedDecoration: const BoxDecoration(
-                          color: Color(0xFF0D9488),
-                          shape: BoxShape.circle,
-                        ),
-                        markerDecoration: const BoxDecoration(
-                          color: Color(0xFFF59E0B),
-                          shape: BoxShape.circle,
-                        ),
+                  GestureDetector(
+                    onTap: _scrollToTop,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOutCubic,
+                      margin: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                       ),
-                      headerStyle: const HeaderStyle(
-                        formatButtonVisible: false,
-                        titleCentered: true,
-                        titleTextStyle: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      child: TableCalendar<AppEvent>(
+                        firstDay: DateTime.utc(2024, 1, 1),
+                        lastDay: DateTime.utc(2030, 12, 31),
+                        focusedDay: _focusedDay,
+                        calendarFormat: _calendarFormat,
+                        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                        eventLoader: (day) {
+                          final d = DateTime(day.year, day.month, day.day);
+                          return eventsByDay[d] ?? [];
+                        },
+                        startingDayOfWeek: StartingDayOfWeek.monday,
+                        calendarStyle: CalendarStyle(
+                          outsideDaysVisible: false,
+                          weekendTextStyle: TextStyle(color: Colors.red.shade400),
+                          todayDecoration: BoxDecoration(
+                            color: const Color(0xFF0D9488).withValues(alpha: 0.5),
+                            shape: BoxShape.circle,
+                          ),
+                          selectedDecoration: const BoxDecoration(
+                            color: Color(0xFF0D9488),
+                            shape: BoxShape.circle,
+                          ),
+                          markerDecoration: const BoxDecoration(
+                            color: Color(0xFFF59E0B),
+                            shape: BoxShape.circle,
+                          ),
                         ),
-                      ),
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedDay = selectedDay;
-                          _focusedDay = focusedDay;
-                        });
-                      },
-                      onFormatChanged: (format) {
-                        if (_calendarFormat != format) {
+                        headerStyle: const HeaderStyle(
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                          titleTextStyle: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onDaySelected: (selectedDay, focusedDay) {
                           setState(() {
-                            _calendarFormat = format;
+                            _selectedDay = selectedDay;
+                            _focusedDay = focusedDay;
                           });
-                        }
-                      },
-                      onPageChanged: (focusedDay) {
-                        _focusedDay = focusedDay;
-                      },
+                        },
+                        onFormatChanged: (format) {
+                          if (_calendarFormat != format) {
+                            setState(() {
+                              _calendarFormat = format;
+                            });
+                          }
+                        },
+                        onPageChanged: (focusedDay) {
+                          _focusedDay = focusedDay;
+                        },
+                      ),
                     ),
                   ).animate().fadeIn().slideY(begin: -0.1, end: 0),
 
@@ -192,6 +232,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                             ),
                           )
                         : ListView.builder(
+                            controller: _scrollController,
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             itemCount: displayEvents.length,
                             itemBuilder: (context, index) {

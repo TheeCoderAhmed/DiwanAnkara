@@ -21,13 +21,16 @@ class BentoCategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
     
+    final cardTheme = Theme.of(context).cardTheme;
+    final shape = (cardTheme.shape as RoundedRectangleBorder?) ?? RoundedRectangleBorder(borderRadius: BorderRadius.circular(24));
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(24),
-          border: isLight
+          color: cardTheme.color,
+          borderRadius: shape.borderRadius,
+          border: shape.side != BorderSide.none ? Border.fromBorderSide(shape.side) : (isLight
               ? Border.all(
                   color: Colors.grey.withValues(alpha: 0.1),
                   width: 1,
@@ -35,16 +38,20 @@ class BentoCategoryCard extends StatelessWidget {
               : Border.all(
                   color: Colors.white.withValues(alpha: 0.1),
                   width: 1,
-                ),
-          boxShadow: isLight
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ]
-              : null,
+                )),
+          boxShadow: isLight ? cardTheme.shadowColor != null ? [
+            BoxShadow(
+              color: cardTheme.shadowColor!,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ] : [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ] : null,
         ),
         child: Stack(
           children: [

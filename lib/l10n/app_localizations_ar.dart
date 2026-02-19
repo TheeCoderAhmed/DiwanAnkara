@@ -400,6 +400,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get catActivities => 'الأنشطة والترفيه';
 
   @override
+  String get catRestaurant => 'المطاعم';
+
+  @override
+  String get catMarket => 'الأسواق';
+
+  @override
   String get noAnnouncementFound => 'لم يتم العثور على الإعلان';
 
   @override
@@ -491,7 +497,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get clear => 'مسح';
 
   @override
-  String get pastOversightCommittees => 'لجان الرقابة السابقة';
+  String get pastOversightCommittees => ' و الحاليةلجان الرقابة السابقة';
 
   @override
   String get noDataAvailable => 'لا توجد بيانات متاحة';
@@ -2087,4 +2093,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onboardingStart => 'ابدأ';
+
+  @override
+  String get onboardingThemeTitle => 'اختر المظهر';
+
+  @override
+  String get onboardingThemeDesc => 'اختر المظهر الذي يناسبك';
+
+  @override
+  String get themeLight => 'فاتح';
+
+  @override
+  String get themeDark => 'داكن';
+
+  @override
+  String get themeSystem => 'تلقائي';
 }

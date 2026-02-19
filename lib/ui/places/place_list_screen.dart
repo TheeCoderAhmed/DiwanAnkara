@@ -44,7 +44,7 @@ class PlaceListScreen extends ConsumerWidget {
             }
             
             return ListView.separated(
-              padding: const EdgeInsets.only(bottom: 100),
+              padding: const EdgeInsets.only(bottom: 200),
               itemCount: universities.length,
               separatorBuilder: (_, __) => const Divider(height: 0),
               itemBuilder: (context, index) {
@@ -163,7 +163,7 @@ class PlaceListScreen extends ConsumerWidget {
           }
           
           return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 100),
+            padding: const EdgeInsets.only(bottom: 200),
             itemCount: filteredPlaces.length,
             separatorBuilder: (_, __) => const Divider(height: 0),
             itemBuilder: (context, index) {

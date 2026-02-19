@@ -4,7 +4,6 @@ import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 
@@ -58,17 +57,25 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
 
   Future<void> _initServices() async {
     try {
-      // Initialize DotEnv
-      await dotenv.load(fileName: ".env");
 
       // Initialize Hive
       await Hive.initFlutter();
       await Hive.openBox('app_cache');
 
       // Initialize Firebase
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      try {
+        if (Firebase.apps.isEmpty) {
+          await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          );
+        }
+      } catch (e) {
+        if (e.toString().contains('duplicate-app')) {
+          debugPrint('Firebase already initialized (duplicate-app caught)');
+        } else {
+          rethrow;
+        }
+      }
       
       // Initialize notification service
       try {

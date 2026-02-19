@@ -862,6 +862,18 @@ abstract class AppLocalizations {
   /// **'الأنشطة والترفيه'**
   String get catActivities;
 
+  /// No description provided for @catRestaurant.
+  ///
+  /// In ar, this message translates to:
+  /// **'المطاعم'**
+  String get catRestaurant;
+
+  /// No description provided for @catMarket.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأسواق'**
+  String get catMarket;
+
   /// No description provided for @noAnnouncementFound.
   ///
   /// In ar, this message translates to:
@@ -1033,7 +1045,7 @@ abstract class AppLocalizations {
   /// No description provided for @pastOversightCommittees.
   ///
   /// In ar, this message translates to:
-  /// **'لجان الرقابة السابقة'**
+  /// **' و الحاليةلجان الرقابة السابقة'**
   String get pastOversightCommittees;
 
   /// No description provided for @noDataAvailable.
@@ -3723,6 +3735,36 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'ابدأ'**
   String get onboardingStart;
+
+  /// No description provided for @onboardingThemeTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر المظهر'**
+  String get onboardingThemeTitle;
+
+  /// No description provided for @onboardingThemeDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر المظهر الذي يناسبك'**
+  String get onboardingThemeDesc;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاتح'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In ar, this message translates to:
+  /// **'داكن'**
+  String get themeDark;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In ar, this message translates to:
+  /// **'تلقائي'**
+  String get themeSystem;
 }
 
 class _AppLocalizationsDelegate

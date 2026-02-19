@@ -16,6 +16,10 @@ class PlaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cardTheme = Theme.of(context).cardTheme;
+    final shape = (cardTheme.shape as RoundedRectangleBorder?) ?? RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
+    final textTheme = Theme.of(context).textTheme;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -27,9 +31,16 @@ class PlaceCard extends StatelessWidget {
         width: isHorizontal ? 200 : double.infinity,
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          color: cardTheme.color,
+          borderRadius: shape.borderRadius,
+          border: shape.side != BorderSide.none ? Border.fromBorderSide(shape.side) : null,
+          boxShadow: cardTheme.shadowColor != null ? [
+            BoxShadow(
+              color: cardTheme.shadowColor!,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ] : [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
@@ -44,7 +55,9 @@ class PlaceCard extends StatelessWidget {
             Expanded(
               flex: 3,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: BorderRadius.vertical(
+                  top: (shape.borderRadius as BorderRadius).topLeft,
+                ),
                 child: _buildImage(place.imageAsset),
               ),
             ),
@@ -60,11 +73,8 @@ class PlaceCard extends StatelessWidget {
                       place.nameTr,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontFamily: 'Cairo', // User requested Cairo, keeping it.
+                      style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -72,11 +82,7 @@ class PlaceCard extends StatelessWidget {
                       place.descriptionAr,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: 'Cairo',
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
+                      style: textTheme.bodySmall,
                     ),
                   ],
                 ),

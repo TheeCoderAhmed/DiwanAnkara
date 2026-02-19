@@ -18,17 +18,16 @@ class MoreScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeControllerProvider);
+    final themeState = ref.watch(themeControllerProvider);
+    final themeMode = themeState.mode;
     final currentLocale = ref.watch(localeControllerProvider);
     final placesAsync = ref.watch(placesStreamProvider);
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.more),
-      ),
+      appBar: AppBar(title: Text(l10n.more)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 150),
         children: [
           _MoreItem(
             icon: Icons.bookmark_outline,
@@ -45,19 +44,21 @@ class MoreScreen extends ConsumerWidget {
             subtitle: l10n.aboutUsSubtitle,
             onTap: () {
               final places = placesAsync.valueOrNull ?? [];
-              final aboutPlace = places.where((p) => p.category == PlaceCategory.about).firstOrNull;
-              
+              final aboutPlace = places
+                  .where((p) => p.category == PlaceCategory.about)
+                  .firstOrNull;
+
               if (aboutPlace != null) {
-                 Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => PlaceDetailsScreen(placeId: aboutPlace.id),
                   ),
                 );
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.loadingData)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l10n.loadingData)));
               }
             },
           ),
@@ -104,16 +105,18 @@ class MoreScreen extends ConsumerWidget {
               );
               try {
                 if (await canLaunchUrl(emailLaunchUri)) {
-                   await launchUrl(emailLaunchUri);
+                  await launchUrl(emailLaunchUri);
                 } else {
-                   if (context.mounted) {
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Could not launch email client')),
+                      const SnackBar(
+                        content: Text('Could not launch email client'),
+                      ),
                     );
-                   }
+                  }
                 }
               } catch (e) {
-                 // Ignore
+                // Ignore
               }
             },
           ),
@@ -125,11 +128,12 @@ class MoreScreen extends ConsumerWidget {
             onTap: () {
               showModalBottomSheet(
                 context: context,
-                builder: (_) => _ThemeSelectionBottomSheet(currentMode: themeMode),
+                builder: (_) =>
+                    _ThemeSelectionBottomSheet(currentState: themeState),
               );
             },
           ),
-           const SizedBox(height: 12),
+          const SizedBox(height: 12),
           _MoreItem(
             icon: Icons.language,
             title: l10n.language,
@@ -137,11 +141,12 @@ class MoreScreen extends ConsumerWidget {
             onTap: () {
               showModalBottomSheet(
                 context: context,
-                builder: (_) => _LocaleSelectionBottomSheet(currentLocale: currentLocale),
+                builder: (_) =>
+                    _LocaleSelectionBottomSheet(currentLocale: currentLocale),
               );
             },
           ),
-
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -176,10 +181,7 @@ class _MoreItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text(title, style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
@@ -224,9 +226,9 @@ class _SupportDialog extends StatelessWidget {
             onPressed: () async {
               await Clipboard.setData(const ClipboardData(text: iban));
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.copiedIban)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l10n.copiedIban)));
               }
             },
             icon: const Icon(Icons.copy),
@@ -245,61 +247,108 @@ class _SupportDialog extends StatelessWidget {
 }
 
 class _ThemeSelectionBottomSheet extends ConsumerWidget {
-  const _ThemeSelectionBottomSheet({required this.currentMode});
-  
-  final ThemeMode currentMode;
+  const _ThemeSelectionBottomSheet({required this.currentState});
+
+  final ThemeState currentState;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return SafeArea(
-        child: RadioGroup<ThemeMode>(
-          groupValue: currentMode,
-          onChanged: (mode) {
-            if (mode != null) {
-              ref.read(themeControllerProvider.notifier).setThemeMode(mode);
-              Navigator.of(context).pop();
-            }
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  l10n.selectTheme,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Text(
+                l10n.selectTheme,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 16),
-              RadioListTile<ThemeMode>(
-                value: ThemeMode.system,
-                title: Text(l10n.system),
-                subtitle: Text(l10n.themeFollowSystem),
-                secondary: const Icon(Icons.brightness_auto),
+            ),
+            RadioGroup<ThemeMode>(
+              groupValue: currentState.mode,
+              onChanged: (mode) {
+                if (mode != null) {
+                  ref.read(themeControllerProvider.notifier).setThemeMode(mode);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<ThemeMode>(
+                    value: ThemeMode.system,
+                    title: Text(l10n.system),
+                    subtitle: Text(l10n.themeFollowSystem),
+                    secondary: const Icon(Icons.brightness_auto),
+                  ),
+                  RadioListTile<ThemeMode>(
+                    value: ThemeMode.light,
+                    title: Text(l10n.light),
+                    subtitle: Text(l10n.themeAlwaysLight),
+                    secondary: const Icon(Icons.light_mode),
+                  ),
+                  RadioListTile<ThemeMode>(
+                    value: ThemeMode.dark,
+                    title: Text(l10n.dark),
+                    subtitle: Text(l10n.themeAlwaysDark),
+                    secondary: const Icon(Icons.dark_mode),
+                  ),
+                ],
               ),
-              RadioListTile<ThemeMode>(
-                value: ThemeMode.light,
-                title: Text(l10n.light),
-                subtitle: Text(l10n.themeAlwaysLight),
-                secondary: const Icon(Icons.light_mode),
-              ),
-              RadioListTile<ThemeMode>(
-                value: ThemeMode.dark,
-                title: Text(l10n.dark),
-                subtitle: Text(l10n.themeAlwaysDark),
-                secondary: const Icon(Icons.dark_mode),
-              ),
-            ],
-          ),
+            ),
+            const Divider(),
+            ListTile(
+              title: const Text('نمط التصميم'),
+              subtitle: Text(switch (currentState.style) {
+                AppStyle.classic => 'كلاسيكي',
+                AppStyle.paper => 'ورق وحبر',
+                AppStyle.nordic => 'نورديك',
+              }),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _StyleChip(style: AppStyle.classic, label: 'كلاسيكي'),
+                _StyleChip(style: AppStyle.paper, label: 'ورق وحبر'),
+                _StyleChip(style: AppStyle.nordic, label: 'نورديك'),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _StyleChip extends ConsumerWidget {
+  final AppStyle style;
+  final String label;
+
+  const _StyleChip({required this.style, required this.label});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentStyle = ref.watch(themeControllerProvider).style;
+    final isSelected = currentStyle == style;
+
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) {
+          ref.read(themeControllerProvider.notifier).setStyle(style);
+        }
+      },
     );
   }
 }
 
 class _LocaleSelectionBottomSheet extends ConsumerWidget {
   const _LocaleSelectionBottomSheet({required this.currentLocale});
-  
+
   final Locale? currentLocale;
 
   @override
@@ -316,17 +365,17 @@ class _LocaleSelectionBottomSheet extends ConsumerWidget {
 
             // Check/Download translation model if not system and not Arabic
             if (code != 'system' && code != 'ar') {
-               ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.downloadingLanguageModel)),
-               );
-               
-               TranslationService().downloadModel(code).then((success) {
-                 if (context.mounted && success) {
-                   ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(content: Text(l10n.languageModelDownloaded)),
-                   );
-                 }
-               });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.downloadingLanguageModel)),
+              );
+
+              TranslationService().downloadModel(code).then((success) {
+                if (context.mounted && success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.languageModelDownloaded)),
+                  );
+                }
+              });
             }
           }
         },

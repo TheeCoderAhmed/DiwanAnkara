@@ -127,6 +127,8 @@
   "catAbout": "من نحن",
   "catProject": "مشاريعنا",
   "catActivities": "الأنشطة والترفيه",
+  "catRestaurant": "المطاعم",
+  "catMarket": "الأسواق",
   "noAnnouncementFound": "لم يتم العثور على الإعلان",
   "shareYourOpinion": "شارك رأيك أو استفسارك حول هذا الخبر",
   "pleaseEnterName": "الرجاء إدخال الاسم",
@@ -183,7 +185,7 @@
   "clearAllNotificationsTitle": "مسح جميع الإشعارات؟",
   "clearAllNotificationsMessage": "هل أنت متأكد من رغبتك في حذف سجل الإشعارات بالكامل؟",
   "clear": "مسح",
-  "pastOversightCommittees": "لجان الرقابة السابقة",
+  "pastOversightCommittees": " و الحاليةلجان الرقابة السابقة",
   "noDataAvailable": "لا توجد بيانات متاحة",
   "selectYear": "اختر السنة",
   "noMembersForYear": "لا يوجد أعضاء لهذه السنة",
@@ -631,5 +633,10 @@
   "onboardingLanguageDesc": "يرجى اختيار اللغة التي تود استخدامها في التطبيق",
   "onboardingSkip": "تخطي",
   "onboardingNext": "التالي",
-  "onboardingStart": "ابدأ"
+  "onboardingStart": "ابدأ",
+  "onboardingThemeTitle": "اختر المظهر",
+  "onboardingThemeDesc": "اختر المظهر الذي يناسبك",
+  "themeLight": "فاتح",
+  "themeDark": "داكن",
+  "themeSystem": "تلقائي"
 }

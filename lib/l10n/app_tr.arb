@@ -126,6 +126,8 @@
   "catPartners": "Ortaklar",
   "catAbout": "Hakkımızda",
   "catProject": "Projelerimiz",
+  "catRestaurant": "Restoranlar",
+  "catMarket": "Marketler",
   "noAnnouncementFound": "Duyuru bulunamadı",
   "shareYourOpinion": "Bu haberle ilgili düşüncelerinizi veya sorularınızı paylaşın",
   "pleaseEnterName": "Lütfen isminizi girin",
@@ -642,5 +644,10 @@
   "onboardingLanguageDesc": "Lütfen uygulamada kullanmak istediğiniz dili seçin",
   "onboardingSkip": "Geç",
   "onboardingNext": "İleri",
-  "onboardingStart": "Başlat"
+  "onboardingStart": "Başlat",
+  "onboardingThemeTitle": "Tema Seçin",
+  "onboardingThemeDesc": "Size en uygun görünümü seçin",
+  "themeLight": "Açık",
+  "themeDark": "Koyu",
+  "themeSystem": "Sistem Varsayılanı"
 }

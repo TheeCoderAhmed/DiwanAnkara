@@ -60,22 +60,18 @@ class InAppMessage {
 
 /// Provider that streams active in-app messages from Firestore
 final inAppMessagesProvider = StreamProvider<List<InAppMessage>>((ref) {
-  debugPrint('🔍 InAppMessagesProvider: Starting Firestore query...');
+  debugPrint('🔍 InAppMessagesProvider: Syncing all recent messages for history...');
   return FirebaseFirestore.instance
       .collection('notifications')
       .where('type', isEqualTo: 'in-app')
-      .where('isActive', isEqualTo: true)
-      .orderBy('order', descending: false)
+      .orderBy('order', descending: true) // Order by latest first for history sync
+      .limit(20) // Limit to last 20 messages
       .snapshots()
       .handleError((error) {
         debugPrint('❌ InAppMessagesProvider ERROR: $error');
       })
       .map((snapshot) {
-        debugPrint('📬 InAppMessagesProvider: Got ${snapshot.docs.length} in-app messages');
-        for (final doc in snapshot.docs) {
-          final data = doc.data();
-          debugPrint('  → doc ${doc.id}: type=${data['type']}, isActive=${data['isActive']}, layout=${data['layout']}');
-        }
+        debugPrint('📬 InAppMessagesProvider: Syncing ${snapshot.docs.length} messages to history');
         return snapshot.docs
             .map((doc) => InAppMessage.fromFirestore(doc))
             .toList();

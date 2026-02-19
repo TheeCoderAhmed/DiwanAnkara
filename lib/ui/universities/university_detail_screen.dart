@@ -131,7 +131,7 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
 
   Widget _buildSliverAppBar(BuildContext context, UniversityModel uni) {
     return SliverAppBar(
-      expandedHeight: 240,
+      expandedHeight: 280,
       pinned: true,
       stretch: true,
       backgroundColor: Colors.transparent,
@@ -140,10 +140,11 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
         background: Stack(
           fit: StackFit.expand,
           children: [
+            // Campus/Building Image as Background
             Hero(
-              tag: 'uni_logo_${uni.id}',
+              tag: 'uni_campus_${uni.id}',
               child: CachedImageWidget(
-                imageUrl: uni.logoUrl,
+                imageUrl: uni.campusUrl ?? uni.logoUrl, // Fallback to logo if campus photo missing
                 fit: BoxFit.cover,
               ),
             ),
@@ -153,11 +154,36 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.3),
-                    Colors.black.withValues(alpha: 0.7),
+                    Colors.black.withValues(alpha: 0.2),
+                    Colors.black.withValues(alpha: 0.8),
                   ],
                 ),
               ),
+            ),
+            // Floating Logo Overlay
+            Positioned.directional(
+              textDirection: Directionality.of(context),
+              top: 80,
+              end: 20,
+              child: Hero(
+                tag: 'uni_logo_${uni.id}',
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+                  ),
+                  child: ClipOval(
+                    child: CachedImageWidget(
+                      imageUrl: uni.logoUrl,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ).animate().fadeIn(duration: 800.ms).scale(),
             ),
             Positioned(
               bottom: 20,
@@ -167,7 +193,7 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
                 uni.name,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                   shadows: [Shadow(color: Colors.black26, blurRadius: 10)],
                 ),
