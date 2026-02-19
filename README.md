@@ -2,13 +2,12 @@
 
 # 🇾🇪 Diwan Ankara | ديوان أنقرة
 
-**The Official App of the Union of Yemeni Students in Ankara.**
+**The Official Digital Infrastructure for the Union of Yemeni Students in Ankara**
 `<br>`
-**التطبيق الرسمي لاتحاد الطلاب اليمنيين في أنقرة**
+**المنصة الرقمية الرسمية لاتحاد الطلاب اليمنيين في أنقرة**
 
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)]()
-[![Google Play](https://img.shields.io/badge/Google%20Play-Coming%20Soon-00ADF2?style=for-the-badge&logo=google-play&logoColor=white)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 [English](#-english) | [العربية](#-arabic)
@@ -17,123 +16,100 @@
 
 ---
 
-`<a id="english"></a>`
+<a id="english"></a>
 
 ## 🇬🇧 English
 
-### ✨ About the Project
+### Overview
+**Diwan Ankara** is the official mobile application of the **Union of Yemeni Students in Ankara**. It serves as a comprehensive digital ecosystem designed to consolidate essential academic, social, and logistical resources for the Yemeni student community and broader expatriate resident population in Ankara, Turkey.
 
-Welcome to **Diwan Ankara**, the official platform of the **Union of Yemeni Students in Ankara (اتحاد الطلاب اليمنيين)**. This application acts as a digital bridge, providing essential resources, real-time updates, and a unified space for the Yemeni student community and residents in Ankara.
+The initiative aims to enhance community connectivity, streamline information dissemination, and provide a centralized gateway for institutional updates and local guidance.
 
-Whether you are looking for the latest university news, community events, or a directory of local services, **Diwan Ankara** has you covered.
+### Core Functional Modules
+The application architecture is structured around several critical service pillars:
 
-> [!TIP]
-> **🚀 Coming Soon:** We are working hard to bring **Diwan Ankara** to the **Google Play Store** very soon! Stay tuned!
+*   **Institutional Communications**: A centralized channel for official announcements, statements, and administrative updates.
+*   **Operational Calendar**: A systematic schedule of academic workshops, community gatherings, and cultural events.
+*   **Civic Directory**: A verified repository of student services, Yemeni businesses, and professional contacts.
+*   **Urban Navigation & Support**: Curated guidance for essential locations, including academic institutions, religious centers, and culinary services.
+*   **Adaptive UI/UX**: Sophisticated onboarding with support for dynamic theme switching (Light, Dark, System) and granular language preferences.
+*   **Automated Notifications**: Real-time push notification infrastructure for critical alerts and community updates.
+*   **Document Management**: Integrated viewer for official PDF resources, procedural guides, and legal documentation.
+*   **Governance & Transparency**: Documentation of ongoing community projects and active oversight committees.
+*   **Localization**: Native support for Arabic, English, and Turkish languages.
 
-### 🚀 Key Features
+### Technical Specification
+The platform utilizes a modern software stack optimized for cross-platform performance and industrial-grade security.
 
-The app is packed with features designed to support the student community:
+| Layer | Specification |
+| :--- | :--- |
+| **Framework** | **Flutter** (Dart SDK) |
+| **State Architecture** | **Riverpod** (Functional Reactive Programming) |
+| **Backend Services** | **Firebase** (Firestore, Cloud Messaging) |
+| **Security Protocol** | **Dart Define** (Environment Variable Encapsulation) |
+| **Routing Management** | **GoRouter** (Declarative Routing) |
+| **Enhanced UX** | `flutter_animate`, `shimmer`, `google_fonts`, `lucide_icons` |
 
-*   **📢 Announcements Hook**: Instantly receive the latest news, official statements, and important updates.
-*   **📅 Dynamic Events Calendar**: Keep track of workshops, gatherings, and celebrations.
-*   **📒 Digital Directory**: A comprehensive guide to Yemeni businesses, student services, and contacts.
-*   **📍 Places & Guidance**: Discover recommended locations, mosques, restaurants, and cultural centers.
-*   **🎨 Personalized Experience**: Choose your preferred **language** and **theme** (Light, Dark, or System) during onboarding.
-*   **🔔 Smart Notifications**: Real-time push notifications ensure you're always in the loop.
-*   **📄 Resource Library**: Access and view important PDFs, guides, and documentation.
-*   **🏗️ Projects & Committees**: View ongoing community projects and oversight committees.
-*   **🌍 Multi-Language Support**: Fully localized in Arabic, English, and Turkish.
+### Security Configuration
+This repository implements strict security standards. Sensitive credentials and API keys are managed via **Dart Define** and are excluded from version control to maintain system integrity.
 
-### 🛠️ Built With
+1.  Initialize local environment: `cp secrets.json.example secrets.json`
+2.  Configure necessary environment variables within `secrets.json`.
+3.  Note that `secrets.json` is pre-configured in `.gitignore` to prevent accidental disclosure.
 
-We use a modern, robust tech stack to ensure performance, scalability, and security:
+### Deployment & Execution
 
-| Category                   | Technology                                                                                                                         |
-| :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
-| **Framework**        | ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat&logo=Flutter&logoColor=white) **Flutter** (Dart)      |
-| **State Management** | ![Riverpod](https://img.shields.io/badge/Riverpod-%232D3748.svg?style=flat&logo=riverpod&logoColor=white) **flutter_riverpod** |
-| **Backend / BaaS**   | ![Firebase](https://img.shields.io/badge/Firebase-%23039BE5.svg?style=flat&logo=firebase) **Firestore, Cloud Messaging**       |
-| **Security**         | **Dart Define (Secure Secret Metadata)**                                                                                      |
-| **Navigation**       | **GoRouter**                                                                                                                 |
-| **UI Components**    | `flutter_animate`, `shimmer`, `google_fonts`, `lucide_icons`                                                               |
-
-### 🔐 Security & Secrets
-
-This project uses **Dart Define** to securely manage API keys and credentials. These are never committed to version control.
-
-1.  Copy `secrets.json.example` to `secrets.json`.
-2.  Fill in your Firebase API keys and other credentials.
-3.  The `secrets.json` file is automatically ignored by Git.
-
-### 🏁 Getting Started
-
-1.  **Clone the repository**
+1.  **Repository Acquisition**
     ```bash
-    git clone https://github.com/your-username/yc_ankara_app.git
-    cd yc_ankara_app
+    git clone https://github.com/TheeCoderAhmed/DiwanAnkara.git
+    cd DiwanAnkara
     ```
-2.  **Install dependencies**
+2.  **Dependency Synchronization**
     ```bash
     flutter pub get
     ```
-3.  **Run the application** (Required: Use secrets file)
+3.  **Development Execution** (Requires secure definition file)
     ```bash
     flutter run --dart-define-from-file=secrets.json
     ```
 
 ---
 
-`<a id="arabic"></a>`
+<a id="arabic"></a>
 
 ## 🇾🇪 العربية
 
-### ✨ عن المشروع
+### نظرة عامة
+**ديوان أنقرة** هو التطبيق الرسمي لـ **اتحاد الطلاب اليمنيين في أنقرة**. يمثل المشروع بيئة رقمية متكاملة تهدف إلى توحيد الموارد الأكاديمية والاجتماعية واللوجستية الأساسية لمجتمع الطلاب اليمنيين والمقيمين في العاصمة التركية أنقرة.
 
-مرحبًا بكم في **ديوان أنقرة**، المنصة الرسمية لـ **اتحاد الطلاب اليمنيين في أنقرة**. يعمل هذا التطبيق كجسر رقمي يوفر الموارد التعليمية والخدمية، والتحديثات الفورية، ومساحة موحدة للتفاعل بين الطلاب وأبناء الجالية اليمنية المقيمين في أنقرة.
+يهدف هذا التطبيق إلى تعزيز الروابط المجتمعية، وتسهيل الوصول إلى المعلومات، وتوفير بوابة مركزية للتحديثات المؤسسية والإرشادات المحلية.
 
-> [!TIP]
-> **🚀 قريباً:** نحن نعمل بجد لإطلاق **ديوان أنقرة** على **متجر جوجل بلاي** في القريب العاجل! انتظرونا!
+### الوحدات الوظيفية الرئيسية
+تم تصميم هيكلية التطبيق لخدمة عدة ركائز أساسية:
 
-### 🚀 المميزات الرئيسية
+*   **الاتصال المؤسسي**: قناة مركزية للإعلانات الرسمية، البيانات، والتحديثات الإدارية.
+*   **التقويم التشغيلي**: جدول زمني منظم لورش العمل الأكاديمية، التجمعات المجتمعية، والفعاليات الثقافية.
+*   **الدليل الرقمي**: مستودع موثق للخدمات الطلابية، المصالح التجارية، وجهات الاتصال المهنية.
+*   **الإرشاد والتوجيه**: أدلة منسقة للمواقع الحيوية بما في ذلك المؤسسات الأكاديمية، المراكز الدينية، والمرافق الخدمية.
+*   **تجربة المستخدم التكيفية**: واجهة متطورة تدعم التبديل بين الأنماط (فاتح، داكن، تلقائي) وتخصيص اللغة.
+*   **الإشعارات الأوتوماتيكية**: بنية تحتية للإشعارات الفورية للتنبيهات العاجلة وتحديثات المجتمع.
+*   **إدارة المستندات**: قارئ مدمج للملفات الرسمية (PDF)، الأدلة الإجرائية، واللوائح القانونية.
+*   **الحوكمة والشفافية**: استعراض المشاريع المجتمعية القائمة واللجان الرقابية النشطة.
+*   **التعريب والتدويل**: دعم كامل للغات العربية، الإنجليزية، والتركية.
 
-تطبيق متكامل بالمميزات المصممة لجعل الحياة أسهل وأكثر ترابطًا:
+### المواصفات التقنية
+تعتمد المنصة على بنية تقنية حديثة مصممة للأداء العالي والأمان المستدام.
 
-* **📢 منصة الإعلانات**: احصل فورًا على آخر الأخبار والبيانات الرسمية والتحديثات المهمة.
-* **📅 تقويم الفعاليات**: تابع ورش العمل، والتجمعات، والاحتفالات.
-* **📒 الدليل الرقمي**: دليل شامل للأعمال الطلابية، والخدمات، وجهات الاتصال.
-* **📍 أماكن وإرشادات**: اكتشف المواقع الموصى بها، المساجد، المطاعم، والمراكز الثقافية.
-* **🎨 تجربة مخصصة**: اختر **اللغة** و **المظهر** المفضل (فاتح، داكن، أو تلقائي) عند بدء الاستخدام.
-* **🔔 إشعارات ذكية**: ابقَ على اطلاع دائم حتى عندما يكون التطبيق مغلقًا.
-* **📄 مكتبة المصادر**: عرض ملفات PDF المهمة، والأدلة مباشرة داخل التطبيق.
-* **🏗️ المشاريع واللجان**: استعرض مشاريع الجالية المستمرة وتعرف على لجان الرقابة.
-* **🌍 دعم متعدد اللغات**: مترجم بالكامل (العربية والإنجليزية والتركية).
-
-### 🔐 الأمان وإدارة المفاتيح
-
-يستخدم هذا المشروع **Dart Define** لإدارة مفاتيح واجهة برمجة التطبيقات (API Keys) بشكل آمن. لا يتم رفع هذه المفاتيح مطلقاً إلى GitHub.
-
-1.  قم بنسخ ملف `secrets.json.example` إلى `secrets.json`.
-2.  قم بتعبئة مفاتيح Firebase والبيانات السرية الأخرى.
-3.  يتم تجاهل ملف `secrets.json` تلقائياً بواسطة Git.
-
-### 🏁 ابدأ الاستخدام
-
-1. **نسخ المستودع**
-   ```bash
-   git clone https://github.com/your-username/yc_ankara_app.git
-   cd yc_ankara_app
-   ```
-2. **تثبيت الحزم والمكتبات**
-   ```bash
-   flutter pub get
-   ```
-3. **تشغيل التطبيق** (يتطلب ملف المفاتيح)
-   ```bash
-   flutter run --dart-define-from-file=secrets.json
-   ```
+| الطبقة التقنية | التقنية المستخدمة |
+| :--- | :--- |
+| **إطار العمل** | **Flutter** (Dart SDK) |
+| **إدارة الحالة** | **Riverpod** |
+| **خدمات الخلفية** | **Firebase** (Firestore, Cloud Messaging) |
+| **بروتوكول الأمان** | **Dart Define** (تشفير المتغيرات البيئية) |
+| **إدارة التنقل** | **GoRouter** |
 
 ---
 
 <p align="center">
-  Made with ❤️ for the 🇾🇪 Community in Ankara
+  Developed for the 🇾🇪 Community in Ankara
 </p>
