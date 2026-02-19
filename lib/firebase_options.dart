@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 class DefaultFirebaseOptions {
-  static String _val(String key) {
-    return String.fromEnvironment(key);
-  }
+  // Security Note: These are placeholder values.
+  // For a production app, the real keys would be managed via environment variables.
+  // The goal here is to showcase the app's structure and features.
 
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -29,47 +29,47 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static FirebaseOptions web = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_WEB'),
-    appId: _val('FIREBASE_APP_ID_WEB'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    authDomain: _val('FIREBASE_AUTH_DOMAIN'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
+  static FirebaseOptions web = const FirebaseOptions(
+    apiKey: 'WEB_API_KEY_PLACEHOLDER',
+    appId: 'WEB_APP_ID_PLACEHOLDER',
+    messagingSenderId: 'SENDER_ID_PLACEHOLDER',
+    projectId: 'DIWAN_ANKARA_PROJECT_ID',
+    authDomain: 'diwan-ankara.firebaseapp.com',
+    storageBucket: 'diwan-ankara.firebasestorage.app',
   );
 
-  static FirebaseOptions android = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_ANDROID'),
-    appId: _val('FIREBASE_APP_ID_ANDROID'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
+  static FirebaseOptions android = const FirebaseOptions(
+    apiKey: 'ANDROID_API_KEY_PLACEHOLDER',
+    appId: 'ANDROID_APP_ID_PLACEHOLDER',
+    messagingSenderId: 'SENDER_ID_PLACEHOLDER',
+    projectId: 'DIWAN_ANKARA_PROJECT_ID',
+    storageBucket: 'diwan-ankara.firebasestorage.app',
   );
 
-  static FirebaseOptions ios = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_IOS'),
-    appId: _val('FIREBASE_APP_ID_IOS'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
-    iosBundleId: _val('FIREBASE_IOS_BUNDLE_ID'),
+  static FirebaseOptions ios = const FirebaseOptions(
+    apiKey: 'IOS_API_KEY_PLACEHOLDER',
+    appId: 'IOS_APP_ID_PLACEHOLDER',
+    messagingSenderId: 'SENDER_ID_PLACEHOLDER',
+    projectId: 'DIWAN_ANKARA_PROJECT_ID',
+    storageBucket: 'diwan-ankara.firebasestorage.app',
+    iosBundleId: 'com.diwan.ankara.app',
   );
 
-  static FirebaseOptions macos = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_IOS'),
-    appId: _val('FIREBASE_APP_ID_IOS'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
-    iosBundleId: _val('FIREBASE_IOS_BUNDLE_ID'),
+  static FirebaseOptions macos = const FirebaseOptions(
+    apiKey: 'IOS_API_KEY_PLACEHOLDER',
+    appId: 'IOS_APP_ID_PLACEHOLDER',
+    messagingSenderId: 'SENDER_ID_PLACEHOLDER',
+    projectId: 'DIWAN_ANKARA_PROJECT_ID',
+    storageBucket: 'diwan-ankara.firebasestorage.app',
+    iosBundleId: 'com.diwan.ankara.app',
   );
 
-  static FirebaseOptions windows = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_WINDOWS'),
-    appId: _val('FIREBASE_APP_ID_WINDOWS'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    authDomain: _val('FIREBASE_AUTH_DOMAIN'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
+  static FirebaseOptions windows = const FirebaseOptions(
+    apiKey: 'WINDOWS_API_KEY_PLACEHOLDER',
+    appId: 'WINDOWS_APP_ID_PLACEHOLDER',
+    messagingSenderId: 'SENDER_ID_PLACEHOLDER',
+    projectId: 'DIWAN_ANKARA_PROJECT_ID',
+    authDomain: 'diwan-ankara.firebaseapp.com',
+    storageBucket: 'diwan-ankara.firebasestorage.app',
   );
 }
