@@ -36,13 +36,13 @@ The app is packed with features designed to support the student community:
 
 *   **📢 Announcements Hook**: Instantly receive the latest news, official statements, and important updates.
 *   **📅 Dynamic Events Calendar**: Keep track of workshops, gatherings, and celebrations.
-*   **📒 Digital Directory**: A comprehensive guide to Yemeni businesses, student services, and contacts.
-*   **📍 Places & Guidance**: Discover recommended locations, mosques, restaurants, and cultural centers.
-*   **🎨 Personalized Experience**: Choose your preferred **language** and **theme** (Light, Dark, or System) during onboarding.
-*   **🔔 Smart Notifications**: Real-time push notifications ensure you're always in the loop.
-*   **📄 Resource Library**: Access and view important PDFs, guides, and documentation.
-*   **🏗️ Projects & Committees**: View ongoing community projects and oversight committees.
-*   **🌍 Multi-Language Support**: Fully localized in Arabic, English, and Turkish.
+*   **🏛️ University Hub**: Detailed profiles for Ankara's universities, including official logos, campus banners, and academic guidance.
+*   **📍 Local Directory**: A curated guide to essential places (hospitals, parks, libraries) with specific medical and social advice modals.
+*   **🎨 Premium Themes**: Experience the app in beautiful **Paper** (light texture) or **Nordic** (serene dark) themes, with smooth ambient animations.
+*   **🔔 Smart Notifications**: Real-time push and in-app messaging system that ensures you never miss a beat.
+*   **🌍 Multi-Language Support**: Fully localized in Arabic, English, and Turkish with dynamic switching.
+*   **🏗️ Community Projects**: Browse ongoing union projects, committees, and student hack resources.
+*   **📄 Resource Library**: Built-in PDF viewer for official guides and student documentation.
 
 ### 🛠️ Built With
 
@@ -100,13 +100,13 @@ This project uses **Dart Define** to securely manage API keys and credentials. T
 
 * **📢 منصة الإعلانات**: احصل فورًا على آخر الأخبار والبيانات الرسمية والتحديثات المهمة.
 * **📅 تقويم الفعاليات**: تابع ورش العمل، والتجمعات، والاحتفالات.
-* **📒 الدليل الرقمي**: دليل شامل للأعمال الطلابية، والخدمات، وجهات الاتصال.
-* **📍 أماكن وإرشادات**: اكتشف المواقع الموصى بها، المساجد، المطاعم، والمراكز الثقافية.
-* **🎨 تجربة مخصصة**: اختر **اللغة** و **المظهر** المفضل (فاتح، داكن، أو تلقائي) عند بدء الاستخدام.
-* **🔔 إشعارات ذكية**: ابقَ على اطلاع دائم حتى عندما يكون التطبيق مغلقًا.
-* **📄 مكتبة المصادر**: عرض ملفات PDF المهمة، والأدلة مباشرة داخل التطبيق.
-* **🏗️ المشاريع واللجان**: استعرض مشاريع الجالية المستمرة وتعرف على لجان الرقابة.
-* **🌍 دعم متعدد اللغات**: مترجم بالكامل (العربية والإنجليزية والتركية).
+* **🏛️ بوابة الجامعات**: ملفات تعريفية شاملة لجامعات أنقرة، تشمل الشعارات الرسمية، وصور الحرم الجامعي، والإرشادات الأكاديمية.
+* **📍 الدليل المحلي**: دليل منسق للأماكن الحيوية (المستشفيات، الحدائق، المكتبات) مع توجيهات طبية واجتماعية مخصصة.
+* **🎨 واجهات فاخرة**: استمتع بواجهات فريدة مثل مظهر **"الورق" (Paper)** الملمسي أو **"نورديك" (Nordic)** الهادئ مع خلفيات متحركة.
+* **🔔 إشعارات ذكية**: نظام تنبيهات فورية ورسائل داخل التطبيق لضمان اطلاعك على كل جديد.
+* **🌍 دعم متعدد اللغات**: التطبيق مترجم بالكامل للعربية والإنجليزية والتركية مع إمكانية التغيير الفوري.
+* **🏗️ المشاريع والمبادرات**: استعرض مشاريع الاتحاد المستمرة، واللجان المختصة، ومصادر "Student Hacks" التعليمية.
+* **📄 مكتبة المصادر**: ميزة استعراض ملفات PDF للأدلة الرسمية والوثائق الطلابية مباشرة.
 
 ### 🔐 الأمان وإدارة المفاتيح
 
