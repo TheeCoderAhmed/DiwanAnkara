@@ -1,8 +1,7 @@
 # Miscellaneous
 # Miscellaneous
-.env*
-!.env.example
-secrets.json
+.env
+!secrets.json.example
 *-firebase-adminsdk-*.json
 config-local.json
 android/app/google-services.json
@@ -58,9 +57,31 @@ GoogleService-Info.plist
 *.pem
 android/key.properties
 android/app/upload-keystore.jks
+google-services.json
+
+# Agent files
+.agent/
+
+key.properties
+
+local.properties
+
+*.jks
+
+*.keystore
+
+google-play-key.json
+
+fastlane/report.xml
+
+android/fastlane/report.xml
+
+*.hprof
+
+android/local.properties
+android/fastlane/google-play-key.json
+android/fastlane/Preview.html
 android/fastlane/metadata/android/en-US/video.txt
 
-# Personal/System files
-.DS_Store
-.env
-.agent/
+# Secrets
+secrets.json

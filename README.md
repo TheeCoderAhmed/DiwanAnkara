@@ -53,10 +53,17 @@ We use a modern, robust tech stack to ensure performance, scalability, and secur
 | **Framework**        | ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat&logo=Flutter&logoColor=white) **Flutter** (Dart)      |
 | **State Management** | ![Riverpod](https://img.shields.io/badge/Riverpod-%232D3748.svg?style=flat&logo=riverpod&logoColor=white) **flutter_riverpod** |
 | **Backend / BaaS**   | ![Firebase](https://img.shields.io/badge/Firebase-%23039BE5.svg?style=flat&logo=firebase) **Firestore, Cloud Messaging**       |
-| **Navigation**       | **GoRouter**                                                                                                                 |
+| **Security**         | **Dart Define (Secure Secret Metadata)**                                                                                      |
 | **Navigation**       | **GoRouter**                                                                                                                 |
 | **UI Components**    | `flutter_animate`, `shimmer`, `google_fonts`, `lucide_icons`                                                               |
 
+### 🔐 Security & Secrets
+
+This project uses **Dart Define** to securely manage API keys and credentials. These are never committed to version control.
+
+1.  Copy `secrets.json.example` to `secrets.json`.
+2.  Fill in your Firebase API keys and other credentials.
+3.  The `secrets.json` file is automatically ignored by Git.
 
 ### 🏁 Getting Started
 
@@ -69,9 +76,9 @@ We use a modern, robust tech stack to ensure performance, scalability, and secur
     ```bash
     flutter pub get
     ```
-3.  **Run the application**
+3.  **Run the application** (Required: Use secrets file)
     ```bash
-    flutter run
+    flutter run --dart-define-from-file=secrets.json
     ```
 
 ---
@@ -101,6 +108,13 @@ We use a modern, robust tech stack to ensure performance, scalability, and secur
 * **🏗️ المشاريع واللجان**: استعرض مشاريع الجالية المستمرة وتعرف على لجان الرقابة.
 * **🌍 دعم متعدد اللغات**: مترجم بالكامل (العربية والإنجليزية والتركية).
 
+### 🔐 الأمان وإدارة المفاتيح
+
+يستخدم هذا المشروع **Dart Define** لإدارة مفاتيح واجهة برمجة التطبيقات (API Keys) بشكل آمن. لا يتم رفع هذه المفاتيح مطلقاً إلى GitHub.
+
+1.  قم بنسخ ملف `secrets.json.example` إلى `secrets.json`.
+2.  قم بتعبئة مفاتيح Firebase والبيانات السرية الأخرى.
+3.  يتم تجاهل ملف `secrets.json` تلقائياً بواسطة Git.
 
 ### 🏁 ابدأ الاستخدام
 
@@ -113,9 +127,9 @@ We use a modern, robust tech stack to ensure performance, scalability, and secur
    ```bash
    flutter pub get
    ```
-3. **تشغيل التطبيق**
+3. **تشغيل التطبيق** (يتطلب ملف المفاتيح)
    ```bash
-   flutter run
+   flutter run --dart-define-from-file=secrets.json
    ```
 
 ---
