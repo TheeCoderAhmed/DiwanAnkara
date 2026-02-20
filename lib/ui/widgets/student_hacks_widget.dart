@@ -35,9 +35,9 @@ class StudentHacksWidget extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 AppLocalizations.of(context).studentResources,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -70,7 +70,7 @@ class StudentHacksWidget extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final data = docs[index].data() as Map<String, dynamic>;
                   final hack = _StudentHack.fromMap(data);
-                  
+
                   return Padding(
                     padding: EdgeInsetsDirectional.only(
                       start: index > 0 ? 16 : 0,
@@ -117,28 +117,28 @@ class _StudentHack {
       case 'museum':
         return (
           LucideIcons.ticket,
-          [const Color(0xFF0D9488), const Color(0xFF14B8A6)]
+          [const Color(0xFF0D9488), const Color(0xFF14B8A6)],
         );
       case 'cinema':
         return (
           LucideIcons.film,
-          [const Color(0xFFEF4444), const Color(0xFFF87171)]
+          [const Color(0xFFEF4444), const Color(0xFFF87171)],
         );
       case 'help':
         return (
           LucideIcons.phone,
-          [const Color(0xFF8B5CF6), const Color(0xFFA78BFA)]
+          [const Color(0xFF8B5CF6), const Color(0xFFA78BFA)],
         );
       case 'transport':
         return (
           LucideIcons.bus,
-          [const Color(0xFFF59E0B), const Color(0xFFFBBF24)]
+          [const Color(0xFFF59E0B), const Color(0xFFFBBF24)],
         );
       case 'general':
       default:
         return (
           LucideIcons.lightbulb,
-          [const Color(0xFF3B82F6), const Color(0xFF60A5FA)]
+          [const Color(0xFF3B82F6), const Color(0xFF60A5FA)],
         );
     }
   }
@@ -173,12 +173,11 @@ class _HackCardState extends State<_HackCard> {
 
   Future<void> _checkAndTranslate() async {
     final languageCode = Localizations.localeOf(context).languageCode;
-    
+
     // Only translate if not Arabic (assuming source is Arabic) and not already translated
-    if (languageCode != 'ar' && 
-        (_translatedTitle == null || _translatedDesc == null) && 
+    if (languageCode != 'ar' &&
+        (_translatedTitle == null || _translatedDesc == null) &&
         !_isTranslating) {
-        
       if (mounted) setState(() => _isTranslating = true);
 
       try {
@@ -186,7 +185,7 @@ class _HackCardState extends State<_HackCard> {
         // Batch translate title and description
         final texts = [widget.hack.title, widget.hack.description];
         final results = await service.translateList(texts, languageCode);
-        
+
         if (mounted && results.length == 2) {
           setState(() {
             _translatedTitle = results[0];
@@ -213,9 +212,9 @@ class _HackCardState extends State<_HackCard> {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         } catch (e) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('خطأ في فتح الرابط: $e')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('خطأ في فتح الرابط: $e')));
           }
         }
       },
@@ -253,7 +252,8 @@ class _HackCardState extends State<_HackCard> {
               ),
 
               // Optional Background Image
-              if (widget.hack.backgroundImage != null && widget.hack.backgroundImage!.isNotEmpty)
+              if (widget.hack.backgroundImage != null &&
+                  widget.hack.backgroundImage!.isNotEmpty)
                 CachedImageWidget(
                   imageUrl: widget.hack.backgroundImage!,
                   fit: BoxFit.cover,
@@ -262,7 +262,8 @@ class _HackCardState extends State<_HackCard> {
                 ),
 
               // Overlay for readability if image exists
-              if (widget.hack.backgroundImage != null && widget.hack.backgroundImage!.isNotEmpty)
+              if (widget.hack.backgroundImage != null &&
+                  widget.hack.backgroundImage!.isNotEmpty)
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -286,7 +287,9 @@ class _HackCardState extends State<_HackCard> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.3),
+                        color: Colors.white.withValues(
+                          alpha: isDark ? 0.1 : 0.3,
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(

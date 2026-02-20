@@ -22,7 +22,9 @@ class PreviousEventsScreen extends ConsumerWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight + MediaQuery.paddingOf(context).top),
+        preferredSize: Size.fromHeight(
+          kToolbarHeight + MediaQuery.paddingOf(context).top,
+        ),
         child: GlassmorphismHeader(
           height: kToolbarHeight + MediaQuery.paddingOf(context).top,
           child: AppBar(
@@ -46,10 +48,10 @@ class PreviousEventsScreen extends ConsumerWidget {
           final cutoff = now.subtract(const Duration(hours: 1));
 
           // Filter previous events
-          final previousEvents = events
-              .where((e) => e.date.isBefore(cutoff))
-              .toList()
-            ..sort((a, b) => b.date.compareTo(a.date)); // Descending (newest first)
+          final previousEvents =
+              events.where((e) => e.date.isBefore(cutoff)).toList()..sort(
+                (a, b) => b.date.compareTo(a.date),
+              ); // Descending (newest first)
 
           return Container(
             decoration: BoxDecoration(
@@ -70,7 +72,10 @@ class PreviousEventsScreen extends ConsumerWidget {
                       ),
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 20,
+                      ),
                       itemCount: previousEvents.length,
                       itemBuilder: (context, index) {
                         return _PreviousEventCard(event: previousEvents[index])
@@ -111,22 +116,44 @@ class _PreviousEventCard extends StatelessWidget {
           ),
         ],
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.1),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
       ),
       child: ColorFiltered(
         // Add a grayscale filter to indicate it's past
-        colorFilter: const ColorFilter.matrix(<double>[
-          0.95, 0, 0, 0, 0,
-          0, 0.95, 0, 0, 0,
-          0, 0, 0.95, 0, 0,
-          0, 0, 0, 1, 0,
-        ]), // Slight desaturation, not full black and white to keep it looking good
+        colorFilter: const ColorFilter.matrix(
+          <double>[
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+          ],
+        ), // Slight desaturation, not full black and white to keep it looking good
         child: Column(
           children: [
             // Image Header
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
               child: SizedBox(
                 height: 120,
                 width: double.infinity,
@@ -138,17 +165,17 @@ class _PreviousEventCard extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // Content
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                       Expanded(
+                      Expanded(
                         child: Text(
                           event.title,
                           style: const TextStyle(
@@ -161,17 +188,25 @@ class _PreviousEventCard extends StatelessWidget {
                       ),
                       // Date Badge (Past)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.grey.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          DateFormat('d MMM yyyy', Localizations.localeOf(context).languageCode).format(event.date),
+                          DateFormat(
+                            'd MMM yyyy',
+                            Localizations.localeOf(context).languageCode,
+                          ).format(event.date),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+                            color: isDark
+                                ? Colors.grey.shade300
+                                : Colors.grey.shade700,
                           ),
                         ),
                       ),
@@ -180,12 +215,19 @@ class _PreviousEventCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(LucideIcons.mapPin, size: 14, color: Colors.grey.shade500),
+                      Icon(
+                        LucideIcons.mapPin,
+                        size: 14,
+                        color: Colors.grey.shade500,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           event.location,
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 13,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -199,7 +241,9 @@ class _PreviousEventCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+                        color: isDark
+                            ? Colors.grey.shade500
+                            : Colors.grey.shade600,
                         fontSize: 13,
                       ),
                     ),

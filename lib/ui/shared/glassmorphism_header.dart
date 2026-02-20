@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 class GlassmorphismHeader extends StatelessWidget {
-  const GlassmorphismHeader({
-    super.key,
-    required this.child,
-    this.height,
-  });
+  const GlassmorphismHeader({super.key, required this.child, this.height});
 
   final Widget child;
   final double? height;
@@ -33,4 +29,3 @@ class GlassmorphismHeader extends StatelessWidget {
     );
   }
 }
-

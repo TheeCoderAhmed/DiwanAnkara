@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 /// Premium Scandinavian/Nordic background with soft frosted glass orbs,
 /// subtle grain/noise texture, and elegant minimalist gradients.
 class NordicBackground extends StatelessWidget {
-  const NordicBackground({
-    super.key,
-    this.scrollOffset = 0.0,
-  });
+  const NordicBackground({super.key, this.scrollOffset = 0.0});
 
   final double scrollOffset;
 
@@ -38,22 +35,23 @@ class NordicBackground extends StatelessWidget {
           top: -screenHeight * 0.1 + (scrollOffset * 0.1),
           left: -screenWidth * 0.2,
           size: screenWidth * 0.8,
-          color: isDark ? const Color(0xFF6366F1).withValues(alpha: 0.1) : const Color(0xFF4F46E5).withValues(alpha: 0.05),
+          color: isDark
+              ? const Color(0xFF6366F1).withValues(alpha: 0.1)
+              : const Color(0xFF4F46E5).withValues(alpha: 0.05),
           blur: 80,
         ),
         _PositionedOrb(
           bottom: screenHeight * 0.1 - (scrollOffset * 0.2),
           right: -screenWidth * 0.3,
           size: screenWidth * 0.9,
-          color: isDark ? const Color(0xFF0D9488).withValues(alpha: 0.08) : const Color(0xFF2DD4BF).withValues(alpha: 0.05),
+          color: isDark
+              ? const Color(0xFF0D9488).withValues(alpha: 0.08)
+              : const Color(0xFF2DD4BF).withValues(alpha: 0.05),
           blur: 100,
         ),
 
         // Noise Texture (Optional but adds high-end feel)
-        Opacity(
-          opacity: isDark ? 0.03 : 0.02,
-          child: _NoiseTexture(),
-        ),
+        Opacity(opacity: isDark ? 0.03 : 0.02, child: _NoiseTexture()),
       ],
     );
   }
@@ -85,10 +83,7 @@ class _PositionedOrb extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-        ),
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         child: BackdropFilter(
           filter: ColorFilter.mode(Colors.transparent, BlendMode.srcOver),
           child: Container(),
@@ -101,10 +96,7 @@ class _PositionedOrb extends StatelessWidget {
 class _NoiseTexture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _NoisePainter(),
-      size: Size.infinite,
-    );
+    return CustomPaint(painter: _NoisePainter(), size: Size.infinite);
   }
 }
 
@@ -113,7 +105,7 @@ class _NoisePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final random = math.Random(42); // Seeded for consistency
     final paint = Paint();
-    
+
     for (var i = 0; i < 1000; i++) {
       final x = random.nextDouble() * size.width;
       final y = random.nextDouble() * size.height;

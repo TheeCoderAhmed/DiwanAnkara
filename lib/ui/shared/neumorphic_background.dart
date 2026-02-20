@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 
 /// A Neumorphic/Soft UI background widget with floating 3D shapes.
-/// 
+///
 /// Creates a monochromatic, ultra-clean background with large, soft shapes
 /// that look like extruded plastic or soft clay. Uses dual box shadows to
 /// create the signature neumorphic "soft 3D" effect.
-/// 
+///
 /// Supports parallax scrolling effect when [scrollOffset] is provided.
 class NeumorphicBackground extends StatelessWidget {
-  const NeumorphicBackground({
-    super.key,
-    this.scrollOffset = 0.0,
-  });
+  const NeumorphicBackground({super.key, this.scrollOffset = 0.0});
 
   /// Scroll offset for parallax effect (0.0 = top of page)
   final double scrollOffset;
 
   // Base background color - Darker Cool Grey for better contrast
   static const Color _baseColor = Color(0xFFE8E8E8);
-  
+
   // Shadow colors for the neumorphic effect
   static const Color _highlightColor = Colors.white;
-  static const Color _shadowColor = Color(0xFFC5CAD3); // Darker shadow for more contrast
+  static const Color _shadowColor = Color(
+    0xFFC5CAD3,
+  ); // Darker shadow for more contrast
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +29,7 @@ class NeumorphicBackground extends StatelessWidget {
 
     // Calculate parallax offsets (different speeds for depth)
     final parallax1 = scrollOffset * 0.15; // Slowest (farthest)
-    final parallax2 = scrollOffset * 0.25; 
+    final parallax2 = scrollOffset * 0.25;
     final parallax3 = scrollOffset * 0.35;
     final parallax4 = scrollOffset * 0.20; // Medium speed
 
@@ -99,7 +98,7 @@ class NeumorphicBackground extends StatelessWidget {
   }
 
   /// Builds a single neumorphic shape with the signature dual shadow effect.
-  /// 
+  ///
   /// The shape uses:
   /// - Same color as background for monochromatic look
   /// - Large border radius for soft, rounded appearance

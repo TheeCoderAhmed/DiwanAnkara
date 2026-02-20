@@ -21,11 +21,11 @@ class PlaceListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isHospital = category == 'hospital';
     final isActivity = category == 'activities';
-    
+
     // Special handling for universities - fetch from universities collection
     if (category == 'university') {
       final universitiesAsync = ref.watch(universitiesStreamProvider);
-      
+
       return Scaffold(
         appBar: AppBar(title: Text(_localizedCategory(context, category))),
         body: universitiesAsync.when(
@@ -35,14 +35,18 @@ class PlaceListScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.folder_open, size: 64, color: Colors.grey.shade400),
+                    Icon(
+                      Icons.folder_open,
+                      size: 64,
+                      color: Colors.grey.shade400,
+                    ),
                     const SizedBox(height: 16),
                     Text(AppLocalizations.of(context).noUniversitiesFound),
                   ],
                 ),
               );
             }
-            
+
             return ListView.separated(
               padding: const EdgeInsets.only(bottom: 200),
               itemCount: universities.length,
@@ -85,7 +89,7 @@ class PlaceListScreen extends ConsumerWidget {
         ),
       );
     }
-    
+
     // Use Firestore stream for live data (for all other categories)
     final placesAsync = ref.watch(placesStreamProvider);
 
@@ -146,22 +150,30 @@ class PlaceListScreen extends ConsumerWidget {
           // Filter places by category
           // ALSO: Filter out the 'medical_advice' entry from the list as it's now in the header icon
           final filteredPlaces = places
-              .where((p) => p.category.jsonValue == category && p.id != 'medical_advice')
+              .where(
+                (p) =>
+                    p.category.jsonValue == category &&
+                    p.id != 'medical_advice',
+              )
               .toList();
-          
+
           if (filteredPlaces.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.folder_open, size: 64, color: Colors.grey.shade400),
+                  Icon(
+                    Icons.folder_open,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
                   const SizedBox(height: 16),
                   Text(AppLocalizations.of(context).noItemsInSection),
                 ],
               ),
             );
           }
-          
+
           return ListView.separated(
             padding: const EdgeInsets.only(bottom: 200),
             itemCount: filteredPlaces.length,
@@ -179,7 +191,9 @@ class PlaceListScreen extends ConsumerWidget {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () async {
                   // Special handling for housing category - open PDF directly
-                  if (category == 'housing' && p.pdfUrl != null && p.pdfUrl!.isNotEmpty) {
+                  if (category == 'housing' &&
+                      p.pdfUrl != null &&
+                      p.pdfUrl!.isNotEmpty) {
                     final uri = Uri.parse(p.pdfUrl!);
                     await launchUrl(uri, mode: LaunchMode.externalApplication);
                   } else {
@@ -225,5 +239,3 @@ class PlaceListScreen extends ConsumerWidget {
     );
   }
 }
-
-

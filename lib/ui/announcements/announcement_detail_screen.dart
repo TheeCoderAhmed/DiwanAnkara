@@ -46,17 +46,17 @@ class _AnnouncementDetailScreenState
     // Rate limiting: Check if user has commented in the last hour
     final prefs = await SharedPreferences.getInstance();
     final lastCommentTime = prefs.getString('last_comment_time');
-    
+
     if (lastCommentTime != null) {
       final lastTime = DateTime.parse(lastCommentTime);
       final now = DateTime.now();
       final difference = now.difference(lastTime);
-      
+
       if (difference.inHours < 1) {
         final remainingMinutes = 60 - difference.inMinutes;
-        
+
         if (!mounted) return;
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -95,8 +95,11 @@ class _AnnouncementDetailScreenState
 
       if (success) {
         // Save current time as last comment time
-        await prefs.setString('last_comment_time', DateTime.now().toIso8601String());
-        
+        await prefs.setString(
+          'last_comment_time',
+          DateTime.now().toIso8601String(),
+        );
+
         if (!mounted) return;
 
         // Show success message
@@ -162,24 +165,20 @@ class _AnnouncementDetailScreenState
     }
 
     // Deep link path: Fetch announcement by ID
-    final announcementAsync = ref.watch(announcementByIdProvider(widget.announcementId));
+    final announcementAsync = ref.watch(
+      announcementByIdProvider(widget.announcementId),
+    );
 
     return announcementAsync.when(
       data: (announcement) {
         if (announcement == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(l10n.announcement),
-            ),
+            appBar: AppBar(title: Text(l10n.announcement)),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    LucideIcons.alertCircle,
-                    size: 64,
-                    color: Colors.grey,
-                  ),
+                  Icon(LucideIcons.alertCircle, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
                     l10n.noAnnouncementFound,
@@ -197,26 +196,16 @@ class _AnnouncementDetailScreenState
         return _buildScreen(announcement);
       },
       loading: () => Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.loading),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text(l10n.loading)),
+        body: const Center(child: CircularProgressIndicator()),
       ),
       error: (error, stack) => Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.error),
-        ),
+        appBar: AppBar(title: Text(l10n.error)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                LucideIcons.xCircle,
-                size: 64,
-                color: Colors.red,
-              ),
+              const Icon(LucideIcons.xCircle, size: 64, color: Colors.red),
               const SizedBox(height: 16),
               Text(
                 '${l10n.error}: $error',
@@ -295,9 +284,8 @@ class _AnnouncementDetailScreenState
                     if (announcement.title.isNotEmpty) ...[
                       Text(
                         announcement.title,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
                     ],
@@ -312,8 +300,10 @@ class _AnnouncementDetailScreenState
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          DateFormat('dd MMMM yyyy', Localizations.localeOf(context).languageCode)
-                              .format(announcement.date),
+                          DateFormat(
+                            'dd MMMM yyyy',
+                            Localizations.localeOf(context).languageCode,
+                          ).format(announcement.date),
                           style: TextStyle(
                             color: Colors.grey.shade600,
                             fontSize: 14,
@@ -329,9 +319,9 @@ class _AnnouncementDetailScreenState
                       Text(
                         announcement.description,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              height: 1.8,
-                              fontSize: 16,
-                            ),
+                          height: 1.8,
+                          fontSize: 16,
+                        ),
                       ),
                       const SizedBox(height: 24),
                     ],
@@ -344,7 +334,10 @@ class _AnnouncementDetailScreenState
                           onPressed: () async {
                             final uri = Uri.parse(announcement.link);
                             try {
-                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
                             } catch (e) {
                               if (!mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -394,7 +387,9 @@ class _AnnouncementDetailScreenState
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+                            color: const Color(
+                              0xFF0D9488,
+                            ).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -406,9 +401,8 @@ class _AnnouncementDetailScreenState
                         const SizedBox(width: 12),
                         Text(
                           l10n.addComment,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -416,7 +410,7 @@ class _AnnouncementDetailScreenState
                     const SizedBox(height: 8),
 
                     Text(
-                       l10n.shareYourOpinion,
+                      l10n.shareYourOpinion,
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 14,
@@ -526,7 +520,9 @@ class _AnnouncementDetailScreenState
 
                           // Submit Button
                           FilledButton(
-                            onPressed: _isSubmitting ? null : () => _submitComment(announcement.id),
+                            onPressed: _isSubmitting
+                                ? null
+                                : () => _submitComment(announcement.id),
                             style: FilledButton.styleFrom(
                               backgroundColor: const Color(0xFF0D9488),
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -541,7 +537,8 @@ class _AnnouncementDetailScreenState
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
+                                        Colors.white,
+                                      ),
                                     ),
                                   )
                                 : Row(
@@ -566,10 +563,14 @@ class _AnnouncementDetailScreenState
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+                              color: const Color(
+                                0xFF0D9488,
+                              ).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: const Color(0xFF0D9488).withValues(alpha: 0.3),
+                                color: const Color(
+                                  0xFF0D9488,
+                                ).withValues(alpha: 0.3),
                               ),
                             ),
                             child: Row(

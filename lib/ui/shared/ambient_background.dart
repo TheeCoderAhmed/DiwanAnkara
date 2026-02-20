@@ -15,16 +15,18 @@ class AmbientBackground extends ConsumerWidget {
   });
 
   final Widget child;
-  
+
   /// Scroll offset for parallax effect in light mode (0.0 = top of page)
   final double scrollOffset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(themeControllerProvider);
-    final isLight = themeState.mode == ThemeMode.light || 
-                   (themeState.mode == ThemeMode.system && MediaQuery.of(context).platformBrightness == Brightness.light);
-    
+    final isLight =
+        themeState.mode == ThemeMode.light ||
+        (themeState.mode == ThemeMode.system &&
+            MediaQuery.of(context).platformBrightness == Brightness.light);
+
     return Stack(
       children: [
         // Background layer based on style
@@ -36,11 +38,16 @@ class AmbientBackground extends ConsumerWidget {
     );
   }
 
-  Widget _buildBackground(BuildContext context, ThemeState themeState, bool isLight) {
+  Widget _buildBackground(
+    BuildContext context,
+    ThemeState themeState,
+    bool isLight,
+  ) {
     return switch (themeState.style) {
-      AppStyle.classic => isLight
-          ? NeumorphicBackground(scrollOffset: scrollOffset)
-          : FluidShaderBackground(scrollOffset: scrollOffset),
+      AppStyle.classic =>
+        isLight
+            ? NeumorphicBackground(scrollOffset: scrollOffset)
+            : FluidShaderBackground(scrollOffset: scrollOffset),
       AppStyle.paper => PaperBackground(scrollOffset: scrollOffset),
       AppStyle.nordic => NordicBackground(scrollOffset: scrollOffset),
     };

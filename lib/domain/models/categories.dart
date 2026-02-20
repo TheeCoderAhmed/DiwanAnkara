@@ -15,30 +15,30 @@ enum PlaceCategory {
   partners,
   restaurant,
   market,
-  about,  // Who We Are (من نحن)
+  about, // Who We Are (من نحن)
   project, // Our Projects
   other, // Fallback for unknown categories
 }
 
 extension PlaceCategoryX on PlaceCategory {
   String get jsonValue => switch (this) {
-        PlaceCategory.university => 'university',
-        PlaceCategory.hospital => 'hospital',
-        PlaceCategory.mall => 'mall',
-        PlaceCategory.historic => 'historic',
-        PlaceCategory.library => 'library',
-        PlaceCategory.transport => 'transport',
-        PlaceCategory.govOffice => 'gov_office',
-        PlaceCategory.parks => 'parks',
-        PlaceCategory.activities => 'activities',
-        PlaceCategory.housing => 'housing',
-        PlaceCategory.partners => 'partners',
-        PlaceCategory.restaurant => 'restaurant',
-        PlaceCategory.market => 'market',
-        PlaceCategory.about => 'about',
-        PlaceCategory.project => 'project',
-        PlaceCategory.other => 'other',
-      };
+    PlaceCategory.university => 'university',
+    PlaceCategory.hospital => 'hospital',
+    PlaceCategory.mall => 'mall',
+    PlaceCategory.historic => 'historic',
+    PlaceCategory.library => 'library',
+    PlaceCategory.transport => 'transport',
+    PlaceCategory.govOffice => 'gov_office',
+    PlaceCategory.parks => 'parks',
+    PlaceCategory.activities => 'activities',
+    PlaceCategory.housing => 'housing',
+    PlaceCategory.partners => 'partners',
+    PlaceCategory.restaurant => 'restaurant',
+    PlaceCategory.market => 'market',
+    PlaceCategory.about => 'about',
+    PlaceCategory.project => 'project',
+    PlaceCategory.other => 'other',
+  };
 
   String getLabel(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -63,23 +63,23 @@ extension PlaceCategoryX on PlaceCategory {
   }
 
   String get arabicLabel => switch (this) {
-        PlaceCategory.university => 'الجامعات',
-        PlaceCategory.hospital => 'المستشفيات',
-        PlaceCategory.mall => 'المولات',
-        PlaceCategory.historic => 'المعالم',
-        PlaceCategory.library => 'المكتبات',
-        PlaceCategory.transport => 'المواصلات',
-        PlaceCategory.govOffice => 'الدوائر الحكومية',
-        PlaceCategory.parks => 'الحدائق',
-        PlaceCategory.activities => 'الأنشطة والترفيه',
-        PlaceCategory.housing => 'دليل السكنات',
-        PlaceCategory.partners => 'شركاء النجاح',
-        PlaceCategory.restaurant => 'مطاعم',
-        PlaceCategory.market => 'أسواق',
-        PlaceCategory.about => 'من نحن',
-        PlaceCategory.project => 'مشاريعنا',
-        PlaceCategory.other => '',
-      };
+    PlaceCategory.university => 'الجامعات',
+    PlaceCategory.hospital => 'المستشفيات',
+    PlaceCategory.mall => 'المولات',
+    PlaceCategory.historic => 'المعالم',
+    PlaceCategory.library => 'المكتبات',
+    PlaceCategory.transport => 'المواصلات',
+    PlaceCategory.govOffice => 'الدوائر الحكومية',
+    PlaceCategory.parks => 'الحدائق',
+    PlaceCategory.activities => 'الأنشطة والترفيه',
+    PlaceCategory.housing => 'دليل السكنات',
+    PlaceCategory.partners => 'شركاء النجاح',
+    PlaceCategory.restaurant => 'مطاعم',
+    PlaceCategory.market => 'أسواق',
+    PlaceCategory.about => 'من نحن',
+    PlaceCategory.project => 'مشاريعنا',
+    PlaceCategory.other => '',
+  };
 
   /// Maps raw category strings (including Arabic) to PlaceCategory enum.
   /// Returns [PlaceCategory.other] as fallback to prevent crashes.
@@ -109,101 +109,90 @@ extension PlaceCategoryX on PlaceCategory {
     // Arabic category mapping - must match Firebase data EXACTLY
     // These strings MUST match the folder names used in the Python upload script
     final trimmed = v.trim();
-    
+
     final result = switch (trimmed) {
       // --- ANKARA PLACES (From Python Script Folder Names) ---
-      
+
       // Malls - PRIMARY mapping is from Python script folder name
-      'مراكز التسوق' => PlaceCategory.mall,  // matches Python script
-      'المولات' => PlaceCategory.mall,        // alias for UI compatibility
-      
+      'مراكز التسوق' => PlaceCategory.mall, // matches Python script
+      'المولات' => PlaceCategory.mall, // alias for UI compatibility
       // Hospitals
-      'المستشفيات' => PlaceCategory.hospital,  // matches Python script
-      
+      'المستشفيات' => PlaceCategory.hospital, // matches Python script
       // Historic places
-      'مناطق تاريخية' => PlaceCategory.historic,  // matches Python script
-      'المعالم' => PlaceCategory.historic,         // alias
-      
+      'مناطق تاريخية' => PlaceCategory.historic, // matches Python script
+      'المعالم' => PlaceCategory.historic, // alias
       // Parks - Check both variants
-      'الحدائق' => PlaceCategory.parks,  // with definite article
-      'حدائق' => PlaceCategory.parks,    // without definite article
+      'الحدائق' => PlaceCategory.parks, // with definite article
+      'حدائق' => PlaceCategory.parks, // without definite article
       'الأنشطة والترفيه' => PlaceCategory.activities,
       'أنشطة' => PlaceCategory.activities,
-      
+
       // Government Offices
-      'المعاملات الحكومية' => PlaceCategory.govOffice,  // matches Python script
-      'الدوائر الحكومية' => PlaceCategory.govOffice,    // alias
-      
+      'المعاملات الحكومية' => PlaceCategory.govOffice, // matches Python script
+      'الدوائر الحكومية' => PlaceCategory.govOffice, // alias
       // Libraries
-      'المكتبات' => PlaceCategory.library,  // matches Python script
-      
+      'المكتبات' => PlaceCategory.library, // matches Python script
       // Hotels
-      'الفنادق' => PlaceCategory.other,  // matches Python script (no hotel enum yet)
-      
+      'الفنادق' =>
+        PlaceCategory.other, // matches Python script (no hotel enum yet)
       // --- OTHER SECTIONS ---
-      
+
       // Housing Guide
-      'دليل السكنات' => PlaceCategory.housing,  // matches Python script
-      'السكنات' => PlaceCategory.housing,       // alias
-      
+      'دليل السكنات' => PlaceCategory.housing, // matches Python script
+      'السكنات' => PlaceCategory.housing, // alias
       // Blog
-      'المدونة' => PlaceCategory.other,  // matches Python script
+      'المدونة' => PlaceCategory.other, // matches Python script
       // Note: Transport might be inside Blog. Check if you need to map it differently.
-      
+
       // Partners/Homepage
-      'الرئيسية' => PlaceCategory.partners,      // matches Python script
-      'شركاء النجاح' => PlaceCategory.partners,  // alias
-      
+      'الرئيسية' => PlaceCategory.partners, // matches Python script
+      'شركاء النجاح' => PlaceCategory.partners, // alias
       // Universities
       'الجامعات' => PlaceCategory.university,
-      
+
       // Transportation
       'المواصلات' => PlaceCategory.transport,
-      
+
       // Projects
-      'مشاريعنا' => PlaceCategory.project,  // matches Python script
-      
+      'مشاريعنا' => PlaceCategory.project, // matches Python script
       // Restaurants
       'المطاعم' => PlaceCategory.restaurant,
       'مطاعم' => PlaceCategory.restaurant,
-      
+
       // Markets
       'الأسواق' => PlaceCategory.market,
       'أسواق' => PlaceCategory.market,
       'ماركت' => PlaceCategory.market,
-      
+
       // About Us / Who We Are
-      'من نحن' => PlaceCategory.about,  // matches Python script
-      
+      'من نحن' => PlaceCategory.about, // matches Python script
       // Student Residency
-      'الاقامة الطلابية' => PlaceCategory.housing,  // Student residency guide
-      
+      'الاقامة الطلابية' => PlaceCategory.housing, // Student residency guide
       // Ankara Places parent folder
       'أماكن أنقرة' => PlaceCategory.other,
-      
+
       // Unknown → safe fallback
       _ => PlaceCategory.other,
     };
-    
+
     // Debug print for unmapped categories (excluding known 'other' categories)
-    if (result == PlaceCategory.other && trimmed.isNotEmpty && 
-        trimmed != 'المدونة' && trimmed != 'أماكن أنقرة' && 
-        trimmed != 'الفنادق' && trimmed != 'مشاريعنا') {
+    if (result == PlaceCategory.other &&
+        trimmed.isNotEmpty &&
+        trimmed != 'المدونة' &&
+        trimmed != 'أماكن أنقرة' &&
+        trimmed != 'الفنادق' &&
+        trimmed != 'مشاريعنا') {
       debugPrint('⚠️ Unmapped Category in DB: "$trimmed"');
     }
-    
+
     return result;
   }
 }
 
-enum GuideCategory {
-  residency,
-}
+enum GuideCategory { residency }
 
 extension GuideCategoryX on GuideCategory {
   String get jsonValue => switch (this) {
-        GuideCategory.residency => 'residency',
-      };
+    GuideCategory.residency => 'residency',
+  };
 }
-
-

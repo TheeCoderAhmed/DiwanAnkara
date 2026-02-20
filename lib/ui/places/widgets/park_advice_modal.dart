@@ -41,14 +41,17 @@ class ParkAdviceModal extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(LucideIcons.palmtree, color: const Color(0xFF0D9488), size: 28),
+                    Icon(
+                      LucideIcons.palmtree,
+                      color: const Color(0xFF0D9488),
+                      size: 28,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         l10n.parkAdvices,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -80,7 +83,12 @@ class ParkAdviceModal extends StatelessWidget {
     );
   }
 
-  Widget _buildAdviceItem(BuildContext context, IconData icon, String title, String content) {
+  Widget _buildAdviceItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String content,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
       child: Column(
@@ -92,9 +100,9 @@ class ParkAdviceModal extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -103,9 +111,9 @@ class ParkAdviceModal extends StatelessWidget {
             padding: const EdgeInsets.only(left: 32.0),
             child: Text(
               content,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    height: 1.5,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(height: 1.5),
             ),
           ),
         ],

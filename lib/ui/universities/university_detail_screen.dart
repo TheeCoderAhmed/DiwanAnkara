@@ -13,16 +13,15 @@ import '../widgets/public_review_section.dart';
 class UniversityDetailScreen extends ConsumerStatefulWidget {
   final UniversityModel university;
 
-  const UniversityDetailScreen({
-    super.key,
-    required this.university,
-  });
+  const UniversityDetailScreen({super.key, required this.university});
 
   @override
-  ConsumerState<UniversityDetailScreen> createState() => _UniversityDetailScreenState();
+  ConsumerState<UniversityDetailScreen> createState() =>
+      _UniversityDetailScreenState();
 }
 
-class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen> {
+class _UniversityDetailScreenState
+    extends ConsumerState<UniversityDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   String? _translatedKnownFor;
   bool _isTranslating = false;
@@ -37,13 +36,16 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
     final languageCode = Localizations.localeOf(context).languageCode;
     final uni = widget.university;
 
-    if (languageCode != 'ar' && uni.knownFor != null && _translatedKnownFor == null && !_isTranslating) {
+    if (languageCode != 'ar' &&
+        uni.knownFor != null &&
+        _translatedKnownFor == null &&
+        !_isTranslating) {
       if (mounted) setState(() => _isTranslating = true);
 
       try {
         final service = TranslationService();
         final text = await service.translate(uni.knownFor!, languageCode);
-        
+
         if (mounted) {
           setState(() {
             _translatedKnownFor = text;
@@ -81,25 +83,30 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
                     Text(
                       _translatedKnownFor ?? uni.knownFor!,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontStyle: FontStyle.italic,
-                            color: Theme.of(context).brightness == Brightness.dark 
-                                ? Colors.grey[300] 
-                                : Colors.grey[800],
-                          ),
+                        fontStyle: FontStyle.italic,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[300]
+                            : Colors.grey[800],
+                      ),
                     ).animate().fadeIn(delay: 300.ms),
                     const SizedBox(height: 32),
                   ],
-                  _buildSectionTitle(context, l10n.aboutUs), // Generic about label or new key
+                  _buildSectionTitle(
+                    context,
+                    l10n.aboutUs,
+                  ), // Generic about label or new key
                   const SizedBox(height: 12),
                   _buildDescription(context, uni),
                   const SizedBox(height: 32),
-                  if (uni.usefulLinks != null && uni.usefulLinks!.isNotEmpty) ...[
+                  if (uni.usefulLinks != null &&
+                      uni.usefulLinks!.isNotEmpty) ...[
                     _buildSectionTitle(context, l10n.studentResources),
                     const SizedBox(height: 12),
                     _buildLinksGrid(context, uni.usefulLinks!),
                     const SizedBox(height: 32),
                   ],
-                  if (uni.socialMedia != null && uni.socialMedia!.isNotEmpty) ...[
+                  if (uni.socialMedia != null &&
+                      uni.socialMedia!.isNotEmpty) ...[
                     _buildSectionTitle(context, l10n.socialConnect),
                     const SizedBox(height: 12),
                     _buildSocialBar(context, uni.socialMedia!),
@@ -144,7 +151,9 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
             Hero(
               tag: 'uni_campus_${uni.id}',
               child: CachedImageWidget(
-                imageUrl: uni.campusUrl ?? uni.logoUrl, // Fallback to logo if campus photo missing
+                imageUrl:
+                    uni.campusUrl ??
+                    uni.logoUrl, // Fallback to logo if campus photo missing
                 fit: BoxFit.cover,
               ),
             ),
@@ -172,7 +181,9 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+                    boxShadow: [
+                      BoxShadow(color: Colors.black26, blurRadius: 10),
+                    ],
                   ),
                   child: ClipOval(
                     child: CachedImageWidget(
@@ -209,9 +220,9 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
     return Text(
       title,
       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF0D9488),
-          ),
+        fontWeight: FontWeight.bold,
+        color: const Color(0xFF0D9488),
+      ),
     );
   }
 
@@ -247,7 +258,12 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
     ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0);
   }
 
-  Widget _buildStatCard(BuildContext context, {required IconData icon, required String label, required String value}) {
+  Widget _buildStatCard(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Container(
@@ -256,15 +272,26 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+            ),
+          ],
         ),
         child: Column(
           children: [
             Icon(icon, color: const Color(0xFF0D9488), size: 24),
             const SizedBox(height: 8),
-            Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
             const SizedBox(height: 4),
-            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ],
         ),
       ),
@@ -274,8 +301,11 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
   Widget _buildDescription(BuildContext context, UniversityModel uni) {
     final l10n = AppLocalizations.of(context);
     final languageCode = Localizations.localeOf(context).languageCode;
-    final description = (languageCode == 'ar' ? uni.descriptionAr : uni.descriptionTr) ?? 
-                        uni.descriptionAr ?? uni.descriptionTr ?? l10n.noDescriptionAvailable;
+    final description =
+        (languageCode == 'ar' ? uni.descriptionAr : uni.descriptionTr) ??
+        uni.descriptionAr ??
+        uni.descriptionTr ??
+        l10n.noDescriptionAvailable;
 
     return Text(
       description,
@@ -311,16 +341,25 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
         decoration: BoxDecoration(
           color: const Color(0xFF0D9488).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF0D9488).withValues(alpha: 0.2)),
+          border: Border.all(
+            color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+          ),
         ),
         child: Row(
           children: [
-            const Icon(LucideIcons.externalLink, size: 16, color: Color(0xFF0D9488)),
+            const Icon(
+              LucideIcons.externalLink,
+              size: 16,
+              color: Color(0xFF0D9488),
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -333,27 +372,38 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
 
   Widget _buildSocialBar(BuildContext context, Map<String, String> social) {
     return Row(
-      children: social.entries.map((e) => Padding(
-        padding: const EdgeInsets.only(right: 12),
-        child: IconButton.filledTonal(
-          onPressed: () => _launchURL(e.value),
-          icon: Icon(_getSocialIcon(e.key)),
-          style: IconButton.styleFrom(
-            backgroundColor: const Color(0xFF0D9488).withValues(alpha: 0.1),
-            foregroundColor: const Color(0xFF0D9488),
-          ),
-        ),
-      )).toList(),
+      children: social.entries
+          .map(
+            (e) => Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: IconButton.filledTonal(
+                onPressed: () => _launchURL(e.value),
+                icon: Icon(_getSocialIcon(e.key)),
+                style: IconButton.styleFrom(
+                  backgroundColor: const Color(
+                    0xFF0D9488,
+                  ).withValues(alpha: 0.1),
+                  foregroundColor: const Color(0xFF0D9488),
+                ),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 
   IconData _getSocialIcon(String key) {
     switch (key.toLowerCase()) {
-      case 'instagram': return LucideIcons.instagram;
-      case 'facebook': return LucideIcons.facebook;
-      case 'linkedin': return LucideIcons.linkedin;
-      case 'twitter': return LucideIcons.twitter;
-      default: return LucideIcons.globe;
+      case 'instagram':
+        return LucideIcons.instagram;
+      case 'facebook':
+        return LucideIcons.facebook;
+      case 'linkedin':
+        return LucideIcons.linkedin;
+      case 'twitter':
+        return LucideIcons.twitter;
+      default:
+        return LucideIcons.globe;
     }
   }
 
@@ -370,11 +420,19 @@ class _UniversityDetailScreenState extends ConsumerState<UniversityDetailScreen>
         children: [
           const Icon(LucideIcons.mapPin, color: Color(0xFF0D9488), size: 32),
           const SizedBox(height: 12),
-          Text(l10n.openInGoogleMaps, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            l10n.openInGoogleMaps,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => _launchURL("https://www.google.com/maps/search/?api=1&query=${uni.lat},${uni.lng}"),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), foregroundColor: Colors.white),
+            onPressed: () => _launchURL(
+              "https://www.google.com/maps/search/?api=1&query=${uni.lat},${uni.lng}",
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0D9488),
+              foregroundColor: Colors.white,
+            ),
             child: Text(l10n.navigateNow),
           ),
         ],

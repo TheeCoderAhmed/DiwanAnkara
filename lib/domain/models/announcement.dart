@@ -21,11 +21,12 @@ class Announcement {
 
   factory Announcement.fromJson(Map<String, dynamic> json) {
     String s(String key) => (json[key] as String?) ?? '';
-    
+
     // Handle date parsing (Timestamp or String)
     DateTime parseDate(dynamic val) {
       if (val is Timestamp) return val.toDate();
-      if (val is String && val.isNotEmpty) return DateTime.tryParse(val) ?? DateTime.now();
+      if (val is String && val.isNotEmpty)
+        return DateTime.tryParse(val) ?? DateTime.now();
       return DateTime.now();
     }
 

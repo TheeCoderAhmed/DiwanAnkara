@@ -3,14 +3,11 @@ import 'package:flutter/material.dart';
 
 /// Premium smooth background with deep radial gradient, subtle fluid movement,
 /// and parallax scrolling shapes.
-/// 
+///
 /// NO lines, NO patterns, NO grid - just pure seamless gradients with soft 3D shapes.
 /// Center: Dark Slate Blue (#1e2f42) → Edges: Pure Black (#000000)
 class FluidShaderBackground extends StatelessWidget {
-  const FluidShaderBackground({
-    super.key,
-    this.scrollOffset = 0.0,
-  });
+  const FluidShaderBackground({super.key, this.scrollOffset = 0.0});
 
   /// Scroll offset for parallax effect (0.0 = top of page)
   final double scrollOffset;
@@ -33,7 +30,7 @@ class FluidShaderBackground extends StatelessWidget {
           painter: _SmoothGradientPainter(time: 0),
           size: Size.infinite,
         ),
-        
+
         // Parallax shapes layer
         // Shape 1 - Top Left (Large Circle)
         Positioned(
@@ -136,10 +133,10 @@ class _SmoothGradientPainter extends CustomPainter {
   final double time;
 
   // Pure smooth colors - no noise, no lines
-  static const Color _centerColor = Color(0xFF1E2F42);  // Dark Slate Blue
-  static const Color _edgeColor = Color(0xFF000000);    // Pure Black
-  static const Color _accentTeal = Color(0xFF0D3D3D);   // Subtle teal accent
-  static const Color _accentWarm = Color(0xFF2A1A1A);   // Subtle warm accent
+  static const Color _centerColor = Color(0xFF1E2F42); // Dark Slate Blue
+  static const Color _edgeColor = Color(0xFF000000); // Pure Black
+  static const Color _accentTeal = Color(0xFF0D3D3D); // Subtle teal accent
+  static const Color _accentWarm = Color(0xFF2A1A1A); // Subtle warm accent
 
   _SmoothGradientPainter({required this.time});
 
@@ -159,7 +156,8 @@ class _SmoothGradientPainter extends CustomPainter {
 
     // Layer 2: Subtle static teal glow (top-left area)
     _drawSmoothGlow(
-      canvas, size,
+      canvas,
+      size,
       centerX: size.width * (0.2 + 0.1 * math.sin(t * 0.3)),
       centerY: size.height * (0.25 + 0.08 * math.cos(t * 0.4)),
       radius: size.width * 0.7,
@@ -168,7 +166,8 @@ class _SmoothGradientPainter extends CustomPainter {
 
     // Layer 3: Subtle static warm glow (bottom-right area)
     _drawSmoothGlow(
-      canvas, size,
+      canvas,
+      size,
       centerX: size.width * (0.75 + 0.08 * math.cos(t * 0.35)),
       centerY: size.height * (0.7 + 0.1 * math.sin(t * 0.45)),
       radius: size.width * 0.6,
@@ -178,7 +177,8 @@ class _SmoothGradientPainter extends CustomPainter {
     // Layer 4: Central highlight
     final breathe = 0.5 + 0.5 * math.sin(t * 0.5);
     _drawSmoothGlow(
-      canvas, size,
+      canvas,
+      size,
       centerX: size.width * 0.5,
       centerY: size.height * 0.4,
       radius: size.width * (0.5 + breathe * 0.1),
@@ -217,5 +217,6 @@ class _SmoothGradientPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_SmoothGradientPainter oldDelegate) => time != oldDelegate.time;
+  bool shouldRepaint(_SmoothGradientPainter oldDelegate) =>
+      time != oldDelegate.time;
 }

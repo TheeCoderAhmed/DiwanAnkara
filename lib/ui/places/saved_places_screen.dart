@@ -55,8 +55,8 @@ class SavedPlacesScreen extends ConsumerWidget {
                     title: Text(
                       place.nameTr,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     subtitle: Text(place.category.getLabel(context)),
                     trailing: Row(
@@ -88,12 +88,12 @@ class SavedPlacesScreen extends ConsumerWidget {
             );
           },
           error: (error, _) => EmptyState(
-            message: AppLocalizations.of(context).errorLoadingData(error.toString()),
+            message: AppLocalizations.of(
+              context,
+            ).errorLoadingData(error.toString()),
             icon: LucideIcons.alertCircle,
           ),
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
         ),
       ),
     );

@@ -31,13 +31,17 @@ class InAppMessageOverlay extends ConsumerWidget {
                   .where((m) => m.isActive && !dismissedIds.contains(m.id))
                   .toList();
 
-              debugPrint('🎯 InAppMessageOverlay: ${messages.length} total, ${visible.length} visible, ${dismissedIds.length} dismissed');
+              debugPrint(
+                '🎯 InAppMessageOverlay: ${messages.length} total, ${visible.length} visible, ${dismissedIds.length} dismissed',
+              );
 
               if (visible.isEmpty) return const SizedBox.shrink();
 
               // Show the first undismissed message
               final msg = visible.first;
-              debugPrint('🎯 Rendering message: ${msg.id} layout=${msg.layout} title=${msg.title}');
+              debugPrint(
+                '🎯 Rendering message: ${msg.id} layout=${msg.layout} title=${msg.title}',
+              );
 
               return _buildMessage(context, ref, msg);
             },
@@ -58,14 +62,26 @@ class InAppMessageOverlay extends ConsumerWidget {
   Widget _buildMessage(BuildContext context, WidgetRef ref, InAppMessage msg) {
     switch (msg.layout) {
       case 'top-banner':
-        return _TopBannerMessage(message: msg, onDismiss: () => _dismiss(ref, msg.id));
+        return _TopBannerMessage(
+          message: msg,
+          onDismiss: () => _dismiss(ref, msg.id),
+        );
       case 'modal':
-        return _ModalMessage(message: msg, onDismiss: () => _dismiss(ref, msg.id));
+        return _ModalMessage(
+          message: msg,
+          onDismiss: () => _dismiss(ref, msg.id),
+        );
       case 'image-only':
-        return _ImageOnlyMessage(message: msg, onDismiss: () => _dismiss(ref, msg.id));
+        return _ImageOnlyMessage(
+          message: msg,
+          onDismiss: () => _dismiss(ref, msg.id),
+        );
       case 'card':
       default:
-        return _CardMessage(message: msg, onDismiss: () => _dismiss(ref, msg.id));
+        return _CardMessage(
+          message: msg,
+          onDismiss: () => _dismiss(ref, msg.id),
+        );
     }
   }
 
@@ -153,7 +169,8 @@ class _TopBannerMessageState extends State<_TopBannerMessage>
         position: _slideAnimation,
         child: GestureDetector(
           onVerticalDragEnd: (details) {
-            if (details.primaryVelocity != null && details.primaryVelocity! < 0) {
+            if (details.primaryVelocity != null &&
+                details.primaryVelocity! < 0) {
               _dismissWithAnimation();
             }
           },
@@ -211,7 +228,11 @@ class _TopBannerMessageState extends State<_TopBannerMessage>
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: _dismissWithAnimation,
-                      child: Icon(Icons.close, color: txtColor.withValues(alpha: 0.6), size: 20),
+                      child: Icon(
+                        Icons.close,
+                        color: txtColor.withValues(alpha: 0.6),
+                        size: 20,
+                      ),
                     ),
                   ],
                 ),
@@ -219,7 +240,10 @@ class _TopBannerMessageState extends State<_TopBannerMessage>
                   const SizedBox(height: 12),
                   Align(
                     alignment: AlignmentDirectional.centerEnd,
-                    child: _ActionButton(message: msg, onDismiss: _dismissWithAnimation),
+                    child: _ActionButton(
+                      message: msg,
+                      onDismiss: _dismissWithAnimation,
+                    ),
                   ),
                 ],
               ],
@@ -293,7 +317,11 @@ class _ModalMessage extends StatelessWidget {
                                 color: Colors.black.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(Icons.close, color: txtColor.withValues(alpha: 0.6), size: 20),
+                              child: Icon(
+                                Icons.close,
+                                color: txtColor.withValues(alpha: 0.6),
+                                size: 20,
+                              ),
                             ),
                           ),
                         ),
@@ -307,7 +335,9 @@ class _ModalMessage extends StatelessWidget {
                           placeholder: (_, __) => Container(
                             height: 180,
                             color: Colors.grey.shade200,
-                            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                            child: const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
                           ),
                           errorWidget: (_, __, ___) => const SizedBox.shrink(),
                         ),
@@ -340,7 +370,10 @@ class _ModalMessage extends StatelessWidget {
                             ],
                             if (message.buttonText.isNotEmpty) ...[
                               const SizedBox(height: 20),
-                              _ActionButton(message: message, onDismiss: onDismiss),
+                              _ActionButton(
+                                message: message,
+                                onDismiss: onDismiss,
+                              ),
                             ],
                           ],
                         ),
@@ -394,7 +427,10 @@ class _ImageOnlyMessage extends StatelessWidget {
                   }
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 60,
+                  ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: CachedNetworkImage(
@@ -402,13 +438,19 @@ class _ImageOnlyMessage extends StatelessWidget {
                       fit: BoxFit.contain,
                       placeholder: (_, __) => const SizedBox(
                         height: 200,
-                        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       ),
                       errorWidget: (_, __, ___) => Container(
                         height: 200,
                         color: Colors.grey.shade800,
                         child: const Center(
-                          child: Icon(Icons.broken_image, color: Colors.white54, size: 48),
+                          child: Icon(
+                            Icons.broken_image,
+                            color: Colors.white54,
+                            size: 48,
+                          ),
                         ),
                       ),
                     ),
@@ -426,7 +468,11 @@ class _ImageOnlyMessage extends StatelessWidget {
                       color: Colors.black.withValues(alpha: 0.5),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close, color: Colors.white, size: 24),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                 ),
               ),
@@ -464,10 +510,14 @@ class _CardMessageState extends State<_CardMessage>
       duration: const Duration(milliseconds: 350),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
   }
 
@@ -526,7 +576,9 @@ class _CardMessageState extends State<_CardMessage>
                       placeholder: (_, __) => Container(
                         height: 140,
                         color: Colors.grey.shade200,
-                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       ),
                       errorWidget: (_, __, ___) => const SizedBox.shrink(),
                     ),
@@ -569,13 +621,20 @@ class _CardMessageState extends State<_CardMessage>
                             const SizedBox(width: 8),
                             GestureDetector(
                               onTap: _dismissWithAnimation,
-                              child: Icon(Icons.close, color: txtColor.withValues(alpha: 0.5), size: 20),
+                              child: Icon(
+                                Icons.close,
+                                color: txtColor.withValues(alpha: 0.5),
+                                size: 20,
+                              ),
                             ),
                           ],
                         ),
                         if (msg.buttonText.isNotEmpty) ...[
                           const SizedBox(height: 12),
-                          _ActionButton(message: msg, onDismiss: _dismissWithAnimation),
+                          _ActionButton(
+                            message: msg,
+                            onDismiss: _dismissWithAnimation,
+                          ),
                         ],
                       ],
                     ),
@@ -601,7 +660,10 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final btnBgColor = _parseColor(message.buttonBackgroundColor, Theme.of(context).colorScheme.primary);
+    final btnBgColor = _parseColor(
+      message.buttonBackgroundColor,
+      Theme.of(context).colorScheme.primary,
+    );
     final btnTxtColor = _parseColor(message.buttonTextColor, Colors.white);
 
     return SizedBox(
@@ -617,7 +679,9 @@ class _ActionButton extends StatelessWidget {
           backgroundColor: btnBgColor,
           foregroundColor: btnTxtColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           elevation: 0,
         ),
         child: Text(

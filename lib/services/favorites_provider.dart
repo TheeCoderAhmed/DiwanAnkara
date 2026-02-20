@@ -30,7 +30,8 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
 }
 
 /// Provider for favorites notifier
-final favoritesProvider = StateNotifierProvider<FavoritesNotifier, List<String>>((ref) {
-  final service = ref.watch(favoritesServiceProvider);
-  return FavoritesNotifier(service);
-});
+final favoritesProvider =
+    StateNotifierProvider<FavoritesNotifier, List<String>>((ref) {
+      final service = ref.watch(favoritesServiceProvider);
+      return FavoritesNotifier(service);
+    });

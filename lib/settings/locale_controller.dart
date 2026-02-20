@@ -9,9 +9,9 @@ const _prefKeyLocale = 'app_locale'; // 'ar' | 'en' | 'tr'
 
 final localeControllerProvider =
     StateNotifierProvider<LocaleController, Locale?>((ref) {
-  final prefs = ref.watch(sharedPrefsProvider);
-  return LocaleController(prefs);
-});
+      final prefs = ref.watch(sharedPrefsProvider);
+      return LocaleController(prefs);
+    });
 
 class LocaleController extends StateNotifier<Locale?> {
   LocaleController(this._prefs) : super(_load(_prefs));
@@ -30,11 +30,13 @@ class LocaleController extends StateNotifier<Locale?> {
       await _prefs.remove(_prefKeyLocale);
     } else {
       await _prefs.setString(_prefKeyLocale, locale.languageCode);
-      
+
       // Trigger model download for the new locale
       TranslationService().downloadModel(locale.languageCode).then((success) {
         if (success) {
-           debugPrint('Translation model for ${locale.languageCode} ensures to be available.');
+          debugPrint(
+            'Translation model for ${locale.languageCode} ensures to be available.',
+          );
         }
       });
     }

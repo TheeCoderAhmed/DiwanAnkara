@@ -36,26 +36,25 @@ GoRouter? globalRouterRef;
 final goRouterProvider = Provider<GoRouter>((ref) {
   final prefs = ref.watch(sharedPrefsProvider);
   final onboardingService = OnboardingService(prefs);
-  
-  final router = GoRouter(
 
+  final router = GoRouter(
     debugLogDiagnostics: false,
     initialLocation: const HomeScreenRoute().location,
     errorBuilder: (_, __) => const NotFoundScreen(),
     redirect: (context, state) {
       final hasSeenOnboarding = onboardingService.hasSeenOnboarding();
       final isOnOnboardingPage = state.uri.path == const OnboardingRoute().path;
-      
+
       // If user hasn't seen onboarding and not already on onboarding page, redirect to onboarding
       if (!hasSeenOnboarding && !isOnOnboardingPage) {
         return const OnboardingRoute().location;
       }
-      
+
       // If user has seen onboarding and is on onboarding page, redirect to home
       if (hasSeenOnboarding && isOnOnboardingPage) {
         return const HomeScreenRoute().location;
       }
-      
+
       return null; // No redirect needed
     },
     routes: [
@@ -196,13 +195,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
-  
+
   // Set global router reference for deep linking
   globalRouterRef = router;
-  
+
   return router;
 });
-
 
 class HomeScreenRoute {
   const HomeScreenRoute();
@@ -267,10 +265,7 @@ class PdfViewerRoute {
   String location({required String title, required String assetPath}) {
     return Uri(
       path: path,
-      queryParameters: {
-        'title': title,
-        'asset': assetPath,
-      },
+      queryParameters: {'title': title, 'asset': assetPath},
     ).toString();
   }
 }
@@ -309,10 +304,7 @@ class EventDetailsRoute {
   }) {
     return Uri(
       path: '/events/$id',
-      queryParameters: {
-        'image': image,
-        'url': url,
-      },
+      queryParameters: {'image': image, 'url': url},
     ).toString();
   }
 }
@@ -355,7 +347,7 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Activate notification listener
     ref.watch(notificationListenerProvider);
-    
+
     return AmbientBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -363,7 +355,8 @@ class AppShell extends ConsumerWidget {
         extendBody: true,
         bottomNavigationBar: FloatingNavigationBar(
           currentIndex: navigationShell.currentIndex,
-          onDestinationSelected: (index) => _onDestinationSelected(context, index),
+          onDestinationSelected: (index) =>
+              _onDestinationSelected(context, index),
         ),
       ),
     );

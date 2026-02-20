@@ -30,7 +30,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final controller = ThemeController(prefs);
-      
+
       await controller.setThemeMode(ThemeMode.dark);
       expect(controller.state, ThemeMode.dark);
       expect(prefs.getString('theme_mode'), 'dark');

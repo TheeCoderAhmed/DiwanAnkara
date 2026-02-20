@@ -13,10 +13,7 @@ class SectionHeader extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            child: Text(title, style: Theme.of(context).textTheme.titleLarge),
           ),
           if (trailing != null) trailing!,
         ],
@@ -24,5 +21,3 @@ class SectionHeader extends StatelessWidget {
     );
   }
 }
-
-

@@ -37,7 +37,7 @@ void main() {
     test('loadFavorites refreshes state from service', () async {
       // Manually add via service directly
       await service.addPlace('place_direct');
-      
+
       // Notifier state should be stale
       expect(notifier.state, isNot(contains('place_direct')));
 

@@ -20,16 +20,18 @@ class NotificationController extends StateNotifier<List<AppNotification>> {
   void _loadNotifications() {
     final jsonStringList = prefs.getStringList(_storageKey);
     if (jsonStringList != null) {
-      state = jsonStringList
-          .map((s) => AppNotification.fromJson(json.decode(s)))
-          .toList()
-        ..sort((a, b) => b.timestamp.compareTo(a.timestamp)); // Newest first
+      state =
+          jsonStringList
+              .map((s) => AppNotification.fromJson(json.decode(s)))
+              .toList()
+            ..sort(
+              (a, b) => b.timestamp.compareTo(a.timestamp),
+            ); // Newest first
     }
   }
 
   Future<void> _saveNotifications() async {
-    final jsonStringList =
-        state.map((n) => json.encode(n.toJson())).toList();
+    final jsonStringList = state.map((n) => json.encode(n.toJson())).toList();
     await prefs.setStringList(_storageKey, jsonStringList);
   }
 
@@ -49,7 +51,9 @@ class NotificationController extends StateNotifier<List<AppNotification>> {
       data: data,
     );
 
-    debugPrint('🔔 NotificationController: Updating state with Push/FCM notification');
+    debugPrint(
+      '🔔 NotificationController: Updating state with Push/FCM notification',
+    );
     state = [newNotification, ...state];
     await _saveNotifications();
   }
@@ -58,17 +62,17 @@ class NotificationController extends StateNotifier<List<AppNotification>> {
     // Check if duplicate
     if (state.any((n) => n.id == message.id)) return;
 
-    debugPrint('🔔 NotificationController: addFromInAppMessage called: "${message.title}"');
+    debugPrint(
+      '🔔 NotificationController: addFromInAppMessage called: "${message.title}"',
+    );
     final newNotification = AppNotification(
       id: message.id,
       title: message.title,
       body: message.message,
-      timestamp: DateTime.now(), // Firestore doesn't provide timestamp in the provider currently, just a list
+      timestamp:
+          DateTime.now(), // Firestore doesn't provide timestamp in the provider currently, just a list
       isRead: false,
-      data: {
-        'link': message.link,
-        'type': 'in-app',
-      },
+      data: {'link': message.link, 'type': 'in-app'},
     );
 
     debugPrint('🔔 NotificationController: Updating state with In-App Message');
@@ -104,10 +108,11 @@ class NotificationController extends StateNotifier<List<AppNotification>> {
   int get unreadCount => state.where((n) => !n.isRead).length;
 }
 
-final notificationControllerProvider = StateNotifierProvider<NotificationController, List<AppNotification>>((ref) {
-  final prefs = ref.watch(sharedPrefsProvider);
-  return NotificationController(prefs);
-});
+final notificationControllerProvider =
+    StateNotifierProvider<NotificationController, List<AppNotification>>((ref) {
+      final prefs = ref.watch(sharedPrefsProvider);
+      return NotificationController(prefs);
+    });
 
 // Provider to listen to incoming FCM messages and add them to history
 final notificationListenerProvider = Provider<void>((ref) {
@@ -115,12 +120,15 @@ final notificationListenerProvider = Provider<void>((ref) {
   final controller = ref.watch(notificationControllerProvider.notifier);
   // We use the singleton NotificationService directly
   final service = NotificationService();
-  
+
   // Listen to FCM messages
   final fcmSubscription = service.messageStream.listen((message) {
-    debugPrint('🔔 notificationListenerProvider: Received FCM message from stream: ${message.messageId}');
+    debugPrint(
+      '🔔 notificationListenerProvider: Received FCM message from stream: ${message.messageId}',
+    );
     controller.addNotification(
-      title: message.notification?.title ?? message.data['title'] ?? 'إشعار جديد',
+      title:
+          message.notification?.title ?? message.data['title'] ?? 'إشعار جديد',
       body: message.notification?.body ?? message.data['body'] ?? '',
       timestamp: message.sentTime,
       data: message.data,
@@ -134,7 +142,7 @@ final notificationListenerProvider = Provider<void>((ref) {
       controller.addFromInAppMessage(msg);
     }
   });
-  
+
   ref.onDispose(() {
     fcmSubscription.cancel();
   });

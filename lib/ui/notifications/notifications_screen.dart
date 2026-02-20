@@ -45,8 +45,8 @@ class NotificationsScreen extends ConsumerWidget {
                   Text(
                     AppLocalizations.of(context).noNotifications,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).disabledColor,
-                        ),
+                      color: Theme.of(context).disabledColor,
+                    ),
                   ),
                 ],
               ),
@@ -78,7 +78,9 @@ class NotificationsScreen extends ConsumerWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
-                        color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+                        color: Theme.of(
+                          context,
+                        ).dividerColor.withValues(alpha: 0.1),
                       ),
                     ),
                     child: InkWell(
@@ -87,16 +89,18 @@ class NotificationsScreen extends ConsumerWidget {
                         HapticFeedback.selectionClick();
                         controller.markAsRead(notification.id);
                         // Handle navigation payload
-                        if (notification.data != null && notification.data!.containsKey('route')) {
-                           // Example payload: { "route": "/places/details/123" }
-                           final route = notification.data!['route'];
-                           if (route != null) {
-                             context.push(route);
-                           }
-                        } else if (notification.data != null && notification.data!.containsKey('link')) {
-                            // DeepLinkService handles this usually, but we can do rudimentary check
-                            // final link = notification.data!['link'];
-                            // Simple URL launch or internal logic
+                        if (notification.data != null &&
+                            notification.data!.containsKey('route')) {
+                          // Example payload: { "route": "/places/details/123" }
+                          final route = notification.data!['route'];
+                          if (route != null) {
+                            context.push(route);
+                          }
+                        } else if (notification.data != null &&
+                            notification.data!.containsKey('link')) {
+                          // DeepLinkService handles this usually, but we can do rudimentary check
+                          // final link = notification.data!['link'];
+                          // Simple URL launch or internal logic
                         }
                       },
                       child: Padding(
@@ -109,8 +113,13 @@ class NotificationsScreen extends ConsumerWidget {
                                 Expanded(
                                   child: Text(
                                     notification.title,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontWeight: notification.isRead
+                                              ? FontWeight.normal
+                                              : FontWeight.bold,
                                         ),
                                   ),
                                 ),
@@ -119,7 +128,9 @@ class NotificationsScreen extends ConsumerWidget {
                                     width: 8,
                                     height: 8,
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -128,14 +139,22 @@ class NotificationsScreen extends ConsumerWidget {
                             const SizedBox(height: 8),
                             Text(
                               notification.body,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color
+                                        ?.withValues(alpha: 0.8),
                                   ),
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              DateFormat('dd/MM/yyyy hh:mm a').format(notification.timestamp),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              DateFormat(
+                                'dd/MM/yyyy hh:mm a',
+                              ).format(notification.timestamp),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
                                     color: Theme.of(context).disabledColor,
                                     fontSize: 10,
                                   ),
@@ -151,12 +170,17 @@ class NotificationsScreen extends ConsumerWidget {
     );
   }
 
-  void _showClearAllDialog(BuildContext context, NotificationController controller) {
+  void _showClearAllDialog(
+    BuildContext context,
+    NotificationController controller,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context).clearAllNotificationsTitle),
-        content: Text(AppLocalizations.of(context).clearAllNotificationsMessage),
+        content: Text(
+          AppLocalizations.of(context).clearAllNotificationsMessage,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -167,7 +191,10 @@ class NotificationsScreen extends ConsumerWidget {
               controller.clearAll();
               Navigator.pop(context);
             },
-            child: Text(AppLocalizations.of(context).clear, style: const TextStyle(color: Colors.red)),
+            child: Text(
+              AppLocalizations.of(context).clear,
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),

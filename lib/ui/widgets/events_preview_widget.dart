@@ -22,14 +22,13 @@ class EventsPreviewWidget extends ConsumerWidget {
     return eventsAsync.when(
       data: (events) {
         final now = DateTime.now();
-        // Event is upcoming if it ends in the future. 
+        // Event is upcoming if it ends in the future.
         // We approximate end time as date + 1 hour.
         final cutoff = now.subtract(const Duration(hours: 1));
 
-        final upcomingEvents = events
-            .where((e) => e.date.isAfter(cutoff))
-            .toList()
-          ..sort((a, b) => a.date.compareTo(b.date)); // Ascending
+        final upcomingEvents =
+            events.where((e) => e.date.isAfter(cutoff)).toList()
+              ..sort((a, b) => a.date.compareTo(b.date)); // Ascending
 
         if (upcomingEvents.isEmpty) return const SizedBox.shrink();
 
@@ -53,9 +52,9 @@ class EventsPreviewWidget extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Text(
                   AppLocalizations.of(context).upcomingEvents,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 TextButton(
@@ -65,7 +64,7 @@ class EventsPreviewWidget extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Events List
             SizedBox(
               height: 180,
@@ -74,9 +73,7 @@ class EventsPreviewWidget extends ConsumerWidget {
                 itemCount: upcomingEvents.take(5).length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(
-                      left: 16, 
-                    ),
+                    padding: const EdgeInsets.only(left: 16),
                     child: _MiniEventCard(event: upcomingEvents[index]),
                   );
                 },
@@ -104,10 +101,10 @@ class PreviousEventsWidget extends ConsumerWidget {
         final now = DateTime.now();
         final cutoff = now.subtract(const Duration(hours: 1));
 
-        final previousEvents = events
-            .where((e) => e.date.isBefore(cutoff))
-            .toList()
-          ..sort((a, b) => b.date.compareTo(a.date)); // Descending (newest first)
+        final previousEvents =
+            events.where((e) => e.date.isBefore(cutoff)).toList()..sort(
+              (a, b) => b.date.compareTo(a.date),
+            ); // Descending (newest first)
 
         if (previousEvents.isEmpty) return const SizedBox.shrink();
 
@@ -132,19 +129,23 @@ class PreviousEventsWidget extends ConsumerWidget {
                 Text(
                   AppLocalizations.of(context).previousEvents,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade600,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
                 const Spacer(),
                 TextButton(
-                  onPressed: () => context.pushNamed(const PreviousEventsRoute().name),
-                  child: Text(AppLocalizations.of(context).showAll, style: const TextStyle(color: Colors.grey)),
+                  onPressed: () =>
+                      context.pushNamed(const PreviousEventsRoute().name),
+                  child: Text(
+                    AppLocalizations.of(context).showAll,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Events List
             SizedBox(
               height: 180,
@@ -153,9 +154,7 @@ class PreviousEventsWidget extends ConsumerWidget {
                 itemCount: previousEvents.take(5).length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(
-                      left: 16, 
-                    ),
+                    padding: const EdgeInsets.only(left: 16),
                     child: _MiniEventCard(
                       event: previousEvents[index],
                       isGrayscale: true, // Optional visual distinction
@@ -177,7 +176,7 @@ class PreviousEventsWidget extends ConsumerWidget {
 
 class _MiniEventCard extends StatelessWidget {
   const _MiniEventCard({
-    required this.event, 
+    required this.event,
     this.isGrayscale = false,
     this.usePreviousEventsRoute = false,
   });
@@ -192,7 +191,9 @@ class _MiniEventCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => context.pushNamed(
-        usePreviousEventsRoute ? const PreviousEventsRoute().name : EventsRoute.name,
+        usePreviousEventsRoute
+            ? const PreviousEventsRoute().name
+            : EventsRoute.name,
       ),
       child: Container(
         width: 280,
@@ -200,7 +201,9 @@ class _MiniEventCard extends StatelessWidget {
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.2),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.2),
           ),
           boxShadow: [
             BoxShadow(
@@ -211,19 +214,37 @@ class _MiniEventCard extends StatelessWidget {
           ],
         ),
         child: ColorFiltered(
-          colorFilter: isGrayscale 
+          colorFilter: isGrayscale
               ? const ColorFilter.matrix(<double>[
-                  0.2126, 0.7152, 0.0722, 0, 0,
-                  0.2126, 0.7152, 0.0722, 0, 0,
-                  0.2126, 0.7152, 0.0722, 0, 0,
-                  0,      0,      0,      1, 0,
+                  0.2126,
+                  0.7152,
+                  0.0722,
+                  0,
+                  0,
+                  0.2126,
+                  0.7152,
+                  0.0722,
+                  0,
+                  0,
+                  0.2126,
+                  0.7152,
+                  0.0722,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
                 ])
               : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
           child: Row(
             children: [
               // Image Section
               ClipRRect(
-                borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)), // Right side for RTL image
+                borderRadius: const BorderRadius.horizontal(
+                  right: Radius.circular(16),
+                ), // Right side for RTL image
                 child: SizedBox(
                   width: 100,
                   height: double.infinity,
@@ -233,7 +254,7 @@ class _MiniEventCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Content Section
               Expanded(
                 child: Padding(
@@ -243,13 +264,19 @@ class _MiniEventCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: event.category.color.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          DateFormat('d MMM', Localizations.localeOf(context).languageCode).format(event.date),
+                          DateFormat(
+                            'd MMM',
+                            Localizations.localeOf(context).languageCode,
+                          ).format(event.date),
                           style: TextStyle(
                             color: event.category.color,
                             fontWeight: FontWeight.bold,
@@ -270,7 +297,11 @@ class _MiniEventCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          Icon(LucideIcons.mapPin, size: 14, color: Colors.grey.shade500),
+                          Icon(
+                            LucideIcons.mapPin,
+                            size: 14,
+                            color: Colors.grey.shade500,
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(

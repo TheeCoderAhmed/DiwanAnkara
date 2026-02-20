@@ -8,10 +8,7 @@ import '../shared/ambient_background.dart';
 import '../shared/cached_image_widget.dart';
 
 class EventDetailsScreen extends StatelessWidget {
-  const EventDetailsScreen({
-    super.key,
-    required this.event,
-  });
+  const EventDetailsScreen({super.key, required this.event});
 
   final AppEvent event;
 
@@ -102,11 +99,16 @@ class EventDetailsScreen extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(event.category.icon, size: 16, color: event.category.color),
+                          Icon(
+                            event.category.icon,
+                            size: 16,
+                            color: event.category.color,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             event.category.label,
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(
                                   color: event.category.color,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -117,26 +119,32 @@ class EventDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       event.title,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     // Date & Location Info
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor.withValues(alpha: 0.5),
+                        color: Theme.of(
+                          context,
+                        ).cardColor.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+                          color: Theme.of(
+                            context,
+                          ).dividerColor.withValues(alpha: 0.1),
                         ),
                       ),
                       child: Column(
                         children: [
                           Row(
                             children: [
-                              Icon(LucideIcons.calendar, color: Colors.grey.shade500),
+                              Icon(
+                                LucideIcons.calendar,
+                                color: Colors.grey.shade500,
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -150,7 +158,10 @@ class EventDetailsScreen extends StatelessWidget {
                           const Divider(height: 24),
                           Row(
                             children: [
-                              Icon(LucideIcons.mapPin, color: Colors.grey.shade500),
+                              Icon(
+                                LucideIcons.mapPin,
+                                color: Colors.grey.shade500,
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -166,9 +177,9 @@ class EventDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Text(
                       event.description,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            height: 1.6,
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.copyWith(height: 1.6),
                     ),
                     const SizedBox(height: 24),
                     if (event.url.isNotEmpty)
@@ -178,13 +189,18 @@ class EventDetailsScreen extends StatelessWidget {
                           onPressed: () async {
                             final uri = Uri.parse(event.url);
                             try {
-                              if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                              if (!await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              )) {
                                 throw 'Could not launch $uri';
                               }
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('تعذر فتح الرابط')),
+                                  const SnackBar(
+                                    content: Text('تعذر فتح الرابط'),
+                                  ),
                                 );
                               }
                             }
@@ -211,4 +227,3 @@ class EventDetailsScreen extends StatelessWidget {
     );
   }
 }
-

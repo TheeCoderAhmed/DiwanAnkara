@@ -17,7 +17,7 @@ class FloatingNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       margin: EdgeInsets.fromLTRB(
         16,
@@ -96,14 +96,8 @@ class FloatingNavigationBar extends StatelessWidget {
         : Colors.black.withValues(alpha: 0.5);
 
     return NavigationDestination(
-      icon: Icon(
-        icon,
-        color: isSelected ? activeColor : inactiveColor,
-      ),
-      selectedIcon: Icon(
-        icon,
-        color: activeColor,
-      ),
+      icon: Icon(icon, color: isSelected ? activeColor : inactiveColor),
+      selectedIcon: Icon(icon, color: activeColor),
       label: label,
     );
   }

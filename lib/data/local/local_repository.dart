@@ -9,7 +9,7 @@ class LocalRepository {
   }) {
     final box = Hive.box(_appBoxName);
     final List<dynamic> rawData = box.get(key, defaultValue: []);
-    
+
     return rawData.map((e) {
       final map = Map<String, dynamic>.from(e as Map);
       return fromJson(map);

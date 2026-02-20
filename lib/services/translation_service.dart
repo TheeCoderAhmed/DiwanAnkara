@@ -18,43 +18,59 @@ class TranslationService {
     try {
       final language = _getTranslateLanguage(languageCode);
       if (language == null) {
-        debugPrint('TranslationService: Unsupported language code: $languageCode');
+        debugPrint(
+          'TranslationService: Unsupported language code: $languageCode',
+        );
         return false;
       }
 
-      final isDownloaded = await _modelManager.isModelDownloaded(language.bcpCode);
+      final isDownloaded = await _modelManager.isModelDownloaded(
+        language.bcpCode,
+      );
       if (isDownloaded) {
         return true;
       }
 
       debugPrint('TranslationService: Downloading model for $languageCode...');
       final bool success = await _modelManager.downloadModel(language.bcpCode);
-      debugPrint('TranslationService: Download for $languageCode ${success ? 'completed' : 'failed'}');
+      debugPrint(
+        'TranslationService: Download for $languageCode ${success ? 'completed' : 'failed'}',
+      );
       return success;
     } catch (e) {
-      debugPrint('TranslationService: Error downloading model for $languageCode: $e');
+      debugPrint(
+        'TranslationService: Error downloading model for $languageCode: $e',
+      );
       return false;
     }
   }
 
   /// Translates [text] to [targetLanguageCode].
   /// [sourceLanguageCode] is optional. If not provided, it defaults to Arabic.
-  Future<String> translate(String text, String targetLanguageCode, {String? sourceLanguageCode}) async {
+  Future<String> translate(
+    String text,
+    String targetLanguageCode, {
+    String? sourceLanguageCode,
+  }) async {
     if (text.isEmpty) return text;
 
     try {
       final targetLang = _getTranslateLanguage(targetLanguageCode);
-      final sourceLang = sourceLanguageCode != null 
-          ? _getTranslateLanguage(sourceLanguageCode) 
+      final sourceLang = sourceLanguageCode != null
+          ? _getTranslateLanguage(sourceLanguageCode)
           : TranslateLanguage.arabic;
 
       if (targetLang == null) {
-        debugPrint('TranslationService: Unsupported target language: $targetLanguageCode');
+        debugPrint(
+          'TranslationService: Unsupported target language: $targetLanguageCode',
+        );
         return text;
       }
 
       if (sourceLang == null) {
-        debugPrint('TranslationService: Unsupported source language: $sourceLanguageCode');
+        debugPrint(
+          'TranslationService: Unsupported source language: $sourceLanguageCode',
+        );
         return text;
       }
 
@@ -63,16 +79,24 @@ class TranslationService {
       }
 
       // Check if models are available, if not, try to download them quietly
-      final sourceAvailable = await _modelManager.isModelDownloaded(sourceLang.bcpCode);
+      final sourceAvailable = await _modelManager.isModelDownloaded(
+        sourceLang.bcpCode,
+      );
       if (!sourceAvailable) {
-         debugPrint('TranslationService: Source model (${sourceLang.bcpCode}) not found, attempting download...');
-         await _modelManager.downloadModel(sourceLang.bcpCode);
+        debugPrint(
+          'TranslationService: Source model (${sourceLang.bcpCode}) not found, attempting download...',
+        );
+        await _modelManager.downloadModel(sourceLang.bcpCode);
       }
 
-      final targetAvailable = await _modelManager.isModelDownloaded(targetLang.bcpCode);
+      final targetAvailable = await _modelManager.isModelDownloaded(
+        targetLang.bcpCode,
+      );
       if (!targetAvailable) {
-         debugPrint('TranslationService: Target model (${targetLang.bcpCode}) not found, attempting download...');
-         await _modelManager.downloadModel(targetLang.bcpCode);
+        debugPrint(
+          'TranslationService: Target model (${targetLang.bcpCode}) not found, attempting download...',
+        );
+        await _modelManager.downloadModel(targetLang.bcpCode);
       }
 
       final translator = OnDeviceTranslator(
@@ -83,7 +107,6 @@ class TranslationService {
       final String translation = await translator.translateText(text);
       await translator.close();
       return translation;
-
     } catch (e) {
       debugPrint('TranslationService: Error translating text: $e');
       return text;
@@ -93,16 +116,22 @@ class TranslationService {
   /// Translates a list of strings to [targetLanguageCode].
   /// Reduces overhead by reusing the translator instance.
   /// [sourceLanguageCode] defaults to Arabic if null.
-  Future<List<String>> translateList(List<String> texts, String targetLanguageCode, {String? sourceLanguageCode}) async {
+  Future<List<String>> translateList(
+    List<String> texts,
+    String targetLanguageCode, {
+    String? sourceLanguageCode,
+  }) async {
     if (texts.isEmpty) return texts;
 
     try {
       final targetLang = _getTranslateLanguage(targetLanguageCode);
-      final sourceLang = sourceLanguageCode != null 
-          ? _getTranslateLanguage(sourceLanguageCode) 
+      final sourceLang = sourceLanguageCode != null
+          ? _getTranslateLanguage(sourceLanguageCode)
           : TranslateLanguage.arabic;
 
-      if (targetLang == null || sourceLang == null || targetLang == sourceLang) {
+      if (targetLang == null ||
+          sourceLang == null ||
+          targetLang == sourceLang) {
         return texts;
       }
 
@@ -127,10 +156,9 @@ class TranslationService {
           translatedTexts.add(await translator.translateText(text));
         }
       }
-      
+
       await translator.close();
       return translatedTexts;
-
     } catch (e) {
       debugPrint('TranslationService: Error translating list: $e');
       return texts;
@@ -158,11 +186,11 @@ class TranslationService {
       return null;
     }
   }
-  
+
   /// Deletes a model to free up space
   Future<bool> deleteModel(String languageCode) async {
-      final language = _getTranslateLanguage(languageCode);
-      if (language == null) return false;
-      return await _modelManager.deleteModel(language.bcpCode);
+    final language = _getTranslateLanguage(languageCode);
+    if (language == null) return false;
+    return await _modelManager.deleteModel(language.bcpCode);
   }
 }

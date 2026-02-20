@@ -24,11 +24,6 @@ class Partner {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'logo_url': logoAsset,
-      'order': order,
-    };
+    return {'id': id, 'name': name, 'logo_url': logoAsset, 'order': order};
   }
 }

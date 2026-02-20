@@ -69,7 +69,9 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight + MediaQuery.paddingOf(context).top),
+        preferredSize: Size.fromHeight(
+          kToolbarHeight + MediaQuery.paddingOf(context).top,
+        ),
         child: GlassmorphismHeader(
           height: kToolbarHeight + MediaQuery.paddingOf(context).top,
           child: AppBar(
@@ -92,7 +94,11 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
           // Group events by day
           final eventsByDay = <DateTime, List<AppEvent>>{};
           for (var event in events) {
-            final date = DateTime(event.date.year, event.date.month, event.date.day);
+            final date = DateTime(
+              event.date.year,
+              event.date.month,
+              event.date.day,
+            );
             if (eventsByDay[date] == null) eventsByDay[date] = [];
             eventsByDay[date]!.add(event);
           }
@@ -100,16 +106,25 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
           final selectedEvents = _selectedDay == null
               ? []
               : eventsByDay[DateTime(
-                  _selectedDay!.year, _selectedDay!.month, _selectedDay!.day)] ??
-                  [];
-          
+                      _selectedDay!.year,
+                      _selectedDay!.month,
+                      _selectedDay!.day,
+                    )] ??
+                    [];
+
           // Get upcoming events if no day selected
           final upcomingEvents = events
-              .where((e) => e.date.isAfter(DateTime.now().subtract(const Duration(hours: 1))))
+              .where(
+                (e) => e.date.isAfter(
+                  DateTime.now().subtract(const Duration(hours: 1)),
+                ),
+              )
               .take(3)
               .toList();
-              
-          final displayEvents = _selectedDay != null ? selectedEvents : upcomingEvents;
+
+          final displayEvents = _selectedDay != null
+              ? selectedEvents
+              : upcomingEvents;
 
           return Container(
             decoration: BoxDecoration(
@@ -147,7 +162,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         lastDay: DateTime.utc(2030, 12, 31),
                         focusedDay: _focusedDay,
                         calendarFormat: _calendarFormat,
-                        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                        selectedDayPredicate: (day) =>
+                            isSameDay(_selectedDay, day),
                         eventLoader: (day) {
                           final d = DateTime(day.year, day.month, day.day);
                           return eventsByDay[d] ?? [];
@@ -155,9 +171,13 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         startingDayOfWeek: StartingDayOfWeek.monday,
                         calendarStyle: CalendarStyle(
                           outsideDaysVisible: false,
-                          weekendTextStyle: TextStyle(color: Colors.red.shade400),
+                          weekendTextStyle: TextStyle(
+                            color: Colors.red.shade400,
+                          ),
                           todayDecoration: BoxDecoration(
-                            color: const Color(0xFF0D9488).withValues(alpha: 0.5),
+                            color: const Color(
+                              0xFF0D9488,
+                            ).withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
                           selectedDecoration: const BoxDecoration(
@@ -199,21 +219,31 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
 
                   // Divider
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
                     child: Row(
                       children: [
-                          Text(
-                            _selectedDay != null 
-                                ? AppLocalizations.of(context).eventsOnDate(DateFormat('d MMMM', Localizations.localeOf(context).languageCode).format(_selectedDay!))
-                                : AppLocalizations.of(context).upcomingEvents,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
+                        Text(
+                          _selectedDay != null
+                              ? AppLocalizations.of(context).eventsOnDate(
+                                  DateFormat(
+                                    'd MMMM',
+                                    Localizations.localeOf(
+                                      context,
+                                    ).languageCode,
+                                  ).format(_selectedDay!),
+                                )
+                              : AppLocalizations.of(context).upcomingEvents,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
                         const Spacer(),
                         if (_selectedDay != null)
                           TextButton(
-                            onPressed: () => setState(() => _selectedDay = null),
+                            onPressed: () =>
+                                setState(() => _selectedDay = null),
                             child: Text(AppLocalizations.of(context).showAll),
                           ),
                       ],
@@ -227,7 +257,9 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                             child: EmptyState(
                               message: _selectedDay != null
                                   ? AppLocalizations.of(context).noEventsOnDay
-                                  : AppLocalizations.of(context).noUpcomingEvents,
+                                  : AppLocalizations.of(
+                                      context,
+                                    ).noUpcomingEvents,
                               icon: LucideIcons.calendarX,
                             ),
                           )
@@ -249,13 +281,13 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
             ),
           );
         },
-        error: (e, s) => Center(child: Text('${AppLocalizations.of(context).error}: $e')),
+        error: (e, s) =>
+            Center(child: Text('${AppLocalizations.of(context).error}: $e')),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
   }
-
-  }
+}
 
 class _EventCard extends StatelessWidget {
   const _EventCard({required this.event});
@@ -264,10 +296,10 @@ class _EventCard extends StatelessWidget {
 
   Future<void> _launchRSVP(BuildContext context) async {
     if (event.url.isEmpty) return;
-    
+
     // Add haptic feedback
     HapticFeedback.mediumImpact();
-    
+
     final uri = Uri.parse(event.url);
     try {
       if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
@@ -276,7 +308,11 @@ class _EventCard extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorOpeningRegistrationLink)),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).errorOpeningRegistrationLink,
+            ),
+          ),
         );
       }
     }
@@ -285,7 +321,7 @@ class _EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -299,9 +335,7 @@ class _EventCard extends StatelessWidget {
             spreadRadius: -5,
           ),
         ],
-        border: Border.all(
-          color: event.category.color.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: event.category.color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -309,7 +343,9 @@ class _EventCard extends StatelessWidget {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
                 child: SizedBox(
                   height: 140,
                   width: double.infinity,
@@ -326,7 +362,10 @@ class _EventCard extends StatelessWidget {
                 top: 12,
                 right: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(20),
@@ -350,7 +389,7 @@ class _EventCard extends StatelessWidget {
               ),
             ],
           ),
-          
+
           // Content
           Padding(
             padding: const EdgeInsets.all(16),
@@ -373,7 +412,10 @@ class _EventCard extends StatelessWidget {
                     ),
                     // Date Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: event.category.color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -381,7 +423,10 @@ class _EventCard extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            DateFormat('MMM', Localizations.localeOf(context).languageCode).format(event.date),
+                            DateFormat(
+                              'MMM',
+                              Localizations.localeOf(context).languageCode,
+                            ).format(event.date),
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -404,23 +449,40 @@ class _EventCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(LucideIcons.mapPin, size: 16, color: Colors.grey.shade500),
+                    Icon(
+                      LucideIcons.mapPin,
+                      size: 16,
+                      color: Colors.grey.shade500,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         event.location,
-                        style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 13,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     // Time
                     const SizedBox(width: 12),
-                    Icon(LucideIcons.clock, size: 16, color: Colors.grey.shade500),
+                    Icon(
+                      LucideIcons.clock,
+                      size: 16,
+                      color: Colors.grey.shade500,
+                    ),
                     const SizedBox(width: 6),
                     Text(
-                      DateFormat('h:mm a', Localizations.localeOf(context).languageCode).format(event.date),
-                      style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                      DateFormat(
+                        'h:mm a',
+                        Localizations.localeOf(context).languageCode,
+                      ).format(event.date),
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -431,14 +493,16 @@ class _EventCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                      color: isDark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
                       fontSize: 14,
                       height: 1.4,
                     ),
                   ),
                 ],
                 const SizedBox(height: 16),
-                
+
                 // Action Button
                 SizedBox(
                   width: double.infinity,

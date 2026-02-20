@@ -14,10 +14,7 @@ class ThemeState {
   ThemeState({required this.mode, required this.style});
 
   ThemeState copyWith({ThemeMode? mode, AppStyle? style}) {
-    return ThemeState(
-      mode: mode ?? this.mode,
-      style: style ?? this.style,
-    );
+    return ThemeState(mode: mode ?? this.mode, style: style ?? this.style);
   }
 }
 
@@ -27,9 +24,9 @@ final sharedPrefsProvider = Provider<SharedPreferences>((ref) {
 
 final themeControllerProvider =
     StateNotifierProvider<ThemeController, ThemeState>((ref) {
-  final prefs = ref.watch(sharedPrefsProvider);
-  return ThemeController(prefs);
-});
+      final prefs = ref.watch(sharedPrefsProvider);
+      return ThemeController(prefs);
+    });
 
 class ThemeController extends StateNotifier<ThemeState> {
   ThemeController(this._prefs) : super(_load(_prefs));

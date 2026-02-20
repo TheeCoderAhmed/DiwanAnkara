@@ -39,9 +39,9 @@ class PdfViewerScreen extends ConsumerWidget {
             autoSpacing: true,
             pageFling: true,
             onError: (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('خطأ في عرض PDF: $e')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('خطأ في عرض PDF: $e')));
             },
           );
         },
@@ -49,5 +49,3 @@ class PdfViewerScreen extends ConsumerWidget {
     );
   }
 }
-
-

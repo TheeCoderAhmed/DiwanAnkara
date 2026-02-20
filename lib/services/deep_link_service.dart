@@ -2,9 +2,8 @@ import 'package:flutter/foundation.dart';
 
 import '../routing/app_router.dart';
 
-
 /// Service to handle deep link parsing and navigation
-/// 
+///
 /// Deep link format: `screen_name:document_id`
 /// Examples:
 ///   - `announcement:abc123` → Opens announcement detail
@@ -19,7 +18,7 @@ class DeepLinkService {
   DeepLinkService._internal();
 
   /// Handle a deep link and navigate to the appropriate screen
-  /// 
+  ///
   /// [link] - The deep link string in format `screen_name:document_id`
   void handleDeepLink(String link) {
     if (link.isEmpty) {
@@ -46,7 +45,9 @@ class DeepLinkService {
     switch (screenName) {
       case 'announcement':
         if (documentId != null && documentId.isNotEmpty) {
-          final location = const AnnouncementDetailsRoute().location(id: documentId);
+          final location = const AnnouncementDetailsRoute().location(
+            id: documentId,
+          );
           debugPrint('DeepLinkService: Navigating to announcement: $location');
           router.go(location);
         } else {
@@ -105,7 +106,9 @@ class DeepLinkService {
         break;
 
       default:
-        debugPrint('DeepLinkService: No matching screen found for: $screenName');
+        debugPrint(
+          'DeepLinkService: No matching screen found for: $screenName',
+        );
         // Default to home if no match found
         router.go(const HomeScreenRoute().location);
     }

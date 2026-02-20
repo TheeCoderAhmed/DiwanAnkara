@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 
 import 'deep_link_service.dart';
 
-
 /// Top-level function to handle background messages
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -54,19 +53,23 @@ class NotificationService {
       // Also request local notification permission on Android 13+
       if (defaultTargetPlatform == TargetPlatform.android) {
         final androidPlugin = _localNotifications
-            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
         final granted = await androidPlugin?.requestNotificationsPermission();
         debugPrint('Android local notification permission granted: $granted');
       }
 
       // Initialize local notifications plugin
-      const androidSettings = AndroidInitializationSettings('@drawable/ic_notification');
+      const androidSettings = AndroidInitializationSettings(
+        '@drawable/ic_notification',
+      );
       const iosSettings = DarwinInitializationSettings(
         requestAlertPermission: true,
         requestBadgePermission: true,
         requestSoundPermission: true,
       );
-      
+
       const initSettings = InitializationSettings(
         android: androidSettings,
         iOS: iosSettings,
@@ -115,7 +118,8 @@ class NotificationService {
 
     await _localNotifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(androidChannel);
   }
 
@@ -148,7 +152,9 @@ class NotificationService {
     // Handle notification tap when app is terminated
     final initialMessage = await _firebaseMessaging.getInitialMessage();
     if (initialMessage != null) {
-      debugPrint('App opened from terminated state: ${initialMessage.messageId}');
+      debugPrint(
+        'App opened from terminated state: ${initialMessage.messageId}',
+      );
       _handleNotificationTap(initialMessage);
     }
 
@@ -160,7 +166,7 @@ class NotificationService {
   Future<void> _showLocalNotification(RemoteMessage message) async {
     try {
       debugPrint('Attempting to show local notification...');
-      
+
       final androidDetails = AndroidNotificationDetails(
         'high_importance_channel', // Must match channel ID
         'High Importance Notifications',
@@ -183,9 +189,12 @@ class NotificationService {
         iOS: iosDetails,
       );
 
-      final title = message.notification?.title ?? message.data['title'] ?? 'New Notification';
+      final title =
+          message.notification?.title ??
+          message.data['title'] ??
+          'New Notification';
       final body = message.notification?.body ?? message.data['body'] ?? '';
-      
+
       debugPrint('Showing notification - Title: $title, Body: $body');
 
       // Add to internal stream for history
@@ -197,7 +206,7 @@ class NotificationService {
         body,
         notificationDetails,
       );
-      
+
       debugPrint('Local notification shown successfully');
     } catch (e, stackTrace) {
       debugPrint('Error showing local notification: $e');
@@ -209,13 +218,13 @@ class NotificationService {
   void _handleNotificationTap(RemoteMessage message) {
     debugPrint('Notification tapped: ${message.messageId}');
     debugPrint('Notification data: ${message.data}');
-    
+
     // Add to stream (history) - handle deduplication in controller
     _messageStreamController.add(message);
-    
+
     // Extract the 'link' field from the notification data payload
     final String? deepLink = message.data['link'];
-    
+
     if (deepLink != null && deepLink.isNotEmpty) {
       debugPrint('Deep link found: $deepLink');
       DeepLinkService().handleDeepLink(deepLink);
@@ -224,7 +233,6 @@ class NotificationService {
       // You can add default navigation behavior here if needed
     }
   }
-
 
   /// Callback for local notification tap
   void _onNotificationTapped(NotificationResponse response) {
@@ -256,4 +264,3 @@ class NotificationService {
     debugPrint('Unsubscribed from topic: $topic');
   }
 }
-

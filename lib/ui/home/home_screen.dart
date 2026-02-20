@@ -49,7 +49,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _searchCtrl = TextEditingController();
   final _scrollController = ScrollController();
   final _scrollOffset = ValueNotifier<double>(0.0);
-  
+
   // Debouncing and background filtering
   Timer? _debounce;
   List<Place>? _filteredResults;
@@ -67,9 +67,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _scrollController.addListener(_onScroll);
     // Add listener with debouncing
     _searchCtrl.addListener(_onSearchChanged);
-    
+
     // Connectivity listener
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((results) {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      results,
+    ) {
       if (mounted) {
         setState(() {
           _isOffline = results.contains(ConnectivityResult.none);
@@ -77,11 +79,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }
     });
   }
-  
+
   void _onSearchChanged() {
     // Cancel previous timer
     _debounce?.cancel();
-    
+
     // Start new timer (300ms delay)
     _debounce = Timer(const Duration(milliseconds: 300), () {
       if (mounted) {
@@ -117,7 +119,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final partnersAsync = ref.watch(partnersStreamProvider);
     final projectsAsync = ref.watch(projectsStreamProvider);
     final universitiesAsync = ref.watch(universitiesStreamProvider);
-    
+
     // Notification count
     final notifications = ref.watch(notificationControllerProvider);
     final unreadCount = notifications.where((n) => !n.isRead).length;
@@ -129,448 +131,528 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ValueListenableBuilder<double>(
             valueListenable: _scrollOffset,
             builder: (context, offset, child) {
-              return AmbientBackground(
-                scrollOffset: offset,
-                child: child!,
-              );
+              return AmbientBackground(scrollOffset: offset, child: child!);
             },
             child: placesAsync.when(
-          data: (places) {
-          final popularPlaces =
-              places.where((p) => p.isPopular).toList(growable: false);
-          
-          // Use the memoized universities provider
-          final mappedUniversities = ref.watch(mappedUniversitiesProvider);
+              data: (places) {
+                final popularPlaces = places
+                    .where((p) => p.isPopular)
+                    .toList(growable: false);
 
-          // Merge lists for search - memoized if possible or simple merge
-          final allSearchablePlaces = [...places, ...mappedUniversities];
-          
-          // Background filtering with debouncing
-          if (query.isNotEmpty && !_isFiltering) {
-            _isFiltering = true;
-            compute(_filterPlaces, {
-              'query': query,
-              'places': allSearchablePlaces,
-            }).then((results) {
-              if (mounted) {
-                setState(() {
-                  _filteredResults = results;
-                  _isFiltering = false;
-                });
-              }
-            });
-          } else if (query.isEmpty) {
-            _filteredResults = null;
-          }
-          
-          final filteredPlaces = _filteredResults ?? [];
+                // Use the memoized universities provider
+                final mappedUniversities = ref.watch(
+                  mappedUniversitiesProvider,
+                );
 
-          return CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              // Glassmorphism Header with Search (ALWAYS visible)
-              SliverToBoxAdapter(
-                child: GlassmorphismHeader(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 16, 20, 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              l10n.hello,
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
+                // Merge lists for search - memoized if possible or simple merge
+                final allSearchablePlaces = [...places, ...mappedUniversities];
+
+                // Background filtering with debouncing
+                if (query.isNotEmpty && !_isFiltering) {
+                  _isFiltering = true;
+                  compute(_filterPlaces, {
+                    'query': query,
+                    'places': allSearchablePlaces,
+                  }).then((results) {
+                    if (mounted) {
+                      setState(() {
+                        _filteredResults = results;
+                        _isFiltering = false;
+                      });
+                    }
+                  });
+                } else if (query.isEmpty) {
+                  _filteredResults = null;
+                }
+
+                final filteredPlaces = _filteredResults ?? [];
+
+                return CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                    // Glassmorphism Header with Search (ALWAYS visible)
+                    SliverToBoxAdapter(
+                      child: GlassmorphismHeader(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            20,
+                            MediaQuery.paddingOf(context).top + 16,
+                            20,
+                            20,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    l10n.hello,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
-                            ),
-                            Row(
-                              children: [
-
-                                IconButton(
-                                  onPressed: () {
-                                    HapticFeedback.lightImpact();
-                                    context.push(const NotificationsRoute().location);
-                                  },
-                                  icon: Badge(
-                                    isLabelVisible: unreadCount > 0,
-                                    label: Text('$unreadCount'),
-                                    child: const Icon(LucideIcons.bell),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          HapticFeedback.lightImpact();
+                                          context.push(
+                                            const NotificationsRoute().location,
+                                          );
+                                        },
+                                        icon: Badge(
+                                          isLabelVisible: unreadCount > 0,
+                                          label: Text('$unreadCount'),
+                                          child: const Icon(LucideIcons.bell),
+                                        ),
+                                        style: IconButton.styleFrom(
+                                          backgroundColor: Colors.white
+                                              .withValues(alpha: 0.1),
+                                          foregroundColor: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                          minimumSize: const Size(48, 48),
+                                          padding: EdgeInsets.zero,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: Colors.white.withValues(alpha: 0.1),
-                                    foregroundColor: Theme.of(context).colorScheme.onSurface,
-                                    minimumSize: const Size(48, 48),
-                                    padding: EdgeInsets.zero,
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _searchCtrl,
+                                decoration: InputDecoration(
+                                  hintText: l10n.searchHint,
+                                  prefixIcon: const Icon(LucideIcons.search),
+                                  suffixIcon: _isSearching
+                                      ? IconButton(
+                                          onPressed: () {
+                                            HapticFeedback.lightImpact();
+                                            _searchCtrl.clear();
+                                          },
+                                          icon: const Icon(LucideIcons.x),
+                                          style: IconButton.styleFrom(
+                                            minimumSize: const Size(48, 48),
+                                          ),
+                                        )
+                                      : null,
+                                  filled: true,
+                                  fillColor: Colors.white.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 16,
                                   ),
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // ============ SEARCH MODE: Show ONLY Search Results ============
+                    if (_isSearching) ...[
+                      SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 24),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                'نتائج البحث',
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
                             ),
+                            const SizedBox(height: 16),
+                            if (filteredPlaces.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(40),
+                                child: EmptyState(message: l10n.noResults),
+                              )
+                            else
+                              ...filteredPlaces.map(
+                                (p) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 8,
+                                  ),
+                                  child: _SearchResultTile(
+                                    place: p,
+                                    universities:
+                                        universitiesAsync.valueOrNull ?? [],
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(
+                              height: 140,
+                            ), // Bottom padding for navbar
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: _searchCtrl,
-                          decoration: InputDecoration(
-                            hintText: l10n.searchHint,
-                            prefixIcon: const Icon(LucideIcons.search),
-                            suffixIcon: _isSearching
-                                ? IconButton(
-                                    onPressed: () {
-                                      HapticFeedback.lightImpact();
-                                      _searchCtrl.clear();
+                      ),
+                    ],
+
+                    // ============ MAIN MODE: Show Main Content ============
+                    if (!_isSearching) ...[
+                      // Announcements Carousel (Connected to Firebase)
+                      SliverToBoxAdapter(
+                        child: announcementsAsync.when(
+                          data: (announcements) {
+                            if (announcements.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 24),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  child: Text(
+                                    l10n.announcements,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                RepaintBoundary(
+                                  child: CarouselSlider.builder(
+                                    itemCount: announcements.length,
+                                    options: CarouselOptions(
+                                      height: 200,
+                                      autoPlay: true,
+                                      enlargeCenterPage: true,
+                                      viewportFraction: 0.9,
+                                      autoPlayInterval: const Duration(
+                                        seconds: 4,
+                                      ),
+                                      autoPlayAnimationDuration: const Duration(
+                                        milliseconds: 800,
+                                      ),
+                                    ),
+                                    itemBuilder: (context, index, realIndex) {
+                                      return _AnnouncementCardFromFirebase(
+                                        announcement: announcements[index],
+                                      );
                                     },
-                                    icon: const Icon(LucideIcons.x),
-                                    style: IconButton.styleFrom(
-                                      minimumSize: const Size(48, 48),
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                              ],
+                            );
+                          },
+                          error: (_, __) => const SizedBox.shrink(),
+                          loading: () => const SizedBox.shrink(),
+                        ),
+                      ),
+
+                      // Popular Places
+                      if (popularPlaces.isNotEmpty)
+                        SliverToBoxAdapter(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: Text(
+                                  l10n.popularPlaces,
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              RepaintBoundary(
+                                child: SizedBox(
+                                  height: 260,
+                                  child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
+                                    itemCount: popularPlaces.length,
+                                    separatorBuilder: (_, __) =>
+                                        const SizedBox(width: 12),
+                                    itemBuilder: (context, index) {
+                                      final p = popularPlaces[index];
+                                      return PlaceCard(
+                                        place: p,
+                                        isHorizontal: true,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
+
+                      // Upcoming Events Preview Widget
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
+                          child: RepaintBoundary(child: EventsPreviewWidget()),
+                        ),
+                      ),
+
+                      // Previous Events Widget
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
+                          child: PreviousEventsWidget(),
+                        ),
+                      ),
+
+                      // Ikamet Tracker Widget
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          child: RepaintBoundary(child: IkametTrackerWidget()),
+                        ),
+                      ),
+
+                      // Currency Exchange Widget
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: RepaintBoundary(
+                            child: CurrencyExchangeWidget(),
+                          ),
+                        ),
+                      ),
+
+                      // Student Hacks Widget
+                      const SliverToBoxAdapter(
+                        child: RepaintBoundary(child: StudentHacksWidget()),
+                      ),
+
+                      // Projects Section
+                      SliverToBoxAdapter(
+                        child: projectsAsync.when(
+                          data: (projects) {
+                            if (projects.isEmpty)
+                              return const SizedBox.shrink();
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  child: Text(
+                                    l10n.projects,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                RepaintBoundary(
+                                  child: SizedBox(
+                                    height: 160,
+                                    child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                      ),
+                                      itemCount: projects.length,
+                                      separatorBuilder: (_, __) =>
+                                          const SizedBox(width: 12),
+                                      itemBuilder: (context, index) {
+                                        return _ProjectCard(
+                                          project: projects[index],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                              ],
+                            );
+                          },
+                          error: (_, __) => const SizedBox.shrink(),
+                          loading: () => const SizedBox.shrink(),
+                        ),
+                      ),
+
+                      // Partners Section
+                      SliverToBoxAdapter(
+                        child: partnersAsync.when(
+                          data: (partners) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    20,
+                                    32,
+                                    20,
+                                    16,
+                                  ),
+                                  child: Text(
+                                    l10n.partners,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                if (partners.isEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
+                                    child: EmptyState(
+                                      message: l10n.noPartners,
+                                      icon: LucideIcons.building2,
                                     ),
                                   )
-                                : null,
-                            filled: true,
-                            fillColor: Colors.white.withValues(alpha: 0.1),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 16,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              // ============ SEARCH MODE: Show ONLY Search Results ============
-              if (_isSearching) ...[
-                SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
-                          'نتائج البحث',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                else
+                                  RepaintBoundary(
+                                    child: _buildPartnersGrid(
+                                      context,
+                                      partners,
+                                    ),
+                                  ),
+                                const SizedBox(
+                                  height: 140,
+                                ), // Bottom padding for navbar
+                              ],
+                            );
+                          },
+                          error: (_, __) => const SizedBox.shrink(),
+                          loading: () => const SizedBox.shrink(),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      if (filteredPlaces.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.all(40),
-                          child: EmptyState(message: l10n.noResults),
-                        )
-                      else
-                        ...filteredPlaces.map(
-                          (p) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 8,
-                            ),
-                            child: _SearchResultTile(
-                              place: p,
-                              universities: universitiesAsync.valueOrNull ?? [],
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 140), // Bottom padding for navbar
                     ],
-                  ),
+                  ],
+                );
+              },
+              error: (e, _) => Center(
+                child: EmptyState(
+                  message: '${l10n.error}: $e',
+                  icon: LucideIcons.alertCircle,
                 ),
-              ],
-
-              // ============ MAIN MODE: Show Main Content ============
-              if (!_isSearching) ...[
-                // Announcements Carousel (Connected to Firebase)
-                SliverToBoxAdapter(
-                  child: announcementsAsync.when(
-                    data: (announcements) {
-                      if (announcements.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-                      
-                      return Column(
+              ),
+              loading: () => CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        20,
+                        MediaQuery.paddingOf(context).top + 16,
+                        20,
+                        20,
+                      ),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 24),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              l10n.announcements,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          Container(
+                            height: 20,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           const SizedBox(height: 16),
-                          RepaintBoundary(
-                            child: CarouselSlider.builder(
-                              itemCount: announcements.length,
-                              options: CarouselOptions(
-                                height: 200,
-                                autoPlay: true,
-                                enlargeCenterPage: true,
-                                viewportFraction: 0.9,
-                                autoPlayInterval: const Duration(seconds: 4),
-                                autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                              ),
-                              itemBuilder: (context, index, realIndex) {
-                                return _AnnouncementCardFromFirebase(announcement: announcements[index]);
-                              },
+                          Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          const SizedBox(height: 24),
                         ],
-                      );
-                    },
-                    error: (_, __) => const SizedBox.shrink(),
-                    loading: () => const SizedBox.shrink(),
-                  ),
-                ),
-
-                // Popular Places
-                if (popularPlaces.isNotEmpty)
-                  SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            l10n.popularPlaces,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        RepaintBoundary(
-                          child: SizedBox(
-                            height: 260,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              itemCount: popularPlaces.length,
-                              separatorBuilder: (_, __) => const SizedBox(width: 12),
-                              itemBuilder: (context, index) {
-                                final p = popularPlaces[index];
-                                return PlaceCard(place: p, isHorizontal: true);
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
+                      ),
                     ),
                   ),
-
-
-                // Upcoming Events Preview Widget
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    child: RepaintBoundary(child: EventsPreviewWidget()),
-                  ),
-                ),
-
-                // Previous Events Widget
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    child: PreviousEventsWidget(),
-                  ),
-                ),
-                
-                 // Ikamet Tracker Widget
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    child: RepaintBoundary(child: IkametTrackerWidget()),
-                  ),
-                ),
-
-                // Currency Exchange Widget
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: RepaintBoundary(child: CurrencyExchangeWidget()),
-                  ),
-                ),
-
-                // Student Hacks Widget
-                const SliverToBoxAdapter(
-                  child: RepaintBoundary(child: StudentHacksWidget()),
-                ),
-
-                // Projects Section
-                SliverToBoxAdapter(
-                  child: projectsAsync.when(
-                    data: (projects) {
-                      if (projects.isEmpty) return const SizedBox.shrink();
-                      
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              l10n.projects,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          RepaintBoundary(
-                            child: SizedBox(
-                              height: 160,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
-                                itemCount: projects.length,
-                                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                                itemBuilder: (context, index) {
-                                  return _ProjectCard(project: projects[index]);
-                                },
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 24,
+                      ),
+                      child: Row(
+                        children: List.generate(
+                          3,
+                          (index) => Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                right: index < 2 ? 12 : 0,
                               ),
+                              child: SkeletonPlaceCard(),
                             ),
                           ),
-                          const SizedBox(height: 24),
-                        ],
-                      );
-                    },
-                    error: (_, __) => const SizedBox.shrink(),
-                    loading: () => const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-
-                // Partners Section
-                SliverToBoxAdapter(
-                  child: partnersAsync.when(
-                    data: (partners) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                           Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
-                            child: Text(
-                              l10n.partners,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 1.1,
                             ),
-                          ),
-                          if (partners.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: EmptyState(
-                                message: l10n.noPartners,
-                                icon: LucideIcons.building2,
-                              ),
-                            )
-                          else
-                            RepaintBoundary(child: _buildPartnersGrid(context, partners)),
-                          const SizedBox(height: 140), // Bottom padding for navbar
-                        ],
-                      );
-                    },
-                    error: (_, __) => const SizedBox.shrink(),
-                    loading: () => const SizedBox.shrink(),
+                        itemCount: 6,
+                        itemBuilder: (context, index) => SkeletonBentoCard(),
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ],
-          );
-        },
-          error: (e, _) => Center(
-            child: EmptyState(
-              message: '${l10n.error}: $e',
-              icon: LucideIcons.alertCircle,
+                ],
+              ),
             ),
           ),
-          loading: () => CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 16, 20, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 20,
-                        width: 200,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                  child: Row(
-                    children: List.generate(
-                      3,
-                      (index) => Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(right: index < 2 ? 12 : 0),
-                          child: SkeletonPlaceCard(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 1.1,
-                    ),
-                    itemCount: 6,
-                    itemBuilder: (context, index) => SkeletonBentoCard(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+          if (_isOffline)
+            const Positioned(top: 0, left: 0, right: 0, child: OfflineBanner()),
+        ],
       ),
-      if (_isOffline)
-        const Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: OfflineBanner(),
-        ),
-    ],
-  ),
-
     );
   }
 
@@ -590,16 +672,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-
-  
   // Static method for background filtering via compute()
   static List<Place> _filterPlaces(Map<String, dynamic> params) {
     final String query = params['query'] as String;
     final List<Place> places = params['places'] as List<Place>;
-    
+
     // Turkish character normalization helper
     String normalizeTurkish(String text) {
-      return text.toLowerCase()
+      return text
+          .toLowerCase()
           .replaceAll('ı', 'i')
           .replaceAll('ğ', 'g')
           .replaceAll('ü', 'u')
@@ -608,19 +689,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           .replaceAll('ç', 'c')
           .replaceAll('İ', 'i');
     }
-    
+
     final normalizedQuery = normalizeTurkish(query);
-    
+
     return places.where((p) {
       final normalizedName = normalizeTurkish(p.nameTr);
       final normalizedDesc = normalizeTurkish(p.descriptionAr);
       final normalizedCat = normalizeTurkish(p.category.jsonValue);
       final normalizedCatAr = normalizeTurkish(p.category.arabicLabel);
-      
+
       return normalizedName.contains(normalizedQuery) ||
-             normalizedDesc.contains(normalizedQuery) ||
-             normalizedCat.contains(normalizedQuery) ||
-             normalizedCatAr.contains(normalizedQuery);
+          normalizedDesc.contains(normalizedQuery) ||
+          normalizedCat.contains(normalizedQuery) ||
+          normalizedCatAr.contains(normalizedQuery);
     }).toList();
   }
 }
@@ -638,7 +719,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
   String _fromCurrency = 'TRY';
   String _toCurrency = 'USD';
   bool _isLoading = false;
-  
+
   // Live exchange rates (will be fetched from API)
   final Map<String, double> _rates = {
     'USD': 0.037,
@@ -652,13 +733,13 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
     'GBP': 0.029,
     'EGP': 2.30,
   };
-  
+
   @override
   void initState() {
     super.initState();
     _fetchRates();
   }
-  
+
   Future<void> _fetchRates() async {
     setState(() => _isLoading = true);
     try {
@@ -666,23 +747,34 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       final usdResponse = await http.get(
         Uri.parse('https://api.exchangerate-api.com/v4/latest/USD'),
       );
-      
+
       // Fetch EUR rates
       final eurResponse = await http.get(
         Uri.parse('https://api.exchangerate-api.com/v4/latest/EUR'),
       );
-      
+
       if (usdResponse.statusCode == 200 && eurResponse.statusCode == 200) {
         final usdData = json.decode(usdResponse.body);
-        
+
         if (mounted) {
           setState(() {
             final rates = Map<String, dynamic>.from(usdData['rates'] as Map);
             final usdToTry = (rates['TRY'] as num).toDouble();
-            
+
             // Define the currencies we want to track
-            final targetCurrencies = ['USD', 'EUR', 'TRY', 'SAR', 'YER', 'AED', 'KWD', 'QAR', 'GBP', 'EGP'];
-            
+            final targetCurrencies = [
+              'USD',
+              'EUR',
+              'TRY',
+              'SAR',
+              'YER',
+              'AED',
+              'KWD',
+              'QAR',
+              'GBP',
+              'EGP',
+            ];
+
             // Update rates relative to TRY (since base is 1.0 TRY)
             for (var currency in targetCurrencies) {
               if (rates.containsKey(currency)) {
@@ -690,10 +782,10 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                 _rates[currency] = usdToCurrency / usdToTry;
               }
             }
-            
+
             // Ensure TRY is exactly 1.0
             _rates['TRY'] = 1.0;
-            
+
             _isLoading = false;
           });
         }
@@ -731,16 +823,16 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       }
     }
   }
-  
+
   double get _convertedAmount {
     final amount = double.tryParse(_amountController.text) ?? 0;
     if (_fromCurrency == _toCurrency) return amount;
-    
+
     // Convert to TRY first, then to target currency
     final tryAmount = amount / _rates[_fromCurrency]!;
     return tryAmount * _rates[_toCurrency]!;
   }
-  
+
   void _swapCurrencies() {
     HapticFeedback.selectionClick();
     setState(() {
@@ -749,17 +841,17 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       _toCurrency = temp;
     });
   }
-  
+
   @override
   void dispose() {
     _amountController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -816,8 +908,8 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                   Text(
                     AppLocalizations.of(context).currencyConverter,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   if (_isLoading) ...[
                     const SizedBox(width: 12),
@@ -826,7 +918,9 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0D9488)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF0D9488),
+                        ),
                       ),
                     ),
                   ],
@@ -841,7 +935,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
             ],
           ),
           const SizedBox(height: 20),
-          
+
           // From Currency
           _buildCurrencyInput(
             label: AppLocalizations.of(context).from,
@@ -849,9 +943,9 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
             selectedCurrency: _fromCurrency,
             onCurrencyChanged: (val) => setState(() => _fromCurrency = val!),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Swap Button
           Center(
             child: GestureDetector(
@@ -870,9 +964,9 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // To Currency (Read-only)
           _buildCurrencyOutput(
             label: AppLocalizations.of(context).to,
@@ -880,9 +974,9 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
             selectedCurrency: _toCurrency,
             onCurrencyChanged: (val) => setState(() => _toCurrency = val!),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Exchange Rate Info
           Container(
             padding: const EdgeInsets.all(12),
@@ -899,10 +993,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                 const SizedBox(width: 8),
                 Text(
                   '1 $_fromCurrency = ${(_rates[_toCurrency]! / _rates[_fromCurrency]!).toStringAsFixed(4)} $_toCurrency',
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                 ),
               ],
             ),
@@ -911,7 +1002,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
-  
+
   Widget _buildCurrencyInput({
     required String label,
     required TextEditingController controller,
@@ -935,9 +1026,14 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
             Expanded(
               child: TextField(
                 controller: controller,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 onChanged: (_) => setState(() {}),
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
@@ -945,7 +1041,10 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                 ),
               ),
             ),
@@ -956,7 +1055,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       ],
     );
   }
-  
+
   Widget _buildCurrencyOutput({
     required String label,
     required double amount,
@@ -979,7 +1078,10 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
           children: [
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
@@ -1001,7 +1103,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       ],
     );
   }
-  
+
   Widget _buildCurrencyDropdown(String value, ValueChanged<String?> onChanged) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -1018,18 +1120,26 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
           fontWeight: FontWeight.bold,
           fontSize: 16,
         ),
-        items: ['TRY', 'USD', 'EUR', 'SAR', 'YER', 'AED', 'KWD', 'QAR', 'GBP', 'EGP'].map((currency) {
-          return DropdownMenuItem(
-            value: currency,
-            child: Text(currency),
-          );
-        }).toList(),
+        items:
+            [
+              'TRY',
+              'USD',
+              'EUR',
+              'SAR',
+              'YER',
+              'AED',
+              'KWD',
+              'QAR',
+              'GBP',
+              'EGP',
+            ].map((currency) {
+              return DropdownMenuItem(value: currency, child: Text(currency));
+            }).toList(),
         onChanged: onChanged,
       ),
     );
   }
 }
-
 
 class _ModernPartnerLogo extends StatelessWidget {
   const _ModernPartnerLogo({required this.partner});
@@ -1039,38 +1149,40 @@ class _ModernPartnerLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
-    
+
     return Container(
-      width: 65,
-      height: 65,
-      decoration: BoxDecoration(
-        color: isLight ? Colors.white : Theme.of(context).cardColor,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: isLight 
-              ? Colors.grey.withValues(alpha: 0.15)
-              : Colors.white.withValues(alpha: 0.1),
-          width: 1,
-        ),
-        boxShadow: isLight
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : null,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: partner.logoAsset.trim().isEmpty
-            ? Icon(
-                LucideIcons.building2,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
-                size: 24,
-              )
-            : partner.logoAsset.startsWith('http')
+          width: 65,
+          height: 65,
+          decoration: BoxDecoration(
+            color: isLight ? Colors.white : Theme.of(context).cardColor,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isLight
+                  ? Colors.grey.withValues(alpha: 0.15)
+                  : Colors.white.withValues(alpha: 0.1),
+              width: 1,
+            ),
+            boxShadow: isLight
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: partner.logoAsset.trim().isEmpty
+                ? Icon(
+                    LucideIcons.building2,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.3),
+                    size: 24,
+                  )
+                : partner.logoAsset.startsWith('http')
                 ? CachedImageWidget(
                     imageUrl: partner.logoAsset,
                     fit: BoxFit.contain,
@@ -1080,12 +1192,17 @@ class _ModernPartnerLogo extends StatelessWidget {
                     fit: BoxFit.contain,
                     errorBuilder: (_, __, ___) => Icon(
                       LucideIcons.building2,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.3),
                       size: 24,
                     ),
                   ),
-      ),
-    ).animate().fadeIn(duration: 300.ms).scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1));
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1));
   }
 }
 
@@ -1183,7 +1300,8 @@ class _AnnouncementCardFromFirebase extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               // Image
-              announcement.imageUrl.isNotEmpty && announcement.imageUrl.startsWith('http')
+              announcement.imageUrl.isNotEmpty &&
+                      announcement.imageUrl.startsWith('http')
                   ? CachedImageWidget(
                       imageUrl: announcement.imageUrl,
                       fit: BoxFit.cover,
@@ -1232,7 +1350,8 @@ class _AnnouncementCardFromFirebase extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    if (announcement.title.isNotEmpty) const SizedBox(height: 8),
+                    if (announcement.title.isNotEmpty)
+                      const SizedBox(height: 8),
                     // Description
                     if (announcement.description.isNotEmpty)
                       Text(
@@ -1275,10 +1394,14 @@ class _ProjectCard extends StatelessWidget {
                 title: project.name,
                 description: project.description ?? '',
                 imageUrl: project.imageUrl,
-                actionType: isClub ? ProjectActionType.whatsapp : ProjectActionType.contact,
+                actionType: isClub
+                    ? ProjectActionType.whatsapp
+                    : ProjectActionType.contact,
                 contactName: AppLocalizations.of(context).contactAndInquiry,
                 contactNumber: isClub ? null : project.contactPhone,
-                whatsappLink: isClub ? 'https://wa.me/${project.contactPhone?.replaceAll('+', '')}' : null,
+                whatsappLink: isClub
+                    ? 'https://wa.me/${project.contactPhone?.replaceAll('+', '')}'
+                    : null,
               ),
             ),
           );
@@ -1300,8 +1423,9 @@ class _ProjectCard extends StatelessWidget {
               ),
             ),
           );
-        } else if (project.name.contains('نادي شعرى') || project.name.contains('نادي انقرة')) {
-           Navigator.push(
+        } else if (project.name.contains('نادي شعرى') ||
+            project.name.contains('نادي انقرة')) {
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ProjectDetailsPage(
@@ -1315,7 +1439,7 @@ class _ProjectCard extends StatelessWidget {
           );
         } else {
           // Default fall through
-           Navigator.push(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ProjectDetailsPage(
@@ -1339,19 +1463,22 @@ class _ProjectCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               // Image or placeholder
-              if (project.imageUrl.isNotEmpty && !project.imageUrl.startsWith('assets') && project.imageUrl.startsWith('http'))
-                 CachedImageWidget(
-                  imageUrl: project.imageUrl,
-                  fit: BoxFit.cover,
-                )
+              if (project.imageUrl.isNotEmpty &&
+                  !project.imageUrl.startsWith('assets') &&
+                  project.imageUrl.startsWith('http'))
+                CachedImageWidget(imageUrl: project.imageUrl, fit: BoxFit.cover)
               else if (project.imageUrl.startsWith('assets'))
-                 Image.asset(
+                Image.asset(
                   project.imageUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
                     color: const Color(0xFF1E293B),
                     child: const Center(
-                      child: Icon(LucideIcons.image, color: Colors.white24, size: 48),
+                      child: Icon(
+                        LucideIcons.image,
+                        color: Colors.white24,
+                        size: 48,
+                      ),
                     ),
                   ),
                 )

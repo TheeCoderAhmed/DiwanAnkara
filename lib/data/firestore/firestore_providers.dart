@@ -38,10 +38,11 @@ final contributorsStreamProvider = StreamProvider<List<Contributor>>((ref) {
   return repo.watchContributors();
 });
 
-final contributorsByYearProvider = StreamProvider.family<List<Contributor>, int>((ref, year) {
-  final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchContributorsByYear(year);
-});
+final contributorsByYearProvider =
+    StreamProvider.family<List<Contributor>, int>((ref, year) {
+      final repo = ref.watch(firestoreRepositoryProvider);
+      return repo.watchContributorsByYear(year);
+    });
 
 final contributorYearsProvider = FutureProvider<List<int>>((ref) async {
   final repo = ref.watch(firestoreRepositoryProvider);
@@ -99,15 +100,18 @@ final eventsStreamProvider = StreamProvider<List<AppEvent>>((ref) async* {
   }
 });
 
-final universitiesStreamProvider = StreamProvider<List<UniversityModel>>((ref) async* {
+final universitiesStreamProvider = StreamProvider<List<UniversityModel>>((
+  ref,
+) async* {
   // 1. Emitting cached data immediately
   yield LocalRepository.getCachedData<UniversityModel>(
     key: 'universities',
-    fromJson: (json) => UniversityModel.fromJson(json, id: json['id'] as String?),
+    fromJson: (json) =>
+        UniversityModel.fromJson(json, id: json['id'] as String?),
   );
 
   final repo = ref.watch(firestoreRepositoryProvider);
-  
+
   // 2. Sync with Firestore
   await for (final unis in repo.watchUniversities()) {
     await LocalRepository.cacheData<UniversityModel>(
@@ -119,7 +123,9 @@ final universitiesStreamProvider = StreamProvider<List<UniversityModel>>((ref) a
   }
 });
 
-final announcementsStreamProvider = StreamProvider<List<Announcement>>((ref) async* {
+final announcementsStreamProvider = StreamProvider<List<Announcement>>((
+  ref,
+) async* {
   yield LocalRepository.getCachedData<Announcement>(
     key: 'announcements',
     fromJson: (json) => Announcement.fromJson(json),
@@ -136,20 +142,25 @@ final announcementsStreamProvider = StreamProvider<List<Announcement>>((ref) asy
   }
 });
 
-final announcementByIdProvider = FutureProvider.family<Announcement?, String>((ref, id) async {
+final announcementByIdProvider = FutureProvider.family<Announcement?, String>((
+  ref,
+  id,
+) async {
   final repo = ref.watch(firestoreRepositoryProvider);
   return repo.getAnnouncementById(id);
 });
 
-final oversightCommitteesStreamProvider = StreamProvider<List<OversightCommittee>>((ref) {
-  final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchOversightCommittees();
-});
+final oversightCommitteesStreamProvider =
+    StreamProvider<List<OversightCommittee>>((ref) {
+      final repo = ref.watch(firestoreRepositoryProvider);
+      return repo.watchOversightCommittees();
+    });
 
-final oversightCommitteesByYearProvider = StreamProvider.family<List<OversightCommittee>, int>((ref, year) {
-  final repo = ref.watch(firestoreRepositoryProvider);
-  return repo.watchOversightCommitteesByYear(year);
-});
+final oversightCommitteesByYearProvider =
+    StreamProvider.family<List<OversightCommittee>, int>((ref, year) {
+      final repo = ref.watch(firestoreRepositoryProvider);
+      return repo.watchOversightCommitteesByYear(year);
+    });
 
 final oversightCommitteeYearsProvider = FutureProvider<List<int>>((ref) async {
   final repo = ref.watch(firestoreRepositoryProvider);
@@ -157,31 +168,40 @@ final oversightCommitteeYearsProvider = FutureProvider<List<int>>((ref) async {
 });
 
 // Comment submission provider
-final submitCommentProvider = Provider<
-    Future<bool> Function({
-      required String announcementId,
-      required String userName,
-      required String commentText,
-      required String targetType,
-    })>((ref) {
-  final repo = ref.watch(firestoreRepositoryProvider);
-  return ({
-    required String announcementId,
-    required String userName,
-    required String commentText,
-    required String targetType,
-  }) =>
-      repo.submitComment(
+final submitCommentProvider =
+    Provider<
+      Future<bool> Function({
+        required String announcementId,
+        required String userName,
+        required String commentText,
+        required String targetType,
+        List<String> imageUrls,
+        double rating,
+      })
+    >((ref) {
+      final repo = ref.watch(firestoreRepositoryProvider);
+      return ({
+        required String announcementId,
+        required String userName,
+        required String commentText,
+        required String targetType,
+        List<String> imageUrls = const [],
+        double rating = 0.0,
+      }) => repo.submitComment(
         announcementId: announcementId,
         userName: userName,
         commentText: commentText,
         targetType: targetType,
+        imageUrls: imageUrls,
+        rating: rating,
       );
-});
+    });
 
 // Public reviews stream provider (for directory items)
-final publicReviewsProvider = StreamProvider.family<List<Comment>, String>((ref, targetId) {
+final publicReviewsProvider = StreamProvider.family<List<Comment>, String>((
+  ref,
+  targetId,
+) {
   final repo = ref.watch(firestoreRepositoryProvider);
   return repo.watchPublicReviews(targetId);
 });
-

@@ -40,7 +40,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       OnboardingSlide(
         icon: LucideIcons.brush,
         title: 'اختر مظهرك المفضل',
-        description: 'خصص تجربة استخدام التطبيق بأحد الأنماط الفريدة التي صممناها لك.',
+        description:
+            'خصص تجربة استخدام التطبيق بأحد الأنماط الفريدة التي صممناها لك.',
         color: const Color(0xFF8B5CF6),
         isStyleSelector: true,
       ),
@@ -75,7 +76,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final prefs = ref.read(sharedPrefsProvider);
     final service = OnboardingService(prefs);
     await service.completeOnboarding();
-    
+
     if (mounted) {
       context.go(const HomeScreenRoute().location);
     }
@@ -158,7 +159,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     ),
                   ),
                   child: Text(
-                    _currentPage < slides.length - 1 ? l10n.onboardingNext : l10n.onboardingStart,
+                    _currentPage < slides.length - 1
+                        ? l10n.onboardingNext
+                        : l10n.onboardingStart,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -185,26 +188,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               color: slide.color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              slide.icon,
-              size: 80,
-              color: slide.color,
-            ),
+            child: Icon(slide.icon, size: 80, color: slide.color),
           ),
           const SizedBox(height: 48),
           Text(
             slide.title,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
             slide.description,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
             textAlign: TextAlign.center,
           ),
           if (slide.isLanguageSelector) ...[
@@ -217,26 +216,58 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ],
           if (slide.isThemeSelector) ...[
             const SizedBox(height: 48),
-            _buildThemeOption(ThemeMode.system, AppLocalizations.of(context).themeSystem, Icons.brightness_auto),
+            _buildThemeOption(
+              ThemeMode.system,
+              AppLocalizations.of(context).themeSystem,
+              Icons.brightness_auto,
+            ),
             const SizedBox(height: 12),
-            _buildThemeOption(ThemeMode.light, AppLocalizations.of(context).themeLight, Icons.light_mode),
+            _buildThemeOption(
+              ThemeMode.light,
+              AppLocalizations.of(context).themeLight,
+              Icons.light_mode,
+            ),
             const SizedBox(height: 12),
-            _buildThemeOption(ThemeMode.dark, AppLocalizations.of(context).themeDark, Icons.dark_mode),
+            _buildThemeOption(
+              ThemeMode.dark,
+              AppLocalizations.of(context).themeDark,
+              Icons.dark_mode,
+            ),
           ],
           if (slide.isStyleSelector) ...[
             const SizedBox(height: 32),
-            _buildStyleOption(AppStyle.classic, 'النمط الكلاسيكي', 'عصري وحيوي', LucideIcons.appWindow),
+            _buildStyleOption(
+              AppStyle.classic,
+              'النمط الكلاسيكي',
+              'عصري وحيوي',
+              LucideIcons.appWindow,
+            ),
             const SizedBox(height: 12),
-            _buildStyleOption(AppStyle.paper, 'الورق والحبر', 'أنيق وخالد', LucideIcons.pencil),
+            _buildStyleOption(
+              AppStyle.paper,
+              'الورق والحبر',
+              'أنيق وخالد',
+              LucideIcons.pencil,
+            ),
             const SizedBox(height: 12),
-            _buildStyleOption(AppStyle.nordic, 'اللمسة الشمالية', 'تقني ونظيف', LucideIcons.snowflake),
+            _buildStyleOption(
+              AppStyle.nordic,
+              'اللمسة الشمالية',
+              'تقني ونظيف',
+              LucideIcons.snowflake,
+            ),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildStyleOption(AppStyle style, String title, String subtitle, IconData icon) {
+  Widget _buildStyleOption(
+    AppStyle style,
+    String title,
+    String subtitle,
+    IconData icon,
+  ) {
     final themeState = ref.watch(themeControllerProvider);
     final isSelected = themeState.style == style;
 
@@ -249,23 +280,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
           side: BorderSide(
-            color: isSelected ? const Color(0xFF0D9488) : Colors.grey.withValues(alpha: 0.3),
+            color: isSelected
+                ? const Color(0xFF0D9488)
+                : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          backgroundColor: isSelected ? const Color(0xFF0D9488).withValues(alpha: 0.05) : null,
+          backgroundColor: isSelected
+              ? const Color(0xFF0D9488).withValues(alpha: 0.05)
+              : null,
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF0D9488).withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
+                color: isSelected
+                    ? const Color(0xFF0D9488).withValues(alpha: 0.1)
+                    : Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: isSelected ? const Color(0xFF0D9488) : Colors.grey),
+              child: Icon(
+                icon,
+                color: isSelected ? const Color(0xFF0D9488) : Colors.grey,
+              ),
             ),
             const SizedBox(width: 16),
             Column(
@@ -275,16 +315,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   title,
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                     color: isSelected ? const Color(0xFF0D9488) : null,
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -308,24 +347,28 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ref.read(localeControllerProvider.notifier).setLocale(Locale(code));
           // Provide subtle haptic feedback or just move to next page
           Future.delayed(const Duration(milliseconds: 300), () {
-             if (_currentPage == 0 && mounted) {
-                _pageController.nextPage(
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut,
-                );
-             }
+            if (_currentPage == 0 && mounted) {
+              _pageController.nextPage(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            }
           });
         },
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           side: BorderSide(
-            color: isSelected ? const Color(0xFF0D9488) : Colors.grey.withValues(alpha: 0.3),
+            color: isSelected
+                ? const Color(0xFF0D9488)
+                : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          backgroundColor: isSelected ? const Color(0xFF0D9488).withValues(alpha: 0.05) : null,
+          backgroundColor: isSelected
+              ? const Color(0xFF0D9488).withValues(alpha: 0.05)
+              : null,
         ),
         child: Row(
           children: [
@@ -370,17 +413,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           side: BorderSide(
-            color: isSelected ? const Color(0xFF0D9488) : Colors.grey.withValues(alpha: 0.3),
+            color: isSelected
+                ? const Color(0xFF0D9488)
+                : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          backgroundColor: isSelected ? const Color(0xFF0D9488).withValues(alpha: 0.05) : null,
+          backgroundColor: isSelected
+              ? const Color(0xFF0D9488).withValues(alpha: 0.05)
+              : null,
         ),
         child: Row(
           children: [
-            Icon(icon, color: isSelected ? const Color(0xFF0D9488) : Colors.grey),
+            Icon(
+              icon,
+              color: isSelected ? const Color(0xFF0D9488) : Colors.grey,
+            ),
             const SizedBox(width: 16),
             Text(
               name,

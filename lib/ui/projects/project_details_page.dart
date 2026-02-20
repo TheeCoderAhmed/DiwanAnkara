@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -30,11 +29,11 @@ class ProjectDetailsPage extends StatelessWidget {
   final String description;
   final String? imageUrl;
   final ProjectActionType actionType;
-  
+
   // For contact action
   final String? contactName;
   final String? contactNumber;
-  
+
   // For whatsapp action
   final String? whatsappLink;
 
@@ -72,9 +71,7 @@ class ProjectDetailsPage extends StatelessWidget {
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                shadows: [
-                  Shadow(color: Colors.black54, blurRadius: 4),
-                ],
+                shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
               ),
             ),
             centerTitle: true,
@@ -85,19 +82,18 @@ class ProjectDetailsPage extends StatelessWidget {
                 children: [
                   // 1. Blurred Background (Fills the space nicely)
                   if (imageUrl != null && imageUrl!.startsWith('http'))
-                    CachedImageWidget(
-                      imageUrl: imageUrl!,
-                      fit: BoxFit.cover,
-                    )
+                    CachedImageWidget(imageUrl: imageUrl!, fit: BoxFit.cover)
                   else
                     Container(color: const Color(0xFF1E293B)),
-                    
+
                   // Blur Effect over the background
                   Positioned.fill(
                     child: BackdropFilter(
                       filter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                       child: Container(
-                        color: Colors.black.withValues(alpha: 0.4), // Darken the blur
+                        color: Colors.black.withValues(
+                          alpha: 0.4,
+                        ), // Darken the blur
                       ),
                     ),
                   ),
@@ -109,7 +105,7 @@ class ProjectDetailsPage extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(20, 100, 20, 20),
                       child: Container(
                         // Limit height so it doesn't look stretched or too huge
-                        constraints: const BoxConstraints(maxHeight: 360), 
+                        constraints: const BoxConstraints(maxHeight: 360),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
@@ -127,9 +123,13 @@ class ProjectDetailsPage extends StatelessWidget {
                                 fit: BoxFit.contain,
                               )
                             : const SizedBox(
-                                height: 200, 
+                                height: 200,
                                 width: 200,
-                                child: Icon(LucideIcons.image, size: 64, color: Colors.white54),
+                                child: Icon(
+                                  LucideIcons.image,
+                                  size: 64,
+                                  color: Colors.white54,
+                                ),
                               ),
                       ),
                     ),
@@ -154,86 +154,104 @@ class ProjectDetailsPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ).animate().fadeIn().slideY(begin: 0.2, end: 0),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Action Card
                   if (actionType != ProjectActionType.none)
                     Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.1),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          if (actionType == ProjectActionType.contact) ...[
-                            if (contactName != null)
-                              Row(
-                                children: [
-                                  const Icon(LucideIcons.user, color: Colors.white70),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      contactName!,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.1),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              if (actionType == ProjectActionType.contact) ...[
+                                if (contactName != null)
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        LucideIcons.user,
+                                        color: Colors.white70,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          contactName!,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                const SizedBox(height: 16),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () =>
+                                        _launchUrl('tel:$contactNumber'),
+                                    icon: const Icon(LucideIcons.phone),
+                                    label: Text(
+                                      contactNumber ??
+                                          AppLocalizations.of(context).callNow,
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF0D9488),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                onPressed: () => _launchUrl('tel:$contactNumber'),
-                                icon: const Icon(LucideIcons.phone),
-                                label: Text(contactNumber ?? AppLocalizations.of(context).callNow),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF0D9488),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                ),
+                              ],
+
+                              if (actionType == ProjectActionType.whatsapp)
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      if (whatsappLink != null) {
+                                        _launchUrl(whatsappLink!);
+                                      }
+                                    },
+                                    icon: const Icon(LucideIcons.messageCircle),
+                                    label: Text(
+                                      AppLocalizations.of(
+                                        context,
+                                      ).joinWhatsappGroup,
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF25D366),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
-                          
-                          if (actionType == ProjectActionType.whatsapp)
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  if (whatsappLink != null) {
-                                    _launchUrl(whatsappLink!);
-                                  }
-                                },
-                                icon: const Icon(LucideIcons.messageCircle), 
-                                label: Text(AppLocalizations.of(context).joinWhatsappGroup),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF25D366), 
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
-                    
+                            ],
+                          ),
+                        )
+                        .animate()
+                        .fadeIn(delay: 200.ms)
+                        .slideY(begin: 0.2, end: 0),
+
                   const SizedBox(height: 32),
-                  
+
                   // Description Title
                   Text(
                     AppLocalizations.of(context).aboutProject,
@@ -242,7 +260,7 @@ class ProjectDetailsPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ).animate().fadeIn(delay: 300.ms),
-                  
+
                   const SizedBox(height: 12),
 
                   // Description
@@ -253,7 +271,7 @@ class ProjectDetailsPage extends StatelessWidget {
                       height: 1.6,
                     ),
                   ).animate().fadeIn(delay: 400.ms),
-                  
+
                   const SizedBox(height: 100),
                 ],
               ),

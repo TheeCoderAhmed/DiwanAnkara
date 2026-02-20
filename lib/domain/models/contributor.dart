@@ -29,11 +29,11 @@ class Contributor {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'role': role,
-        'phone': phone,
-        'imageUrl': imageUrl,
-        'year': year,
-        'order': order,
-      };
+    'name': name,
+    'role': role,
+    'phone': phone,
+    'imageUrl': imageUrl,
+    'year': year,
+    'order': order,
+  };
 }

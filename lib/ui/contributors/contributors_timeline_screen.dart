@@ -29,7 +29,9 @@ class _ContributorsTimelineScreenState
       body: yearsAsync.when(
         data: (years) {
           if (years.isEmpty) {
-            return Center(child: Text(AppLocalizations.of(context).noDataAvailable));
+            return Center(
+              child: Text(AppLocalizations.of(context).noDataAvailable),
+            );
           }
 
           // Auto-select first year if none selected
@@ -51,10 +53,7 @@ class _ContributorsTimelineScreenState
                     border: OutlineInputBorder(),
                   ),
                   items: years.map((year) {
-                    return DropdownMenuItem(
-                      value: year,
-                      child: Text('$year'),
-                    );
+                    return DropdownMenuItem(value: year, child: Text('$year'));
                   }).toList(),
                   onChanged: (year) {
                     setState(() => _selectedYear = year);
@@ -63,13 +62,12 @@ class _ContributorsTimelineScreenState
               ),
               // Contributors list
               if (_selectedYear != null)
-                Expanded(
-                  child: _ContributorsList(year: _selectedYear!),
-                ),
+                Expanded(child: _ContributorsList(year: _selectedYear!)),
             ],
           );
         },
-        error: (e, _) => Center(child: Text('${AppLocalizations.of(context).error}: $e')),
+        error: (e, _) =>
+            Center(child: Text('${AppLocalizations.of(context).error}: $e')),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
@@ -88,7 +86,9 @@ class _ContributorsList extends ConsumerWidget {
     return contributorsAsync.when(
       data: (contributors) {
         if (contributors.isEmpty) {
-          return Center(child: Text(AppLocalizations.of(context).noContributorsForYear));
+          return Center(
+            child: Text(AppLocalizations.of(context).noContributorsForYear),
+          );
         }
         return GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -104,7 +104,9 @@ class _ContributorsList extends ConsumerWidget {
             return InkWell(
               onTap: () async {
                 final phone = c.phone.replaceAll(' ', '');
-                final uri = Uri.parse('https://wa.me/${phone.replaceAll('+', '')}');
+                final uri = Uri.parse(
+                  'https://wa.me/${phone.replaceAll('+', '')}',
+                );
                 await launchUrl(uri, mode: LaunchMode.externalApplication);
               },
               child: Column(
@@ -116,7 +118,9 @@ class _ContributorsList extends ConsumerWidget {
                     height: 100,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest, // Subtle bg for loading
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest, // Subtle bg for loading
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
@@ -128,12 +132,16 @@ class _ContributorsList extends ConsumerWidget {
                           : Image.asset(
                               c.imageUrl,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 50, color: Colors.grey),
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.person,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
                             ),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // --- 2. Name (Bold & Clean) ---
                   Text(
                     c.name,
@@ -141,12 +149,12 @@ class _ContributorsList extends ConsumerWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700, // Bold
-                          fontSize: 16,
-                        ),
+                      fontWeight: FontWeight.w700, // Bold
+                      fontSize: 16,
+                    ),
                   ),
                   const SizedBox(height: 4),
-                  
+
                   // --- 3. Role (Grey & Thin) ---
                   Text(
                     c.role,
@@ -154,10 +162,10 @@ class _ContributorsList extends ConsumerWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey, // Classic grey text
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                        ),
+                      color: Colors.grey, // Classic grey text
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ],
               ),
@@ -170,4 +178,3 @@ class _ContributorsList extends ConsumerWidget {
     );
   }
 }
-

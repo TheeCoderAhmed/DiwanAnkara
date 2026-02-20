@@ -30,7 +30,7 @@ class CachedImageWidget extends StatelessWidget {
     }
 
     final isNetwork = imageUrl!.startsWith('http');
-    
+
     Widget imageWidget;
     if (isNetwork) {
       imageWidget = CachedNetworkImage(
@@ -51,15 +51,13 @@ class CachedImageWidget extends StatelessWidget {
         width: width,
         height: height,
         fit: fit,
-        errorBuilder: (context, error, stackTrace) => _buildErrorWidget(context),
+        errorBuilder: (context, error, stackTrace) =>
+            _buildErrorWidget(context),
       );
     }
 
     if (borderRadius != null) {
-      return ClipRRect(
-        borderRadius: borderRadius!,
-        child: imageWidget,
-      );
+      return ClipRRect(borderRadius: borderRadius!, child: imageWidget);
     }
 
     return imageWidget;
@@ -70,11 +68,7 @@ class CachedImageWidget extends StatelessWidget {
     return Shimmer.fromColors(
       baseColor: isDark ? Colors.white10 : Colors.grey[300]!,
       highlightColor: isDark ? Colors.white24 : Colors.grey[100]!,
-      child: Container(
-        width: width,
-        height: height,
-        color: Colors.white,
-      ),
+      child: Container(width: width, height: height, color: Colors.white),
     );
   }
 

@@ -1,20 +1,14 @@
 import 'categories.dart';
 
 class PlaceDocument {
-  const PlaceDocument({
-    required this.title,
-    required this.filePath,
-  });
+  const PlaceDocument({required this.title, required this.filePath});
 
   final String title;
   final String filePath; // asset path
 
   factory PlaceDocument.fromJson(Map<String, dynamic> json) {
     String s(String key) => (json[key] as String?) ?? '';
-    return PlaceDocument(
-      title: s('title'),
-      filePath: s('file_path'),
-    );
+    return PlaceDocument(title: s('title'), filePath: s('file_path'));
   }
 }
 
@@ -68,7 +62,8 @@ class Place {
   final String descriptionAr;
   final double lat;
   final double lng;
-  final String imageAsset; // Can be asset path or image_url/logo_url from Firestore
+  final String
+  imageAsset; // Can be asset path or image_url/logo_url from Firestore
   final String? address;
   final bool isPopular;
   final List<PlaceDocument> documents; // for university (DOCX)
@@ -91,51 +86,57 @@ class Place {
     // Helper to get string value, checking multiple key variants
     String s(String key) => (json[key] as String?) ?? '';
     double d(String key) => ((json[key] as num?) ?? 0).toDouble();
-    
-    final docs = (json['documents'] as List<dynamic>?)
-            ?.map((e) => PlaceDocument.fromJson(Map<String, dynamic>.from(e as Map)))
+
+    final docs =
+        (json['documents'] as List<dynamic>?)
+            ?.map(
+              (e) =>
+                  PlaceDocument.fromJson(Map<String, dynamic>.from(e as Map)),
+            )
             .toList() ??
         const <PlaceDocument>[];
 
     final sections = (json['sections'] as List<dynamic>?)
-            ?.map((e) => PlaceSection.fromJson(Map<String, dynamic>.from(e as Map)))
-            .toList();
-    
+        ?.map((e) => PlaceSection.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList();
+
     final rawCategory = s('category');
-    
+
     // IMAGES: Check ALL possible keys (snake_case, camelCase, variants)
     String image = s('image_url');
-    if (image.isEmpty) image = s('imageUrl');     // camelCase variant
-    if (image.isEmpty) image = s('logo_url');     // University logos
-    if (image.isEmpty) image = s('logoUrl');      // camelCase variant
-    if (image.isEmpty) image = s('image_asset');  // Legacy asset path
-    
+    if (image.isEmpty) image = s('imageUrl'); // camelCase variant
+    if (image.isEmpty) image = s('logo_url'); // University logos
+    if (image.isEmpty) image = s('logoUrl'); // camelCase variant
+    if (image.isEmpty) image = s('image_asset'); // Legacy asset path
+
     // TITLE: Check multiple key variants
     String title = s('display_name');
     if (title.isEmpty) title = s('name');
     if (title.isEmpty) title = s('name_tr');
-    
+
     // PDF: Check multiple key variants
     String pdfUrl = s('pdf_url');
-    if (pdfUrl.isEmpty) pdfUrl = s('pdfUrl');     // camelCase variant
-    if (pdfUrl.isEmpty) pdfUrl = s('file_url');   // Alternative key
-    if (pdfUrl.isEmpty) pdfUrl = s('fileUrl');    // camelCase variant
-    
+    if (pdfUrl.isEmpty) pdfUrl = s('pdfUrl'); // camelCase variant
+    if (pdfUrl.isEmpty) pdfUrl = s('file_url'); // Alternative key
+    if (pdfUrl.isEmpty) pdfUrl = s('fileUrl'); // camelCase variant
+
     // DOC: Check multiple key variants
     String docUrl = s('document_url');
     if (docUrl.isEmpty) docUrl = s('documentUrl'); // camelCase variant
-    
+
     // MAPS: Check multiple key variants
     String mapsLink = s('maps_link');
     if (mapsLink.isEmpty) mapsLink = s('mapsLink'); // camelCase variant
-    
+
     return Place(
       id: s('id'),
       category: rawCategory.isEmpty
           ? PlaceCategory.other
           : PlaceCategoryX.fromJsonValue(rawCategory),
       nameTr: title,
-      descriptionAr: s('description_ar').isEmpty ? s('description') : s('description_ar'),
+      descriptionAr: s('description_ar').isEmpty
+          ? s('description')
+          : s('description_ar'),
       lat: d('lat'),
       lng: d('lng'),
       address: s('address'),
@@ -143,14 +144,22 @@ class Place {
       isPopular: (json['is_popular'] as bool?) ?? false,
       documents: docs,
       pdfUrl: pdfUrl.isEmpty ? null : pdfUrl,
-      docUrl: docUrl.isEmpty ? null : docUrl, // Backwards compatibility for some DB entries
+      docUrl: docUrl.isEmpty
+          ? null
+          : docUrl, // Backwards compatibility for some DB entries
       mapsLink: mapsLink.isEmpty ? null : mapsLink,
       order: (json['order'] as num?)?.toInt(),
-      establishment: (json['establishment'] as num?)?.toInt() ?? (json['year_est'] as num?)?.toInt(),
+      establishment:
+          (json['establishment'] as num?)?.toInt() ??
+          (json['year_est'] as num?)?.toInt(),
       knownFor: s('known_for').isEmpty ? s('knownFor') : s('known_for'),
       type: s('type'),
-      entryFeeAr: s('entry_fee_ar').isEmpty ? s('entryFeeAr') : s('entry_fee_ar'),
-      entryFeeTr: s('entry_fee_tr').isEmpty ? s('entryFeeTr') : s('entry_fee_tr'),
+      entryFeeAr: s('entry_fee_ar').isEmpty
+          ? s('entryFeeAr')
+          : s('entry_fee_ar'),
+      entryFeeTr: s('entry_fee_tr').isEmpty
+          ? s('entryFeeTr')
+          : s('entry_fee_tr'),
       barbecueAr: s('barbecue_ar').isEmpty ? s('barbecueAr') : s('barbecue_ar'),
       barbecueTr: s('barbecue_tr').isEmpty ? s('barbecueTr') : s('barbecue_tr'),
       historyAr: s('history_ar').isEmpty ? s('historyAr') : s('history_ar'),
@@ -245,12 +254,6 @@ class Place {
 
 extension on PlaceDocument {
   Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'file_path': filePath,
-    };
+    return {'title': title, 'file_path': filePath};
   }
 }
-
-
-

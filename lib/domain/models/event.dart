@@ -12,34 +12,52 @@ enum EventCategory {
 
   String get label {
     switch (this) {
-      case EventCategory.sports: return 'رياضة';
-      case EventCategory.culture: return 'ثقافة وفنون';
-      case EventCategory.educational: return 'تعليم';
-      case EventCategory.social: return 'اجتماعي';
-      case EventCategory.religious: return 'ديني';
-      case EventCategory.other: return 'عام';
+      case EventCategory.sports:
+        return 'رياضة';
+      case EventCategory.culture:
+        return 'ثقافة وفنون';
+      case EventCategory.educational:
+        return 'تعليم';
+      case EventCategory.social:
+        return 'اجتماعي';
+      case EventCategory.religious:
+        return 'ديني';
+      case EventCategory.other:
+        return 'عام';
     }
   }
 
   IconData get icon {
     switch (this) {
-      case EventCategory.sports: return LucideIcons.trophy;
-      case EventCategory.culture: return LucideIcons.palette;
-      case EventCategory.educational: return LucideIcons.graduationCap;
-      case EventCategory.social: return LucideIcons.users;
-      case EventCategory.religious: return LucideIcons.moon; // Moon for religious
-      case EventCategory.other: return LucideIcons.calendar;
+      case EventCategory.sports:
+        return LucideIcons.trophy;
+      case EventCategory.culture:
+        return LucideIcons.palette;
+      case EventCategory.educational:
+        return LucideIcons.graduationCap;
+      case EventCategory.social:
+        return LucideIcons.users;
+      case EventCategory.religious:
+        return LucideIcons.moon; // Moon for religious
+      case EventCategory.other:
+        return LucideIcons.calendar;
     }
   }
 
   Color get color {
     switch (this) {
-      case EventCategory.sports: return const Color(0xFFF59E0B); // Amber
-      case EventCategory.culture: return const Color(0xFF8B5CF6); // Violet
-      case EventCategory.educational: return const Color(0xFF3B82F6); // Blue
-      case EventCategory.social: return const Color(0xFFEC4899); // Pink
-      case EventCategory.religious: return const Color(0xFF10B981); // Emerald
-      case EventCategory.other: return const Color(0xFF6B7280); // Gray
+      case EventCategory.sports:
+        return const Color(0xFFF59E0B); // Amber
+      case EventCategory.culture:
+        return const Color(0xFF8B5CF6); // Violet
+      case EventCategory.educational:
+        return const Color(0xFF3B82F6); // Blue
+      case EventCategory.social:
+        return const Color(0xFFEC4899); // Pink
+      case EventCategory.religious:
+        return const Color(0xFF10B981); // Emerald
+      case EventCategory.other:
+        return const Color(0xFF6B7280); // Gray
     }
   }
 }
@@ -67,14 +85,15 @@ class AppEvent {
 
   factory AppEvent.fromJson(Map<String, dynamic> json) {
     String s(String key) => (json[key] as String?) ?? '';
-    
+
     // Support both image_asset (legacy) and image_url (Firestore)
     final image = s('image_url').isEmpty ? s('image_asset') : s('image_url');
-    
+
     // Parse Date (Handle Timestamp or String)
     DateTime parseDate(dynamic val) {
       if (val is Timestamp) return val.toDate();
-      if (val is String && val.isNotEmpty) return DateTime.tryParse(val) ?? DateTime.now();
+      if (val is String && val.isNotEmpty)
+        return DateTime.tryParse(val) ?? DateTime.now();
       return DateTime.now();
     }
 
@@ -112,5 +131,3 @@ class AppEvent {
     };
   }
 }
-
-

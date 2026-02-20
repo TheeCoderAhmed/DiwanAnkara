@@ -61,25 +61,29 @@ class DirectoryScreen extends ConsumerWidget {
                           .where('category', isEqualTo: 'الاقامة الطلابية')
                           .limit(1)
                           .get();
-                      
+
                       if (snapshot.docs.isEmpty) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppLocalizations.of(context).noResidencyGuide)),
+                            SnackBar(
+                              content: Text(
+                                AppLocalizations.of(context).noResidencyGuide,
+                              ),
+                            ),
                           );
                         }
                         return;
                       }
-                      
+
                       final doc = snapshot.docs.first;
                       final data = doc.data();
-                      
+
                       // CRITICAL: Check docUrl FIRST (for Word/Doc files)
                       String? fileUrl = data['document_url'] as String?;
                       if (fileUrl == null || fileUrl.isEmpty) {
                         fileUrl = data['documentUrl'] as String?;
                       }
-                      
+
                       // ELSE check pdfUrl
                       if (fileUrl == null || fileUrl.isEmpty) {
                         fileUrl = data['pdf_url'] as String?;
@@ -93,23 +97,36 @@ class DirectoryScreen extends ConsumerWidget {
                       if (fileUrl == null || fileUrl.isEmpty) {
                         fileUrl = data['fileUrl'] as String?;
                       }
-                      
+
                       if (fileUrl == null || fileUrl.isEmpty) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppLocalizations.of(context).fileLinkNotAvailable)),
+                            SnackBar(
+                              content: Text(
+                                AppLocalizations.of(
+                                  context,
+                                ).fileLinkNotAvailable,
+                              ),
+                            ),
                           );
                         }
                         return;
                       }
-                      
+
                       // Launch file URL immediately (do not navigate to details page)
                       final uri = Uri.parse(fileUrl);
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
                     } catch (e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${AppLocalizations.of(context).error}: $e')),
+                          SnackBar(
+                            content: Text(
+                              '${AppLocalizations.of(context).error}: $e',
+                            ),
+                          ),
                         );
                       }
                     }
@@ -122,7 +139,7 @@ class DirectoryScreen extends ConsumerWidget {
                       // Try multiple category variants for housing
                       final categoryVariants = ['دليل السكنات', 'السكنات'];
                       QuerySnapshot? snapshot;
-                      
+
                       for (final category in categoryVariants) {
                         snapshot = await FirebaseFirestore.instance
                             .collection('places')
@@ -131,19 +148,23 @@ class DirectoryScreen extends ConsumerWidget {
                             .get();
                         if (snapshot.docs.isNotEmpty) break;
                       }
-                      
+
                       if (snapshot == null || snapshot.docs.isEmpty) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppLocalizations.of(context).noHousingGuide)),
+                            SnackBar(
+                              content: Text(
+                                AppLocalizations.of(context).noHousingGuide,
+                              ),
+                            ),
                           );
                         }
                         return;
                       }
-                      
+
                       final doc = snapshot.docs.first;
                       final data = doc.data() as Map<String, dynamic>;
-                      
+
                       // Check multiple PDF URL keys
                       String? pdfUrl = data['pdf_url'] as String?;
                       if (pdfUrl == null || pdfUrl.isEmpty) {
@@ -155,23 +176,36 @@ class DirectoryScreen extends ConsumerWidget {
                       if (pdfUrl == null || pdfUrl.isEmpty) {
                         pdfUrl = data['fileUrl'] as String?;
                       }
-                      
+
                       if (pdfUrl == null || pdfUrl.isEmpty) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppLocalizations.of(context).pdfLinkNotAvailable)),
+                            SnackBar(
+                              content: Text(
+                                AppLocalizations.of(
+                                  context,
+                                ).pdfLinkNotAvailable,
+                              ),
+                            ),
                           );
                         }
                         return;
                       }
-                      
+
                       // Launch PDF URL immediately
                       final uri = Uri.parse(pdfUrl);
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
                     } catch (e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${AppLocalizations.of(context).error}: $e')),
+                          SnackBar(
+                            content: Text(
+                              '${AppLocalizations.of(context).error}: $e',
+                            ),
+                          ),
                         );
                       }
                     }
@@ -230,7 +264,6 @@ class DirectoryScreen extends ConsumerWidget {
     };
   }
 
-
   static IconData _iconFor(String key) {
     return switch (key) {
       'Universities' => Icons.school_outlined,
@@ -287,5 +320,3 @@ class _CategoryCard extends StatelessWidget {
     );
   }
 }
-
-

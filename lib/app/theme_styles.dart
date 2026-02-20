@@ -15,7 +15,7 @@ class AppThemeStyles {
     final baseTextTheme = GoogleFonts.tajawalTextTheme(
       isDark ? ThemeData.dark().textTheme : ThemeData.light().textTheme,
     );
-    
+
     final colorScheme = ColorScheme.fromSeed(
       seedColor: const Color(0xFF0D9488),
       brightness: isDark ? Brightness.dark : Brightness.light,
@@ -26,7 +26,9 @@ class AppThemeStyles {
       useMaterial3: true,
       brightness: isDark ? Brightness.dark : Brightness.light,
       textTheme: _applyArabicMetrics(baseTextTheme, isDark),
-      scaffoldBackgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      scaffoldBackgroundColor: isDark
+          ? const Color(0xFF0F172A)
+          : const Color(0xFFF8FAFC),
       colorScheme: colorScheme,
       cardTheme: CardThemeData(
         elevation: 0,
@@ -45,20 +47,42 @@ class AppThemeStyles {
       displayLarge: GoogleFonts.amiri(textStyle: baseTheme.displayLarge),
       displayMedium: GoogleFonts.amiri(textStyle: baseTheme.displayMedium),
       displaySmall: GoogleFonts.amiri(textStyle: baseTheme.displaySmall),
-      headlineLarge: GoogleFonts.amiri(textStyle: baseTheme.headlineLarge, fontWeight: FontWeight.bold),
-      headlineMedium: GoogleFonts.amiri(textStyle: baseTheme.headlineMedium, fontWeight: FontWeight.bold),
-      headlineSmall: GoogleFonts.amiri(textStyle: baseTheme.headlineSmall, fontWeight: FontWeight.bold),
-      titleLarge: GoogleFonts.amiri(textStyle: baseTheme.titleLarge, fontWeight: FontWeight.bold),
-      titleMedium: GoogleFonts.amiri(textStyle: baseTheme.titleMedium, fontWeight: FontWeight.bold),
-      titleSmall: GoogleFonts.amiri(textStyle: baseTheme.titleSmall, fontWeight: FontWeight.bold),
+      headlineLarge: GoogleFonts.amiri(
+        textStyle: baseTheme.headlineLarge,
+        fontWeight: FontWeight.bold,
+      ),
+      headlineMedium: GoogleFonts.amiri(
+        textStyle: baseTheme.headlineMedium,
+        fontWeight: FontWeight.bold,
+      ),
+      headlineSmall: GoogleFonts.amiri(
+        textStyle: baseTheme.headlineSmall,
+        fontWeight: FontWeight.bold,
+      ),
+      titleLarge: GoogleFonts.amiri(
+        textStyle: baseTheme.titleLarge,
+        fontWeight: FontWeight.bold,
+      ),
+      titleMedium: GoogleFonts.amiri(
+        textStyle: baseTheme.titleMedium,
+        fontWeight: FontWeight.bold,
+      ),
+      titleSmall: GoogleFonts.amiri(
+        textStyle: baseTheme.titleSmall,
+        fontWeight: FontWeight.bold,
+      ),
       bodyLarge: GoogleFonts.tajawal(textStyle: baseTheme.bodyLarge),
       bodyMedium: GoogleFonts.tajawal(textStyle: baseTheme.bodyMedium),
       bodySmall: GoogleFonts.tajawal(textStyle: baseTheme.bodySmall),
     );
 
     final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFFAF9F6);
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
-    final accentInk = isDark ? const Color(0xFFD4A373) : const Color(0xFF8B4513); // Saddle Brown/Sepia Ink
+    final cardColor = isDark
+        ? const Color(0xFF1E1E1E)
+        : const Color(0xFFFFFFFF);
+    final accentInk = isDark
+        ? const Color(0xFFD4A373)
+        : const Color(0xFF8B4513); // Saddle Brown/Sepia Ink
 
     return ThemeData(
       useMaterial3: true,
@@ -74,7 +98,9 @@ class AppThemeStyles {
       ),
       cardTheme: CardThemeData(
         elevation: 2,
-        shadowColor: isDark ? Colors.black45 : const Color(0xFFD4C9B0).withValues(alpha: 0.3),
+        shadowColor: isDark
+            ? Colors.black45
+            : const Color(0xFFD4C9B0).withValues(alpha: 0.3),
         color: cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(2), // Very sharp, paper-cut edges
@@ -123,7 +149,9 @@ class AppThemeStyles {
         brightness: isDark ? Brightness.dark : Brightness.light,
         surface: surface,
         primary: primary,
-        onSurface: isDark ? Colors.white.withValues(alpha: 0.9) : const Color(0xFF1F2937),
+        onSurface: isDark
+            ? Colors.white.withValues(alpha: 0.9)
+            : const Color(0xFF1F2937),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -131,7 +159,9 @@ class AppThemeStyles {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
           side: BorderSide(
-            color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+            color: isDark
+                ? Colors.white10
+                : Colors.black.withValues(alpha: 0.05),
             width: 1,
           ),
         ),
@@ -151,7 +181,9 @@ class AppThemeStyles {
 
   static TextTheme _applyArabicMetrics(TextTheme base, bool isDark) {
     // Arabic needs more line height to breathe
-    final color = isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black.withValues(alpha: 0.8);
+    final color = isDark
+        ? Colors.white.withValues(alpha: 0.9)
+        : Colors.black.withValues(alpha: 0.8);
     return base.copyWith(
       displayLarge: base.displayLarge?.copyWith(height: 1.3, color: color),
       displayMedium: base.displayMedium?.copyWith(height: 1.3, color: color),
@@ -162,9 +194,18 @@ class AppThemeStyles {
       titleLarge: base.titleLarge?.copyWith(height: 1.4, color: color),
       titleMedium: base.titleMedium?.copyWith(height: 1.4, color: color),
       titleSmall: base.titleSmall?.copyWith(height: 1.4, color: color),
-      bodyLarge: base.bodyLarge?.copyWith(height: 1.6, color: color.withValues(alpha: 0.8)),
-      bodyMedium: base.bodyMedium?.copyWith(height: 1.6, color: color.withValues(alpha: 0.7)),
-      bodySmall: base.bodySmall?.copyWith(height: 1.6, color: color.withValues(alpha: 0.6)),
+      bodyLarge: base.bodyLarge?.copyWith(
+        height: 1.6,
+        color: color.withValues(alpha: 0.8),
+      ),
+      bodyMedium: base.bodyMedium?.copyWith(
+        height: 1.6,
+        color: color.withValues(alpha: 0.7),
+      ),
+      bodySmall: base.bodySmall?.copyWith(
+        height: 1.6,
+        color: color.withValues(alpha: 0.6),
+      ),
     );
   }
 }

@@ -38,7 +38,9 @@ class InAppMessage {
 
   factory InAppMessage.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
-    debugPrint('📨 Parsing in-app message: ${doc.id} => layout=${data['layout']}, title=${data['title']}');
+    debugPrint(
+      '📨 Parsing in-app message: ${doc.id} => layout=${data['layout']}, title=${data['title']}',
+    );
     return InAppMessage(
       id: doc.id,
       title: data['title'] ?? '',
@@ -60,18 +62,25 @@ class InAppMessage {
 
 /// Provider that streams active in-app messages from Firestore
 final inAppMessagesProvider = StreamProvider<List<InAppMessage>>((ref) {
-  debugPrint('🔍 InAppMessagesProvider: Syncing all recent messages for history...');
+  debugPrint(
+    '🔍 InAppMessagesProvider: Syncing all recent messages for history...',
+  );
   return FirebaseFirestore.instance
       .collection('notifications')
       .where('type', isEqualTo: 'in-app')
-      .orderBy('order', descending: true) // Order by latest first for history sync
+      .orderBy(
+        'order',
+        descending: true,
+      ) // Order by latest first for history sync
       .limit(20) // Limit to last 20 messages
       .snapshots()
       .handleError((error) {
         debugPrint('❌ InAppMessagesProvider ERROR: $error');
       })
       .map((snapshot) {
-        debugPrint('📬 InAppMessagesProvider: Syncing ${snapshot.docs.length} messages to history');
+        debugPrint(
+          '📬 InAppMessagesProvider: Syncing ${snapshot.docs.length} messages to history',
+        );
         return snapshot.docs
             .map((doc) => InAppMessage.fromFirestore(doc))
             .toList();
@@ -91,4 +100,5 @@ class DismissedMessagesNotifier extends StateNotifier<Set<String>> {
 
 final dismissedMessagesProvider =
     StateNotifierProvider<DismissedMessagesNotifier, Set<String>>(
-        (ref) => DismissedMessagesNotifier());
+      (ref) => DismissedMessagesNotifier(),
+    );

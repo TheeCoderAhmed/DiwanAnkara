@@ -8,23 +8,23 @@ class PlaceCard extends StatelessWidget {
   final Place place;
   final bool isHorizontal;
 
-  const PlaceCard({
-    super.key,
-    required this.place,
-    this.isHorizontal = false,
-  });
+  const PlaceCard({super.key, required this.place, this.isHorizontal = false});
 
   @override
   Widget build(BuildContext context) {
     final cardTheme = Theme.of(context).cardTheme;
-    final shape = (cardTheme.shape as RoundedRectangleBorder?) ?? RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
+    final shape =
+        (cardTheme.shape as RoundedRectangleBorder?) ??
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
     final textTheme = Theme.of(context).textTheme;
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => PlaceDetailsScreen(placeId: place.id)),
+          MaterialPageRoute(
+            builder: (_) => PlaceDetailsScreen(placeId: place.id),
+          ),
         );
       },
       child: Container(
@@ -33,20 +33,24 @@ class PlaceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: cardTheme.color,
           borderRadius: shape.borderRadius,
-          border: shape.side != BorderSide.none ? Border.fromBorderSide(shape.side) : null,
-          boxShadow: cardTheme.shadowColor != null ? [
-            BoxShadow(
-              color: cardTheme.shadowColor!,
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            )
-          ] : [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: shape.side != BorderSide.none
+              ? Border.fromBorderSide(shape.side)
+              : null,
+          boxShadow: cardTheme.shadowColor != null
+              ? [
+                  BoxShadow(
+                    color: cardTheme.shadowColor!,
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

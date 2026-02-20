@@ -131,9 +131,7 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
           ),
         ],
       ),
-      child: _expiryDate == null
-          ? _buildSetDateView()
-          : _buildCountdownView(),
+      child: _expiryDate == null ? _buildSetDateView() : _buildCountdownView(),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
@@ -157,9 +155,9 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
             const SizedBox(width: 12),
             Text(
               AppLocalizations.of(context).ikametTracker,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -209,9 +207,9 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                 const SizedBox(width: 12),
                 Text(
                   AppLocalizations.of(context).ikametTracker,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -252,41 +250,43 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                       color: _statusColor,
                     ),
                   ),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context).ikametExpiresIn,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context).ikametExpiresIn,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  DateFormat.yMd(Localizations.localeOf(context).languageCode).format(_expiryDate!),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: _statusColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    _daysRemaining > 90
-                        ? AppLocalizations.of(context).ikametSafe
-                        : _daysRemaining > 30
-                            ? AppLocalizations.of(context).ikametWarning
-                            : AppLocalizations.of(context).ikametUrgent,
-                    style: TextStyle(
-                      color: _statusColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                  const SizedBox(height: 4),
+                  Text(
+                    DateFormat.yMd(
+                      Localizations.localeOf(context).languageCode,
+                    ).format(_expiryDate!),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _statusColor.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      _daysRemaining > 90
+                          ? AppLocalizations.of(context).ikametSafe
+                          : _daysRemaining > 30
+                          ? AppLocalizations.of(context).ikametWarning
+                          : AppLocalizations.of(context).ikametUrgent,
+                      style: TextStyle(
+                        color: _statusColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ],
               ),
