@@ -34,8 +34,9 @@ class Comment {
     // Handle timestamp parsing
     DateTime parseTimestamp(dynamic val) {
       if (val is Timestamp) return val.toDate();
-      if (val is String && val.isNotEmpty)
+      if (val is String && val.isNotEmpty) {
         return DateTime.tryParse(val) ?? DateTime.now();
+      }
       return DateTime.now();
     }
 
