@@ -245,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     alpha: 0.1,
                                   ),
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius as BorderRadius?) ?? BorderRadius.circular(16),
                                     borderSide: BorderSide.none,
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
@@ -458,8 +458,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       SliverToBoxAdapter(
                         child: projectsAsync.when(
                           data: (projects) {
-                            if (projects.isEmpty)
+                            if (projects.isEmpty) {
                               return const SizedBox.shrink();
+                            }
 
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -587,7 +588,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       Brightness.dark
                                   ? Colors.grey.shade800
                                   : Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(8)),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -599,7 +600,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       Brightness.dark
                                   ? Colors.grey.shade800
                                   : Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
                             ),
                           ),
                         ],
@@ -868,7 +869,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                   Colors.grey.shade50.withValues(alpha: 0.8),
                 ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(20)),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.1)
@@ -896,7 +897,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0D9488).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
                     ),
                     child: const Icon(
                       LucideIcons.arrowLeftRight,
@@ -954,7 +955,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFF0D9488),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
                 ),
                 child: const Icon(
                   LucideIcons.arrowUpDown,
@@ -984,7 +985,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
               color: isDark
                   ? Colors.white.withValues(alpha: 0.05)
                   : Colors.grey.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1038,7 +1039,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                   filled: true,
                   fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius as BorderRadius?) ?? BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
@@ -1084,7 +1085,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                 ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
                 ),
                 child: Text(
                   amount.toStringAsFixed(2),
@@ -1109,7 +1110,7 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xFF0D9488).withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
       ),
       child: DropdownButton<String>(
         value: value,
@@ -1219,7 +1220,7 @@ class _SearchResultTile extends ConsumerWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(8),
         leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(8)),
           child: SizedBox(
             width: 56,
             height: 56,
@@ -1285,7 +1286,7 @@ class _AnnouncementCardFromFirebase extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.2),
@@ -1295,7 +1296,7 @@ class _AnnouncementCardFromFirebase extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -1318,7 +1319,7 @@ class _AnnouncementCardFromFirebase extends StatelessWidget {
               // Gradient overlay for text readability
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -1455,10 +1456,10 @@ class _ProjectCard extends StatelessWidget {
         width: 280,
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
           child: Stack(
             fit: StackFit.expand,
             children: [

@@ -862,8 +862,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   ) {
     final sectionsToUse = translatedSections ?? place.sections;
 
-    if (sectionsToUse == null || sectionsToUse.isEmpty)
+    if (sectionsToUse == null || sectionsToUse.isEmpty) {
       return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
