@@ -72,16 +72,9 @@ local.properties
 
 google-play-key.json
 
-fastlane/report.xml
-
-android/fastlane/report.xml
-
 *.hprof
 
 android/local.properties
-android/fastlane/google-play-key.json
-android/fastlane/Preview.html
-android/fastlane/metadata/android/en-US/video.txt
 
 # Secrets
 secrets.json
