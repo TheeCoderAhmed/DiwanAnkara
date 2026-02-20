@@ -24,7 +24,7 @@ class StudentHacksWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFBBF24).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
                 ),
                 child: const Icon(
                   LucideIcons.lightbulb,
@@ -219,7 +219,7 @@ class _HackCardState extends State<_HackCard> {
         }
       },
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(20)),
         child: SizedBox(
           width: 300,
           height: 180,
@@ -290,7 +290,7 @@ class _HackCardState extends State<_HackCard> {
                         color: Colors.white.withValues(
                           alpha: isDark ? 0.1 : 0.3,
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
                       ),
                       child: Icon(
                         widget.hack.icon,

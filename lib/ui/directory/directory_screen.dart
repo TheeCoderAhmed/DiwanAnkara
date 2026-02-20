@@ -8,6 +8,7 @@ import '../../domain/models/categories.dart';
 import '../../routing/app_router.dart';
 import '../shared/section_header.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
+import '../../data/firestore/firestore_providers.dart';
 
 class DirectoryScreen extends ConsumerWidget {
   const DirectoryScreen({super.key});
@@ -52,22 +53,18 @@ class DirectoryScreen extends ConsumerWidget {
                 title: _localizedLabel(context, cat),
                 icon: _iconFor(cat),
                 onTap: () async {
-                  // Residency Guide - Query Firestore and open file directly
+                  // Residency Guide - Query from AppSettings and open file directly
                   if (cat == 'Residency Guide') {
                     try {
-                      // Query for Residency category (user will update DB to use this category)
-                      final snapshot = await FirebaseFirestore.instance
-                          .collection('places')
-                          .where('category', isEqualTo: 'الاقامة الطلابية')
-                          .limit(1)
-                          .get();
+                      final appSettings = ref.read(appSettingsProvider).valueOrNull;
+                      final String? fileUrl = appSettings?.residencyGuideUrl;
 
-                      if (snapshot.docs.isEmpty) {
+                      if (fileUrl == null || fileUrl.isEmpty) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                AppLocalizations.of(context).noResidencyGuide,
+                                AppLocalizations.of(context).fileLinkNotAvailable,
                               ),
                             ),
                           );
@@ -75,45 +72,7 @@ class DirectoryScreen extends ConsumerWidget {
                         return;
                       }
 
-                      final doc = snapshot.docs.first;
-                      final data = doc.data();
-
-                      // CRITICAL: Check docUrl FIRST (for Word/Doc files)
-                      String? fileUrl = data['document_url'] as String?;
-                      if (fileUrl == null || fileUrl.isEmpty) {
-                        fileUrl = data['documentUrl'] as String?;
-                      }
-
-                      // ELSE check pdfUrl
-                      if (fileUrl == null || fileUrl.isEmpty) {
-                        fileUrl = data['pdf_url'] as String?;
-                      }
-                      if (fileUrl == null || fileUrl.isEmpty) {
-                        fileUrl = data['pdfUrl'] as String?;
-                      }
-                      if (fileUrl == null || fileUrl.isEmpty) {
-                        fileUrl = data['file_url'] as String?;
-                      }
-                      if (fileUrl == null || fileUrl.isEmpty) {
-                        fileUrl = data['fileUrl'] as String?;
-                      }
-
-                      if (fileUrl == null || fileUrl.isEmpty) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                AppLocalizations.of(
-                                  context,
-                                ).fileLinkNotAvailable,
-                              ),
-                            ),
-                          );
-                        }
-                        return;
-                      }
-
-                      // Launch file URL immediately (do not navigate to details page)
+                      // Launch file URL immediately
                       final uri = Uri.parse(fileUrl);
                       await launchUrl(
                         uri,

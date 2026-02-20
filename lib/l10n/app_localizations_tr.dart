@@ -171,6 +171,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ikametExpiresIn => 'Bitiş süresi:';
 
   @override
+  String get resetDate => 'Sıfırla';
+
+  @override
   String get days => 'Gün';
 
   @override
@@ -2009,4 +2012,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get themeSystem => 'Sistem Varsayılanı';
+
+  @override
+  String get version => 'Sürüm';
 }

@@ -45,6 +45,16 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
     });
   }
 
+  Future<void> _resetDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('ikamet_expiry_date');
+    if (mounted) {
+      setState(() {
+        _expiryDate = null;
+      });
+    }
+  }
+
   Future<void> _pickDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -116,7 +126,7 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                   Colors.grey.shade50.withValues(alpha: 0.8),
                 ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(20)),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.1)
@@ -144,7 +154,7 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: const Color(0xFF0D9488).withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
               ),
               child: const Icon(
                 LucideIcons.calendar,
@@ -176,7 +186,7 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
             ),
           ),
         ),
@@ -196,7 +206,7 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: _statusColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
                   ),
                   child: Icon(
                     LucideIcons.calendar,
@@ -213,10 +223,21 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                 ),
               ],
             ),
-            IconButton(
-              onPressed: _pickDate,
-              icon: const Icon(LucideIcons.settings, size: 20),
-              color: Colors.grey.shade600,
+            Row(
+              children: [
+                IconButton(
+                  onPressed: _resetDate,
+                  icon: const Icon(LucideIcons.rotateCcw),
+                  color: Colors.red.shade400,
+                  tooltip: AppLocalizations.of(context).resetDate,
+                  iconSize: 18,
+                ),
+                IconButton(
+                  onPressed: _pickDate,
+                  icon: const Icon(LucideIcons.settings, size: 20),
+                  color: Colors.grey.shade600,
+                ),
+              ],
             ),
           ],
         ),
@@ -273,7 +294,7 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                     ),
                     decoration: BoxDecoration(
                       color: _statusColor.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
                     ),
                     child: Text(
                       _daysRemaining > 90

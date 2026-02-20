@@ -51,6 +51,7 @@
   "ikametNoDateSet": "Ikamet expiry date not set",
   "ikametSetDate": "Set expiry date",
   "ikametExpiresIn": "Expires in:",
+  "resetDate": "Reset",
   "days": "Days",
   "ikametSafe": "Safe",
   "ikametWarning": "Warning",
@@ -650,5 +651,6 @@
   "onboardingThemeDesc": "Select the appearance that suits you best",
   "themeLight": "Light",
   "themeDark": "Dark",
-  "themeSystem": "System Default"
+  "themeSystem": "System Default",
+  "version": "Version"
 }

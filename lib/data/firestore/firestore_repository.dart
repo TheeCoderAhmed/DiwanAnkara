@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../domain/models/announcement.dart';
 import '../../domain/models/contributor.dart';
@@ -9,6 +10,7 @@ import '../../domain/models/place.dart';
 import '../../domain/models/project.dart';
 import '../../domain/models/university_model.dart';
 import '../../domain/models/comment.dart';
+import '../../domain/models/app_settings.dart';
 
 class FirestoreRepository {
   final FirebaseFirestore? _firestore;
@@ -22,6 +24,24 @@ class FirestoreRepository {
       throw StateError(
         'Firebase not initialized. Run "flutterfire configure" to set up Firebase.',
       );
+    }
+  }
+
+  // App Settings collection (fetching a single document 'global')
+  Stream<AppSettings> watchAppSettings() {
+    try {
+      return _safeFirestore
+          .collection('Settings')
+          .doc('global')
+          .snapshots()
+          .map((doc) {
+            if (!doc.exists || doc.data() == null) {
+              return AppSettings.fromJson({});
+            }
+            return AppSettings.fromJson(doc.data()!);
+          });
+    } catch (e) {
+      return Stream.value(AppSettings.fromJson({}));
     }
   }
 
@@ -278,6 +298,7 @@ class FirestoreRepository {
     required String targetType,
     List<String> imageUrls = const [],
     double rating = 0.0,
+    String? userId,
   }) async {
     try {
       final docRef = _safeFirestore.collection('Comments').doc();
@@ -291,9 +312,21 @@ class FirestoreRepository {
         'targetType': targetType,
         'imageUrls': imageUrls,
         'rating': rating,
+        'userId': userId,
       });
       return true;
     } catch (e) {
+      return false;
+    }
+  }
+
+  // Comments - Delete a comment
+  Future<bool> deleteComment(String commentId) async {
+    try {
+      await _safeFirestore.collection('Comments').doc(commentId).delete();
+      return true;
+    } catch (e) {
+      debugPrint('Error deleting comment: $e');
       return false;
     }
   }

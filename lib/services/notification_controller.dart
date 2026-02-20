@@ -40,10 +40,18 @@ class NotificationController extends StateNotifier<List<AppNotification>> {
     required String body,
     DateTime? timestamp,
     Map<String, dynamic>? data,
+    String? id,
   }) async {
     debugPrint('🔔 NotificationController: addNotification called: "$title"');
+    
+    final resolvedId = id ?? const Uuid().v4();
+    if (state.any((n) => n.id == resolvedId)) {
+      debugPrint('🔔 NotificationController: Duplicate notification ignored ($resolvedId)');
+      return;
+    }
+
     final newNotification = AppNotification(
-      id: const Uuid().v4(),
+      id: resolvedId,
       title: title,
       body: body,
       timestamp: timestamp ?? DateTime.now(),
@@ -127,6 +135,7 @@ final notificationListenerProvider = Provider<void>((ref) {
       '🔔 notificationListenerProvider: Received FCM message from stream: ${message.messageId}',
     );
     controller.addNotification(
+      id: message.messageId,
       title:
           message.notification?.title ?? message.data['title'] ?? 'إشعار جديد',
       body: message.notification?.body ?? message.data['body'] ?? '',

@@ -125,6 +125,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final unreadCount = notifications.where((n) => !n.isRead).length;
     final l10n = AppLocalizations.of(context);
 
+    final appSettingsAsync = ref.watch(appSettingsProvider);
+    final appSettings = appSettingsAsync.valueOrNull;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -305,164 +308,80 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ],
 
+                    // Emergency Banner (ALWAYS visible if active)
+                    if (appSettings?.emergencyBannerVisible == true &&
+                        appSettings?.emergencyBannerText.trim().isNotEmpty == true)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 16, 20, 0),
+                          child: _EmergencyBanner(text: appSettings!.emergencyBannerText),
+                        ),
+                      ),
+
                     // ============ MAIN MODE: Show Main Content ============
                     if (!_isSearching) ...[
                       // Announcements Carousel (Connected to Firebase)
-                      SliverToBoxAdapter(
-                        child: announcementsAsync.when(
-                          data: (announcements) {
-                            if (announcements.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
-
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 24),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    l10n.announcements,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                RepaintBoundary(
-                                  child: CarouselSlider.builder(
-                                    itemCount: announcements.length,
-                                    options: CarouselOptions(
-                                      height: 200,
-                                      autoPlay: true,
-                                      enlargeCenterPage: true,
-                                      viewportFraction: 0.9,
-                                      autoPlayInterval: const Duration(
-                                        seconds: 4,
-                                      ),
-                                      autoPlayAnimationDuration: const Duration(
-                                        milliseconds: 800,
-                                      ),
-                                    ),
-                                    itemBuilder: (context, index, realIndex) {
-                                      return _AnnouncementCardFromFirebase(
-                                        announcement: announcements[index],
-                                      );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                              ],
-                            );
-                          },
-                          error: (_, __) => const SizedBox.shrink(),
-                          loading: () => const SizedBox.shrink(),
-                        ),
-                      ),
-
-                      // Popular Places
-                      if (popularPlaces.isNotEmpty)
+                      if (appSettings?.enableAnnouncements ?? true)
                         SliverToBoxAdapter(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                child: Text(
-                                  l10n.popularPlaces,
-                                  style: Theme.of(context).textTheme.titleLarge
-                                      ?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              RepaintBoundary(
-                                child: SizedBox(
-                                  height: 260,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
+                          child: announcementsAsync.when(
+                            data: (announcements) {
+                              if (announcements.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 24),
+                                  Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 20,
                                     ),
-                                    itemCount: popularPlaces.length,
-                                    separatorBuilder: (_, __) =>
-                                        const SizedBox(width: 12),
-                                    itemBuilder: (context, index) {
-                                      final p = popularPlaces[index];
-                                      return PlaceCard(
-                                        place: p,
-                                        isHorizontal: true,
-                                      );
-                                    },
+                                    child: Text(
+                                      l10n.announcements,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(fontWeight: FontWeight.bold),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                            ],
+                                  const SizedBox(height: 16),
+                                  RepaintBoundary(
+                                    child: CarouselSlider.builder(
+                                      itemCount: announcements.length,
+                                      options: CarouselOptions(
+                                        height: 200,
+                                        autoPlay: true,
+                                        enlargeCenterPage: true,
+                                        viewportFraction: 0.9,
+                                        autoPlayInterval: const Duration(
+                                          seconds: 4,
+                                        ),
+                                        autoPlayAnimationDuration: const Duration(
+                                          milliseconds: 800,
+                                        ),
+                                      ),
+                                      itemBuilder: (context, index, realIndex) {
+                                        return _AnnouncementCardFromFirebase(
+                                          announcement: announcements[index],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                ],
+                              );
+                            },
+                            error: (_, __) => const SizedBox.shrink(),
+                            loading: () => const SizedBox.shrink(),
                           ),
                         ),
 
-                      // Upcoming Events Preview Widget
-                      const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 8,
-                          ),
-                          child: RepaintBoundary(child: EventsPreviewWidget()),
-                        ),
-                      ),
-
-                      // Previous Events Widget
-                      const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 8,
-                          ),
-                          child: PreviousEventsWidget(),
-                        ),
-                      ),
-
-                      // Ikamet Tracker Widget
-                      const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          child: RepaintBoundary(child: IkametTrackerWidget()),
-                        ),
-                      ),
-
-                      // Currency Exchange Widget
-                      const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: RepaintBoundary(
-                            child: CurrencyExchangeWidget(),
-                          ),
-                        ),
-                      ),
-
-                      // Student Hacks Widget
-                      const SliverToBoxAdapter(
-                        child: RepaintBoundary(child: StudentHacksWidget()),
-                      ),
-
-                      // Projects Section
-                      SliverToBoxAdapter(
-                        child: projectsAsync.when(
-                          data: (projects) {
-                            if (projects.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
-
-                            return Column(
+                      // Popular Places
+                      if (appSettings?.enablePopularPlaces ?? true)
+                        if (popularPlaces.isNotEmpty)
+                          SliverToBoxAdapter(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
@@ -470,28 +389,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     horizontal: 20,
                                   ),
                                   child: Text(
-                                    l10n.projects,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
+                                    l10n.popularPlaces,
+                                    style: Theme.of(context).textTheme.titleLarge
                                         ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 const SizedBox(height: 16),
                                 RepaintBoundary(
                                   child: SizedBox(
-                                    height: 160,
+                                    height: 260,
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 20,
                                       ),
-                                      itemCount: projects.length,
+                                      itemCount: popularPlaces.length,
                                       separatorBuilder: (_, __) =>
                                           const SizedBox(width: 12),
                                       itemBuilder: (context, index) {
-                                        return _ProjectCard(
-                                          project: projects[index],
+                                        final p = popularPlaces[index];
+                                        return PlaceCard(
+                                          place: p,
+                                          isHorizontal: true,
                                         );
                                       },
                                     ),
@@ -499,62 +418,167 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                                 const SizedBox(height: 24),
                               ],
-                            );
-                          },
-                          error: (_, __) => const SizedBox.shrink(),
-                          loading: () => const SizedBox.shrink(),
-                        ),
-                      ),
+                            ),
+                          ),
 
-                      // Partners Section
-                      SliverToBoxAdapter(
-                        child: partnersAsync.when(
-                          data: (partners) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    20,
-                                    32,
-                                    20,
-                                    16,
-                                  ),
-                                  child: Text(
-                                    l10n.partners,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                if (partners.isEmpty)
+                      // Upcoming Events Preview Widget
+                      if (appSettings?.enableEvents ?? true) ...[
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 8,
+                            ),
+                            child: RepaintBoundary(child: EventsPreviewWidget()),
+                          ),
+                        ),
+
+                        // Previous Events Widget
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 8,
+                            ),
+                            child: PreviousEventsWidget(),
+                          ),
+                        ),
+                      ],
+
+                      // Ikamet Tracker Widget
+                      if (appSettings?.enableIkametTracker ?? true)
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            child: RepaintBoundary(child: IkametTrackerWidget()),
+                          ),
+                        ),
+
+                      // Currency Exchange Widget
+                      if (appSettings?.enableCurrencyConverter ?? true)
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: RepaintBoundary(
+                              child: CurrencyExchangeWidget(
+                                fallbackRates: appSettings?.currencyFallbackRates,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      // Student Hacks Widget
+                      if (appSettings?.enableStudentHacks ?? true)
+                        const SliverToBoxAdapter(
+                          child: RepaintBoundary(child: StudentHacksWidget()),
+                        ),
+
+                      // Projects Section
+                      if (appSettings?.enableProjects ?? true)
+                        SliverToBoxAdapter(
+                          child: projectsAsync.when(
+                            data: (projects) {
+                              if (projects.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 20,
                                     ),
-                                    child: EmptyState(
-                                      message: l10n.noPartners,
-                                      icon: LucideIcons.building2,
-                                    ),
-                                  )
-                                else
-                                  RepaintBoundary(
-                                    child: _buildPartnersGrid(
-                                      context,
-                                      partners,
+                                    child: Text(
+                                      l10n.projects,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                const SizedBox(
-                                  height: 140,
-                                ), // Bottom padding for navbar
-                              ],
-                            );
-                          },
-                          error: (_, __) => const SizedBox.shrink(),
-                          loading: () => const SizedBox.shrink(),
+                                  const SizedBox(height: 16),
+                                  RepaintBoundary(
+                                    child: SizedBox(
+                                      height: 160,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                        ),
+                                        itemCount: projects.length,
+                                        separatorBuilder: (_, __) =>
+                                            const SizedBox(width: 12),
+                                        itemBuilder: (context, index) {
+                                          return _ProjectCard(
+                                            project: projects[index],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                ],
+                              );
+                            },
+                            error: (_, __) => const SizedBox.shrink(),
+                            loading: () => const SizedBox.shrink(),
+                          ),
                         ),
-                      ),
+
+                      // Partners Section
+                      if (appSettings?.enablePartners ?? true)
+                        SliverToBoxAdapter(
+                          child: partnersAsync.when(
+                            data: (partners) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      20,
+                                      32,
+                                      20,
+                                      16,
+                                    ),
+                                    child: Text(
+                                      l10n.partners,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  if (partners.isEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                      ),
+                                      child: EmptyState(
+                                        message: l10n.noPartners,
+                                        icon: LucideIcons.building2,
+                                      ),
+                                    )
+                                  else
+                                    RepaintBoundary(
+                                      child: _buildPartnersGrid(
+                                        context,
+                                        partners,
+                                      ),
+                                    ),
+                                  const SizedBox(
+                                    height: 140,
+                                  ), // Bottom padding for navbar
+                                ],
+                              );
+                            },
+                            error: (_, __) => const SizedBox.shrink(),
+                            loading: () => const SizedBox.shrink(),
+                          ),
+                        ),
                     ],
                   ],
                 );
@@ -709,7 +733,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 // Currency Exchange Widget
 class CurrencyExchangeWidget extends StatefulWidget {
-  const CurrencyExchangeWidget({super.key});
+  final Map<String, double>? fallbackRates;
+  const CurrencyExchangeWidget({super.key, this.fallbackRates});
 
   @override
   State<CurrencyExchangeWidget> createState() => _CurrencyExchangeWidgetState();
@@ -795,7 +820,13 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       debugPrint('Error fetching exchange rates: $e');
       if (mounted) {
         final l10n = AppLocalizations.of(context);
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          if (widget.fallbackRates != null) {
+            _rates.addAll(widget.fallbackRates!);
+            _rates['TRY'] = 1.0;
+          }
+        });
         // Show user-friendly error notification
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1531,3 +1562,44 @@ class _ProjectCard extends StatelessWidget {
     );
   }
 }
+
+class _EmergencyBanner extends StatelessWidget {
+  final String text;
+  const _EmergencyBanner({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50.withValues(alpha: 0.9),
+        border: Border.all(color: Colors.red.shade300),
+        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.red.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(LucideIcons.alertTriangle, color: Colors.red),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2, end: 0);
+  }
+}
+

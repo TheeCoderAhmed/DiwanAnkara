@@ -406,6 +406,12 @@ abstract class AppLocalizations {
   /// **'تنتهي في:'**
   String get ikametExpiresIn;
 
+  /// No description provided for @resetDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة تعيين'**
+  String get resetDate;
+
   /// No description provided for @days.
   ///
   /// In ar, this message translates to:
@@ -3765,6 +3771,12 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تلقائي'**
   String get themeSystem;
+
+  /// No description provided for @version.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإصدار'**
+  String get version;
 }
 
 class _AppLocalizationsDelegate

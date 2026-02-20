@@ -51,6 +51,7 @@
   "ikametNoDateSet": "İkamet bitiş tarihi ayarlanmadı",
   "ikametSetDate": "Bitiş tarihini ayarla",
   "ikametExpiresIn": "Bitiş süresi:",
+  "resetDate": "Sıfırla",
   "days": "Gün",
   "ikametSafe": "Güvenli",
   "ikametWarning": "Uyarı",
@@ -649,5 +650,6 @@
   "onboardingThemeDesc": "Size en uygun görünümü seçin",
   "themeLight": "Açık",
   "themeDark": "Koyu",
-  "themeSystem": "Sistem Varsayılanı"
+  "themeSystem": "Sistem Varsayılanı",
+  "version": "Sürüm"
 }

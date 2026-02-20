@@ -12,6 +12,7 @@ import '../places/place_details_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/translation_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
@@ -23,6 +24,9 @@ class MoreScreen extends ConsumerWidget {
     final currentLocale = ref.watch(localeControllerProvider);
     final placesAsync = ref.watch(placesStreamProvider);
     final l10n = AppLocalizations.of(context);
+
+    final appSettingsAsync = ref.watch(appSettingsProvider);
+    final safetyEmail = appSettingsAsync.valueOrNull?.safetyEmail ?? 'ahm3dbusinesss@gmail.com';
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.more)),
@@ -100,8 +104,8 @@ class MoreScreen extends ConsumerWidget {
             onTap: () async {
               final Uri emailLaunchUri = Uri(
                 scheme: 'mailto',
-                path: 'ahm3dbusinesss@gmail.com',
-                query: 'subject=Report Safety Concern / إبلاغ عن مشكلة أمان',
+                path: safetyEmail,
+                query: 'subject=Report Safety Concern / إبلاغ عن مشكلة',
               );
               try {
                 if (await canLaunchUrl(emailLaunchUri)) {
@@ -144,6 +148,27 @@ class MoreScreen extends ConsumerWidget {
                 builder: (_) =>
                     _LocaleSelectionBottomSheet(currentLocale: currentLocale),
               );
+            },
+          ),
+          const SizedBox(height: 32),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final packageInfo = snapshot.data!;
+                return Center(
+                  child: Text(
+                    '${l10n.version}: ${packageInfo.version} (${packageInfo.buildNumber})',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.5),
+                        ),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
             },
           ),
           const SizedBox(height: 24),
@@ -203,12 +228,21 @@ class _MoreItem extends StatelessWidget {
   }
 }
 
-class _SupportDialog extends StatelessWidget {
+class _SupportDialog extends ConsumerWidget {
   const _SupportDialog();
 
   @override
-  Widget build(BuildContext context) {
-    const iban = 'TR330006100519786457841326'; // Example IBAN
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsAsync = ref.watch(appSettingsProvider);
+
+    return settingsAsync.when(
+      data: (settings) => _buildContent(context, settings.iban),
+      loading: () => const _LoadingDialog(),
+      error: (_, __) => _buildContent(context, 'TR330006100519786457841326'),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, String iban) {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(l10n.supportUs),
@@ -220,11 +254,11 @@ class _SupportDialog extends StatelessWidget {
           const SizedBox(height: 16),
           const Text('IBAN:', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const SelectableText(iban),
+          SelectableText(iban),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () async {
-              await Clipboard.setData(const ClipboardData(text: iban));
+              await Clipboard.setData(ClipboardData(text: iban));
               if (context.mounted) {
                 ScaffoldMessenger.of(
                   context,
@@ -242,6 +276,20 @@ class _SupportDialog extends StatelessWidget {
           child: Text(l10n.close),
         ),
       ],
+    );
+  }
+}
+
+class _LoadingDialog extends StatelessWidget {
+  const _LoadingDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [CircularProgressIndicator()],
+      ),
     );
   }
 }

@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'deep_link_service.dart';
 
@@ -9,7 +12,44 @@ import 'deep_link_service.dart';
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('Handling background message: ${message.messageId}');
-  // Handle background message here
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStringList = prefs.getStringList('app_notifications') ?? [];
+
+    final title =
+        message.notification?.title ?? message.data['title'] ?? 'إشعار جديد';
+    final body = message.notification?.body ?? message.data['body'] ?? '';
+
+    final newNotification = {
+      'id': message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      'title': title,
+      'body': body,
+      'timestamp': (message.sentTime ?? DateTime.now()).toIso8601String(),
+      'isRead': false,
+      'data': message.data,
+    };
+
+    bool isDuplicate = false;
+    for (var s in jsonStringList) {
+      try {
+        final decoded = jsonDecode(s) as Map<String, dynamic>;
+        if (decoded['id'] == newNotification['id']) {
+          isDuplicate = true;
+          break;
+        }
+      } catch (_) {}
+    }
+
+    if (!isDuplicate) {
+      jsonStringList.insert(0, jsonEncode(newNotification));
+      await prefs.setStringList('app_notifications', jsonStringList);
+      debugPrint('Saved background notification: ${newNotification['id']}');
+    }
+  } catch (e) {
+    debugPrint('Error handling background notification: $e');
+  }
 }
 
 class NotificationService {
@@ -140,7 +180,15 @@ class NotificationService {
       debugPrint('Body: ${message.notification?.body}');
       debugPrint('Data: ${message.data}');
       debugPrint('===================================');
-      _showLocalNotification(message);
+      
+      // Add to internal stream for history (across all platforms)
+      _messageStreamController.add(message);
+
+      // Show local notification only on Android 
+      // (iOS handles foreground notifications natively via PresentationOptions)
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        _showLocalNotification(message);
+      }
     });
 
     // Handle notification taps when app is in background
@@ -192,19 +240,17 @@ class NotificationService {
       final title =
           message.notification?.title ??
           message.data['title'] ??
-          'New Notification';
+          'إشعار جديد';
       final body = message.notification?.body ?? message.data['body'] ?? '';
 
       debugPrint('Showing notification - Title: $title, Body: $body');
-
-      // Add to internal stream for history
-      _messageStreamController.add(message);
 
       await _localNotifications.show(
         message.hashCode,
         title,
         body,
         notificationDetails,
+        payload: jsonEncode(message.data),
       );
 
       debugPrint('Local notification shown successfully');
@@ -237,7 +283,20 @@ class NotificationService {
   /// Callback for local notification tap
   void _onNotificationTapped(NotificationResponse response) {
     debugPrint('Local notification tapped: ${response.id}');
-    // Handle local notification tap
+    
+    final payload = response.payload;
+    if (payload != null && payload.isNotEmpty) {
+      try {
+        final data = jsonDecode(payload) as Map<String, dynamic>;
+        final String? deepLink = data['link'];
+        if (deepLink != null && deepLink.toString().isNotEmpty) {
+          debugPrint('Deep link found in local notification payload: $deepLink');
+          DeepLinkService().handleDeepLink(deepLink.toString());
+        }
+      } catch (e) {
+        debugPrint('Error decoding local notification payload: $e');
+      }
+    }
   }
 
   /// Get FCM token

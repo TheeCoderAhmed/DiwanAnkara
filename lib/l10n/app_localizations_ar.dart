@@ -169,6 +169,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ikametExpiresIn => 'تنتهي في:';
 
   @override
+  String get resetDate => 'إعادة تعيين';
+
+  @override
   String get days => 'يوم';
 
   @override
@@ -2108,4 +2111,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get themeSystem => 'تلقائي';
+
+  @override
+  String get version => 'الإصدار';
 }

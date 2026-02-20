@@ -5,10 +5,6 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 class DefaultFirebaseOptions {
-  static String _val(String key) {
-    return String.fromEnvironment(key);
-  }
-
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
@@ -29,47 +25,47 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static FirebaseOptions web = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_WEB'),
-    appId: _val('FIREBASE_APP_ID_WEB'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    authDomain: _val('FIREBASE_AUTH_DOMAIN'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_WEB'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_WEB'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    authDomain: String.fromEnvironment('FIREBASE_AUTH_DOMAIN'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
   );
 
-  static FirebaseOptions android = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_ANDROID'),
-    appId: _val('FIREBASE_APP_ID_ANDROID'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_ANDROID'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_ANDROID'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
   );
 
-  static FirebaseOptions ios = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_IOS'),
-    appId: _val('FIREBASE_APP_ID_IOS'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
-    iosBundleId: _val('FIREBASE_IOS_BUNDLE_ID'),
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_IOS'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_IOS'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    iosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID'),
   );
 
-  static FirebaseOptions macos = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_IOS'),
-    appId: _val('FIREBASE_APP_ID_IOS'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
-    iosBundleId: _val('FIREBASE_IOS_BUNDLE_ID'),
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_IOS'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_IOS'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    iosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID'),
   );
 
-  static FirebaseOptions windows = FirebaseOptions(
-    apiKey: _val('FIREBASE_API_KEY_WINDOWS'),
-    appId: _val('FIREBASE_APP_ID_WINDOWS'),
-    messagingSenderId: _val('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: _val('FIREBASE_PROJECT_ID'),
-    authDomain: _val('FIREBASE_AUTH_DOMAIN'),
-    storageBucket: _val('FIREBASE_STORAGE_BUCKET'),
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_WINDOWS'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_WINDOWS'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    authDomain: String.fromEnvironment('FIREBASE_AUTH_DOMAIN'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
   );
 }

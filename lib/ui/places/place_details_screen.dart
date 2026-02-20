@@ -294,6 +294,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   Widget _buildPlaceDetails(BuildContext context, Place place, bool isDark) {
     final favorites = ref.watch(favoritesProvider);
     final isSaved = favorites.contains(place.id);
+    final appSettingsAsync = ref.watch(appSettingsProvider);
+    final enableComments = appSettingsAsync.valueOrNull?.enableComments ?? true;
 
     return Scaffold(
       body: CustomScrollView(
@@ -527,13 +529,14 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           ),
 
           // Public Review Section
-          SliverToBoxAdapter(
-            child: PublicReviewSection(
-              targetId: place.id,
-              targetType: place.category.jsonValue,
-              targetName: place.nameTr,
+          if (enableComments)
+            SliverToBoxAdapter(
+              child: PublicReviewSection(
+                targetId: place.id,
+                targetType: place.category.jsonValue,
+                targetName: place.nameTr,
+              ),
             ),
-          ),
 
           // Extra bottom padding for better scrollability
           const SliverToBoxAdapter(child: SizedBox(height: 200)),

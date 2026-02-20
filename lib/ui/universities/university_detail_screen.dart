@@ -9,6 +9,7 @@ import '../../domain/models/university_model.dart';
 import '../../services/translation_service.dart';
 import '../shared/cached_image_widget.dart';
 import '../widgets/public_review_section.dart';
+import '../../data/firestore/firestore_providers.dart';
 
 class UniversityDetailScreen extends ConsumerStatefulWidget {
   final UniversityModel university;
@@ -123,13 +124,14 @@ class _UniversityDetailScreenState
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: PublicReviewSection(
-              targetId: uni.id,
-              targetType: 'university',
-              targetName: uni.name,
+          if (ref.watch(appSettingsProvider).valueOrNull?.enableComments ?? true)
+            SliverToBoxAdapter(
+              child: PublicReviewSection(
+                targetId: uni.id,
+                targetType: 'university',
+                targetName: uni.name,
+              ),
             ),
-          ),
           const SliverToBoxAdapter(child: SizedBox(height: 120)),
         ],
       ),

@@ -12,6 +12,7 @@ class Comment {
     required this.targetName,
     this.imageUrls = const [],
     this.rating = 0.0,
+    this.userId,
   });
 
   final String id;
@@ -27,6 +28,7 @@ class Comment {
   targetName; // Display name: "Atilim University", "ANKAmall", etc.
   final List<String> imageUrls;
   final double rating;
+  final String? userId;
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     String s(String key) => (json[key] as String?) ?? '';
@@ -55,6 +57,7 @@ class Comment {
               .toList() ??
           [],
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      userId: json['userId'] as String?,
     );
   }
 
@@ -69,5 +72,6 @@ class Comment {
     'targetName': targetName,
     'imageUrls': imageUrls,
     'rating': rating,
+    'userId': userId,
   };
 }

@@ -187,7 +187,11 @@ class _MiniEventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final cardTheme = theme.cardTheme;
+    final shape = (cardTheme.shape as RoundedRectangleBorder?) ??
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
 
     return GestureDetector(
       onTap: () => context.pushNamed(
@@ -198,20 +202,30 @@ class _MiniEventCard extends StatelessWidget {
       child: Container(
         width: 280,
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E293B) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.1)
-                : Colors.grey.withValues(alpha: 0.2),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: cardTheme.color ?? (isDark ? const Color(0xFF1E293B) : Colors.white),
+          borderRadius: shape.borderRadius,
+          border: shape.side != BorderSide.none
+              ? Border.fromBorderSide(shape.side)
+              : Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.grey.withValues(alpha: 0.2),
+                ),
+          boxShadow: cardTheme.shadowColor != null
+              ? [
+                  BoxShadow(
+                    color: cardTheme.shadowColor!,
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: ColorFiltered(
           colorFilter: isGrayscale
@@ -242,8 +256,8 @@ class _MiniEventCard extends StatelessWidget {
             children: [
               // Image Section
               ClipRRect(
-                borderRadius: const BorderRadius.horizontal(
-                  right: Radius.circular(16),
+                borderRadius: BorderRadius.horizontal(
+                  right: (shape.borderRadius as BorderRadius).topRight,
                 ), // Right side for RTL image
                 child: SizedBox(
                   width: 100,

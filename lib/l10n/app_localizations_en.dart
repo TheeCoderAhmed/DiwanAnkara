@@ -171,6 +171,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ikametExpiresIn => 'Expires in:';
 
   @override
+  String get resetDate => 'Reset';
+
+  @override
   String get days => 'Days';
 
   @override
@@ -2116,4 +2119,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeSystem => 'System Default';
+
+  @override
+  String get version => 'Version';
 }

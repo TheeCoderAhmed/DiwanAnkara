@@ -39,6 +39,27 @@ class _PublicReviewSectionState extends ConsumerState<PublicReviewSection> {
   int _rating = 0;
   bool _isSubmitting = false;
   bool _showForm = false;
+  String? _currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
+
+  Future<void> _loadUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_id');
+    if (userId == null) {
+      userId = const Uuid().v4();
+      await prefs.setString('user_id', userId);
+    }
+    if (mounted) {
+      setState(() {
+        _currentUserId = userId;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -64,43 +85,6 @@ class _PublicReviewSectionState extends ConsumerState<PublicReviewSection> {
         ),
       );
       return;
-    }
-
-    // Rate limiting check
-    final prefs = await SharedPreferences.getInstance();
-    final lastCommentTime = prefs.getString('last_comment_time');
-
-    if (lastCommentTime != null) {
-      final lastTime = DateTime.parse(lastCommentTime);
-      final now = DateTime.now();
-      final difference = now.difference(lastTime);
-
-      if (difference.inHours < 1) {
-        final remainingMinutes = 60 - difference.inMinutes;
-
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.timer_outlined, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'يرجى الانتظار $remainingMinutes دقيقة قبل إرسال تعليق آخر',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.orange,
-            duration: const Duration(seconds: 4),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        return;
-      }
     }
 
     setState(() => _isSubmitting = true);
@@ -130,16 +114,12 @@ class _PublicReviewSectionState extends ConsumerState<PublicReviewSection> {
         targetType: widget.targetType,
         imageUrls: uploadedUrls,
         rating: _rating.toDouble(),
+        userId: _currentUserId,
       );
 
       if (!mounted) return;
 
       if (success) {
-        await prefs.setString(
-          'last_comment_time',
-          DateTime.now().toIso8601String(),
-        );
-
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -291,7 +271,11 @@ class _PublicReviewSectionState extends ConsumerState<PublicReviewSection> {
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final review = reviews[index];
-                return _ReviewBubble(review: review, isDark: isDark);
+                return _ReviewBubble(
+                  review: review,
+                  isDark: isDark,
+                  currentUserId: _currentUserId,
+                );
               },
             );
           },
@@ -587,17 +571,22 @@ class _PublicReviewSectionState extends ConsumerState<PublicReviewSection> {
   }
 }
 
-class _ReviewBubble extends StatefulWidget {
-  const _ReviewBubble({required this.review, required this.isDark});
+class _ReviewBubble extends ConsumerStatefulWidget {
+  const _ReviewBubble({
+    required this.review,
+    required this.isDark,
+    this.currentUserId,
+  });
 
   final Comment review;
   final bool isDark;
+  final String? currentUserId;
 
   @override
-  State<_ReviewBubble> createState() => _ReviewBubbleState();
+  ConsumerState<_ReviewBubble> createState() => _ReviewBubbleState();
 }
 
-class _ReviewBubbleState extends State<_ReviewBubble> {
+class _ReviewBubbleState extends ConsumerState<_ReviewBubble> {
   String? _translatedText;
   bool _isTranslating = false;
 
@@ -632,6 +621,54 @@ class _ReviewBubbleState extends State<_ReviewBubble> {
         setState(() => _isTranslating = false);
       }
     }
+  }
+
+  Future<void> _deleteReview() async {
+    final deleteComment = ref.read(deleteCommentProvider);
+    final success = await deleteComment(widget.review.id);
+
+    if (mounted) {
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم حذف التعليق بنجاح'),
+            backgroundColor: Color(0xFF0D9488),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('فشل حذف التعليق. يرجى المحاولة مرة أخرى.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('حذف التعليق'),
+            content: const Text('هل أنت متأكد من رغبتك في حذف هذا التعليق؟'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('إلغاء'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _deleteReview();
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('حذف'),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
@@ -724,11 +761,25 @@ class _ReviewBubbleState extends State<_ReviewBubble> {
                 onPressed: _isTranslating ? null : _translateComment,
               ),
               const SizedBox(width: 4),
-              Icon(
-                Icons.verified,
-                size: 20,
-                color: const Color(0xFF0D9488).withValues(alpha: 0.7),
-              ),
+              // Delete Button (only if owner)
+              if (widget.review.userId != null &&
+                  widget.review.userId == widget.currentUserId)
+                IconButton(
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    size: 20,
+                    color: Colors.redAccent,
+                  ),
+                  tooltip: 'Delete',
+                  onPressed: () => _confirmDelete(context),
+                )
+              else ...[
+                Icon(
+                  Icons.verified,
+                  size: 20,
+                  color: const Color(0xFF0D9488).withValues(alpha: 0.7),
+                ),
+              ],
             ],
           ),
 

@@ -51,6 +51,7 @@
   "ikametNoDateSet": "لم يتم تعيين تاريخ انتهاء الإقامة",
   "ikametSetDate": "تعيين تاريخ الانتهاء",
   "ikametExpiresIn": "تنتهي في:",
+  "resetDate": "إعادة تعيين",
   "days": "يوم",
   "ikametSafe": "آمن",
   "ikametWarning": "تحذير",
@@ -638,5 +639,6 @@
   "onboardingThemeDesc": "اختر المظهر الذي يناسبك",
   "themeLight": "فاتح",
   "themeDark": "داكن",
-  "themeSystem": "تلقائي"
+  "themeSystem": "تلقائي",
+  "version": "الإصدار"
 }

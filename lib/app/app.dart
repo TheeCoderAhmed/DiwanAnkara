@@ -8,6 +8,7 @@ import '../settings/locale_controller.dart';
 import '../l10n/app_localizations.dart';
 
 import 'theme_styles.dart';
+import '../ui/widgets/version_guard.dart';
 
 class YCAnkaraApp extends ConsumerWidget {
   const YCAnkaraApp({super.key});
@@ -33,6 +34,9 @@ class YCAnkaraApp extends ConsumerWidget {
       theme: AppThemeStyles.buildTheme(themeState, isDark: false),
       darkTheme: AppThemeStyles.buildTheme(themeState, isDark: true),
       routerConfig: router,
+      builder: (context, child) {
+        return VersionGuard(child: child!);
+      },
     );
   }
 }

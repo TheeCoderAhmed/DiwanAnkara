@@ -9,11 +9,17 @@ import '../../domain/models/place.dart';
 import '../../domain/models/project.dart';
 import '../../domain/models/university_model.dart';
 import '../../domain/models/comment.dart';
+import '../../domain/models/app_settings.dart';
 import 'firestore_repository.dart';
 import '../local/local_repository.dart';
 
 final firestoreRepositoryProvider = Provider<FirestoreRepository>((ref) {
   return FirestoreRepository();
+});
+
+final appSettingsProvider = StreamProvider<AppSettings>((ref) {
+  final repo = ref.watch(firestoreRepositoryProvider);
+  return repo.watchAppSettings();
 });
 
 final placesStreamProvider = StreamProvider<List<Place>>((ref) async* {
@@ -177,6 +183,7 @@ final submitCommentProvider =
         required String targetType,
         List<String> imageUrls,
         double rating,
+        String? userId,
       })
     >((ref) {
       final repo = ref.watch(firestoreRepositoryProvider);
@@ -187,6 +194,7 @@ final submitCommentProvider =
         required String targetType,
         List<String> imageUrls = const [],
         double rating = 0.0,
+        String? userId,
       }) => repo.submitComment(
         announcementId: announcementId,
         userName: userName,
@@ -194,7 +202,15 @@ final submitCommentProvider =
         targetType: targetType,
         imageUrls: imageUrls,
         rating: rating,
+        userId: userId,
       );
+    });
+
+// Comment deletion provider
+final deleteCommentProvider =
+    Provider<Future<bool> Function(String commentId)>((ref) {
+      final repo = ref.watch(firestoreRepositoryProvider);
+      return (commentId) => repo.deleteComment(commentId);
     });
 
 // Public reviews stream provider (for directory items)

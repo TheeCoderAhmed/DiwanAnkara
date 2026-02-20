@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../settings/theme_controller.dart';
 
 /// Model for in-app message from Firestore
 class InAppMessage {
@@ -87,18 +90,31 @@ final inAppMessagesProvider = StreamProvider<List<InAppMessage>>((ref) {
       });
 });
 
-/// Tracks which in-app message IDs have been dismissed this session
+/// Tracks which in-app message IDs have been dismissed persistently
 class DismissedMessagesNotifier extends StateNotifier<Set<String>> {
-  DismissedMessagesNotifier() : super({});
+  final SharedPreferences prefs;
+  static const String _storageKey = 'dismissed_in_app_messages';
+
+  DismissedMessagesNotifier(this.prefs) : super({}) {
+    _loadDismissed();
+  }
+
+  void _loadDismissed() {
+    final list = prefs.getStringList(_storageKey) ?? [];
+    state = list.toSet();
+  }
 
   void dismiss(String id) {
-    state = {...state, id};
+    final newState = {...state, id};
+    state = newState;
+    prefs.setStringList(_storageKey, newState.toList());
   }
 
   bool isDismissed(String id) => state.contains(id);
 }
 
 final dismissedMessagesProvider =
-    StateNotifierProvider<DismissedMessagesNotifier, Set<String>>(
-      (ref) => DismissedMessagesNotifier(),
-    );
+    StateNotifierProvider<DismissedMessagesNotifier, Set<String>>((ref) {
+      final prefs = ref.watch(sharedPrefsProvider);
+      return DismissedMessagesNotifier(prefs);
+    });

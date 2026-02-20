@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../settings/theme_controller.dart';
 
@@ -33,6 +34,22 @@ class AppThemeStyles {
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        systemOverlayStyle: isDark
+            ? SystemUiOverlayStyle.light.copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarIconBrightness: Brightness.light,
+              )
+            : SystemUiOverlayStyle.dark.copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarIconBrightness: Brightness.dark,
+              ),
       ),
     );
   }
@@ -120,6 +137,17 @@ class AppThemeStyles {
           fontWeight: FontWeight.bold,
           color: isDark ? Colors.white : const Color(0xFF1A1A1A),
         ),
+        systemOverlayStyle: isDark
+            ? SystemUiOverlayStyle.light.copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarIconBrightness: Brightness.light,
+              )
+            : SystemUiOverlayStyle.dark.copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarIconBrightness: Brightness.dark,
+              ),
       ),
       dividerTheme: DividerThemeData(
         color: isDark ? Colors.white10 : const Color(0xFFE8E2D0),
@@ -175,6 +203,17 @@ class AppThemeStyles {
           fontWeight: FontWeight.w600,
           color: isDark ? Colors.white : const Color(0xFF1F2937),
         ),
+        systemOverlayStyle: isDark
+            ? SystemUiOverlayStyle.light.copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarIconBrightness: Brightness.light,
+              )
+            : SystemUiOverlayStyle.dark.copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarIconBrightness: Brightness.dark,
+              ),
       ),
     );
   }
