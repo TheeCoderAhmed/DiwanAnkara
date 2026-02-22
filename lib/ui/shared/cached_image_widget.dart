@@ -39,9 +39,20 @@ class CachedImageWidget extends StatelessWidget {
         height: height,
         fit: fit,
         cacheKey: imageUrl,
-        maxWidthDiskCache: 1000,
-        maxHeightDiskCache: 1000,
-        fadeInDuration: const Duration(milliseconds: 400),
+        // Phase 4: Constrain in-memory decode to 2× display size.
+        // Guard against double.infinity / NaN — only pass finite values.
+        // When width/height is double.infinity (full-width cards), we skip the
+        // hint so CachedNetworkImage uses its own default sizing instead of
+        // crashing on .toInt().
+        memCacheWidth: (width != null && width!.isFinite && width! > 0)
+            ? (width! * 2).toInt()
+            : null,
+        memCacheHeight: (height != null && height!.isFinite && height! > 0)
+            ? (height! * 2).toInt()
+            : null,
+        maxWidthDiskCache: 800, // was 1000 — still fine for high-DPI screens
+        maxHeightDiskCache: 800, // was 1000
+        fadeInDuration: const Duration(milliseconds: 200), // was 400
         placeholder: (context, url) => _buildShimmerPlaceholder(context),
         errorWidget: (context, url, error) => _buildErrorWidget(context),
       );

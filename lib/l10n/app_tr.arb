@@ -651,5 +651,14 @@
   "themeLight": "Açık",
   "themeDark": "Koyu",
   "themeSystem": "Sistem Varsayılanı",
-  "version": "Sürüm"
+  "version": "Sürüm",
+  "goodMorning": "Günaydın",
+  "goodAfternoon": "İyi günler",
+  "goodEvening": "İyi akşamlar",
+  "goodNight": "İyi geceler",
+  "general": "Genel",
+  "community": "Topluluk",
+  "support": "Destek",
+  "eventsTab": "Etkinlikler",
+  "searchResults": "Arama Sonuçları"
 }

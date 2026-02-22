@@ -2114,4 +2114,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get version => 'الإصدار';
+
+  @override
+  String get goodMorning => 'صباح الخير';
+
+  @override
+  String get goodAfternoon => 'مساء الخير';
+
+  @override
+  String get goodEvening => 'مساء الخير';
+
+  @override
+  String get goodNight => 'طاب مساؤك';
+
+  @override
+  String get general => 'عام';
+
+  @override
+  String get community => 'المجتمع';
+
+  @override
+  String get support => 'الدعم';
+
+  @override
+  String get eventsTab => 'الفعاليات';
 }

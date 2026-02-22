@@ -649,25 +649,24 @@ class _ReviewBubbleState extends ConsumerState<_ReviewBubble> {
   Future<void> _confirmDelete(BuildContext context) async {
     return showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('حذف التعليق'),
-            content: const Text('هل أنت متأكد من رغبتك في حذف هذا التعليق؟'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('إلغاء'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _deleteReview();
-                },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('حذف'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('حذف التعليق'),
+        content: const Text('هل أنت متأكد من رغبتك في حذف هذا التعليق؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('إلغاء'),
           ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _deleteReview();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('حذف'),
+          ),
+        ],
+      ),
     );
   }
 

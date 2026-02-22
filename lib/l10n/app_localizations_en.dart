@@ -2122,4 +2122,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get version => 'Version';
+
+  @override
+  String get goodMorning => 'Good Morning';
+
+  @override
+  String get goodAfternoon => 'Good Afternoon';
+
+  @override
+  String get goodEvening => 'Good Evening';
+
+  @override
+  String get goodNight => 'Good Night';
+
+  @override
+  String get general => 'General';
+
+  @override
+  String get community => 'Community';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get eventsTab => 'Events';
 }

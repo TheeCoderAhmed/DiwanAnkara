@@ -40,7 +40,8 @@ class AppSettings {
   factory AppSettings.fromJson(Map<String, dynamic> json) {
     Map<String, double> parsedRates = {};
     if (json['currencyFallbackRates'] != null) {
-      final Map<String, dynamic> rawRates = json['currencyFallbackRates'] as Map<String, dynamic>;
+      final Map<String, dynamic> rawRates =
+          json['currencyFallbackRates'] as Map<String, dynamic>;
       rawRates.forEach((key, value) {
         if (value is num) {
           parsedRates[key] = value.toDouble();

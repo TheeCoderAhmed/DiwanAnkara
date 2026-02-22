@@ -12,6 +12,7 @@ import '../shared/cached_image_widget.dart';
 import '../widgets/public_review_section.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
 import '../../services/translation_service.dart';
+import '../shared/floating_navigation_bar.dart';
 
 class PlaceDetailsScreen extends ConsumerStatefulWidget {
   const PlaceDetailsScreen({super.key, required this.placeId});
@@ -297,251 +298,277 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     final appSettingsAsync = ref.watch(appSettingsProvider);
     final enableComments = appSettingsAsync.valueOrNull?.enableComments ?? true;
 
+    // 3.5 – Determine if a navigation target exists for sticky bar
+    final hasNav = place.mapsLink != null || (place.lat != 0 && place.lng != 0);
+
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Parallax SliverAppBar
-          SliverAppBar(
-            expandedHeight: 300,
-            pinned: true,
-            stretch: true,
-            backgroundColor: isDark ? Colors.black : Colors.white,
-            leading: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.3),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  LucideIcons.arrowRight,
-                  color: isDark ? Colors.white : Colors.black,
+      // 3.5 – Sticky Navigate bottom bar
+      bottomNavigationBar: hasNav
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                child: FilledButton.icon(
+                  onPressed: () async {
+                    HapticFeedback.mediumImpact();
+                    final Uri uri;
+                    if (place.mapsLink != null && place.mapsLink!.isNotEmpty) {
+                      uri = Uri.parse(place.mapsLink!);
+                    } else {
+                      uri = Uri.parse(
+                        'https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}',
+                      );
+                    }
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  },
+                  icon: const Icon(LucideIcons.navigation),
+                  label: Text(AppLocalizations.of(context).navigate),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    minimumSize: const Size(double.infinity, 52),
+                  ),
                 ),
-                onPressed: () => Navigator.of(context).pop(),
               ),
-            ),
-            actions: [
-              Container(
+            )
+          : null,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        child: CustomScrollView(
+          slivers: [
+            // Parallax SliverAppBar
+            SliverAppBar(
+              expandedHeight: 300,
+              pinned: true,
+              stretch: true,
+              backgroundColor: isDark ? Colors.black : Colors.white,
+              leading: Container(
                 margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
+                decoration: const BoxDecoration(
+                  color: Color(
+                    0x80000000,
+                  ), // always dark semi-transparent (9.2)
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
                   icon: Icon(
-                    LucideIcons.heart,
-                    color: isSaved ? Colors.red : Colors.white,
+                    // 3.1 – RTL-aware back arrow
+                    Directionality.of(context) == TextDirection.rtl
+                        ? LucideIcons.arrowRight
+                        : LucideIcons.arrowLeft,
+                    color: Colors.white, // always white on dark backing
                   ),
-                  onPressed: () {
-                    HapticFeedback.selectionClick();
-                    ref
-                        .read(favoritesProvider.notifier)
-                        .toggleFavorite(place.id);
-                  },
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                place.nameTr,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  shadows: [Shadow(blurRadius: 8, color: Colors.black54)],
-                ),
-              ),
-              titlePadding: const EdgeInsets.only(
-                left: 16,
-                right: 56,
-                bottom: 16,
-              ),
-              stretchModes: const [
-                StretchMode.zoomBackground,
-                StretchMode.blurBackground,
-              ],
-              background: Hero(
-                tag: 'place_image_${place.id}',
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    place.imageAsset.isNotEmpty &&
-                            place.imageAsset.startsWith('http')
-                        ? CachedImageWidget(
-                            imageUrl: place.imageAsset,
-                            fit: place.category == PlaceCategory.project
-                                ? BoxFit.contain
-                                : BoxFit.cover,
-                          )
-                        : place.imageAsset.isNotEmpty
-                        ? Image.asset(
-                            place.imageAsset,
-                            fit: place.category == PlaceCategory.project
-                                ? BoxFit.contain
-                                : BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                _buildImagePlaceholder(place.pdfUrl != null),
-                          )
-                        : _buildImagePlaceholder(place.pdfUrl != null),
-                    // Bottom gradient for text readability (Hide for projects as they are flyers/logos)
-                    if (place.category != PlaceCategory.project)
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.7),
-                            ],
-                            stops: const [0.5, 1.0],
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Content
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Category badge
+              actions: [
+                if (place.category != PlaceCategory.about)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                    margin: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Color(
+                        0x80000000,
+                      ), // always dark semi-transparent (9.2)
+                      shape: BoxShape.circle,
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0D9488).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      place.category.getLabel(context),
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: const Color(0xFF0D9488),
+                    child: IconButton(
+                      icon: Icon(
+                        LucideIcons.heart,
+                        color: isSaved ? Colors.red : Colors.white,
                       ),
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        ref
+                            .read(favoritesProvider.notifier)
+                            .toggleFavorite(place.id);
+                      },
                     ),
                   ),
-                  const SizedBox(height: 16),
-
-                  // Title
-                  Text(
-                    place.nameTr,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      height: 1.2,
-                    ),
+              ],
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  place.nameTr,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    shadows: [Shadow(blurRadius: 8, color: Colors.black54)],
                   ),
-                  const SizedBox(height: 16),
-
-                  // Stats Row (Type, Established, Known For)
-                  _buildPlaceStats(context, place),
-                  const SizedBox(height: 24),
-
-                  _isTranslating
-                      ? const Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      : _buildDescription(
-                          context,
-                          _translatedDescription ?? place.descriptionAr,
-                          isDark,
-                        ),
-                  const SizedBox(height: 24),
-
-                  // History section if available
-                  _buildHistorySection(context, place, _translatedHistory),
-                  const SizedBox(height: 12),
-
-                  // New: Sections Accordion (for Transport Guide, etc.)
-                  _buildSectionsAccordion(context, place, _translatedSections),
-                  const SizedBox(height: 12),
-
-                  // Known For section if available and not shown in stats
-                  if (place.knownFor != null && place.knownFor!.isNotEmpty) ...[
-                    Text(
-                      AppLocalizations.of(context).knownFor,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF0D9488),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _translatedKnownFor ?? place.knownFor!,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-
-                  const SizedBox(height: 24),
-
-                  // Navigate button (use mapsLink if available, otherwise use coords)
-                  if (place.mapsLink != null ||
-                      (place.lat != 0 && place.lng != 0))
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: () async {
-                          HapticFeedback.mediumImpact();
-                          final Uri uri;
-                          if (place.mapsLink != null &&
-                              place.mapsLink!.isNotEmpty) {
-                            uri = Uri.parse(place.mapsLink!);
-                          } else {
-                            uri = Uri.parse(
-                              'https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}',
-                            );
-                          }
-                          await launchUrl(
-                            uri,
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        icon: const Icon(LucideIcons.navigation),
-                        label: Text(AppLocalizations.of(context).navigate),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF0D9488),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 16,
+                ),
+                titlePadding: const EdgeInsets.only(
+                  left: 16,
+                  right: 56,
+                  bottom: 16,
+                ),
+                stretchModes: const [
+                  StretchMode.zoomBackground,
+                  StretchMode.blurBackground,
+                ],
+                background: Hero(
+                  tag: 'place_image_${place.id}',
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      place.imageAsset.isNotEmpty &&
+                              place.imageAsset.startsWith('http')
+                          ? CachedImageWidget(
+                              imageUrl: place.imageAsset,
+                              fit: place.category == PlaceCategory.project
+                                  ? BoxFit.contain
+                                  : BoxFit.cover,
+                            )
+                          : place.imageAsset.isNotEmpty
+                          ? Image.asset(
+                              place.imageAsset,
+                              fit: place.category == PlaceCategory.project
+                                  ? BoxFit.contain
+                                  : BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  _buildImagePlaceholder(place.pdfUrl != null),
+                            )
+                          : _buildImagePlaceholder(place.pdfUrl != null),
+                      // Bottom gradient for text readability (Hide for projects as they are flyers/logos)
+                      if (place.category != PlaceCategory.project)
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.7),
+                              ],
+                              stops: const [0.5, 1.0],
+                            ),
                           ),
                         ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Content
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 3.3 – Category-specific badge color
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _categoryColor(
+                          place.category,
+                        ).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        place.category.getLabel(context),
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: _categoryColor(place.category),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 16),
 
-                  const SizedBox(height: 24),
+                    // Title
+                    Text(
+                      place.nameTr,
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.w700, height: 1.2),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // Documents Section (Unified)
-                  _buildDocuments(context, place),
-                  const SizedBox(height: 132),
-                ],
+                    // Stats Row (Type, Established, Known For)
+                    _buildPlaceStats(context, place),
+                    const SizedBox(height: 24),
+
+                    _isTranslating
+                        ? const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        : _buildDescription(
+                            context,
+                            _translatedDescription ?? place.descriptionAr,
+                            isDark,
+                          ),
+                    const SizedBox(height: 24),
+
+                    // History section if available
+                    _buildHistorySection(context, place, _translatedHistory),
+                    const SizedBox(height: 12),
+
+                    // New: Sections Accordion (for Transport Guide, etc.)
+                    _buildSectionsAccordion(
+                      context,
+                      place,
+                      _translatedSections,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Known For section if available and not shown in stats
+                    if (place.knownFor != null &&
+                        place.knownFor!.isNotEmpty) ...[
+                      Text(
+                        AppLocalizations.of(context).knownFor,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _translatedKnownFor ?? place.knownFor!,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+
+                    const SizedBox(height: 24),
+
+                    // Navigate button removed from scroll body — now in sticky bottomNavigationBar (3.5)
+                    const SizedBox(height: 24),
+
+                    // Documents Section (Unified)
+                    _buildDocuments(context, place),
+                    SizedBox(
+                      height: FloatingNavigationBar.totalHeight(context),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          // Public Review Section
-          if (enableComments)
+            // Public Review Section — hidden for About Us page
+            if (enableComments && place.category != PlaceCategory.about)
+              SliverToBoxAdapter(
+                child: PublicReviewSection(
+                  targetId: place.id,
+                  targetType: place.category.jsonValue,
+                  targetName: place.nameTr,
+                ),
+              ),
+
+            // Extra bottom padding for better scrollability
             SliverToBoxAdapter(
-              child: PublicReviewSection(
-                targetId: place.id,
-                targetType: place.category.jsonValue,
-                targetName: place.nameTr,
+              child: SizedBox(
+                height: FloatingNavigationBar.totalHeight(context),
               ),
             ),
-
-          // Extra bottom padding for better scrollability
-          const SliverToBoxAdapter(child: SizedBox(height: 200)),
-        ],
-      ),
+          ],
+        ),
+      ), // AnimatedSwitcher
     );
   }
 
@@ -615,31 +642,36 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _buildDocTile(String title, IconData icon, Color color, String url) {
+    // 3.4 – Respect theme card shape
+    final shape =
+        (Theme.of(context).cardTheme.shape as RoundedRectangleBorder?) ??
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12));
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        leading: Icon(icon, color: color),
-        title: Text(
-          title,
-          style: const TextStyle(fontFamily: 'Cairo'),
-        ), // User requested Cairo
-        trailing: const Icon(LucideIcons.download, size: 20),
-        onTap: () async {
-          final uri = Uri.parse(url);
-          try {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-          } catch (e) {
-            debugPrint('Could not launch $url: $e');
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppLocalizations.of(context).cannotOpenFile(e.toString()),
+      child: ClipRRect(
+        borderRadius:
+            shape.borderRadius as BorderRadius? ?? BorderRadius.circular(12),
+        child: ListTile(
+          leading: Icon(icon, color: color),
+          title: Text(title, style: const TextStyle(fontFamily: 'Cairo')),
+          trailing: const Icon(LucideIcons.download, size: 20),
+          onTap: () async {
+            final uri = Uri.parse(url);
+            try {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            } catch (e) {
+              debugPrint('Could not launch $url: $e');
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    AppLocalizations.of(context).cannotOpenFile(e.toString()),
+                  ),
                 ),
-              ),
-            );
-          }
-        },
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -798,7 +830,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           AppLocalizations.of(context).history,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF0D9488),
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
@@ -822,7 +854,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       children: [
         Row(
           children: [
-            Icon(icon, size: 16, color: const Color(0xFF0D9488)),
+            Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 8),
             Text(
               label,
@@ -841,6 +873,25 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         ),
       ],
     );
+  }
+
+  /// Returns the semantic accent color for a given [PlaceCategory] (3.3 / 3.6).
+  static Color _categoryColor(PlaceCategory cat) {
+    return switch (cat) {
+      PlaceCategory.university => const Color(0xFF6366F1),
+      PlaceCategory.hospital => const Color(0xFFEF4444),
+      PlaceCategory.mall => const Color(0xFFF59E0B),
+      PlaceCategory.restaurant => const Color(0xFFFF6B35),
+      PlaceCategory.market => const Color(0xFF10B981),
+      PlaceCategory.historic => const Color(0xFF8B5CF6),
+      PlaceCategory.library => const Color(0xFF3B82F6),
+      PlaceCategory.transport => const Color(0xFF0EA5E9),
+      PlaceCategory.govOffice => const Color(0xFF14B8A6),
+      PlaceCategory.housing => const Color(0xFF84CC16),
+      PlaceCategory.parks => const Color(0xFF22C55E),
+      PlaceCategory.activities => const Color(0xFFEC4899),
+      _ => const Color(0xFF0D9488),
+    };
   }
 
   /// Builds a placeholder when no image is available.
@@ -937,7 +988,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           child: Theme(
             data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
-              iconColor: const Color(0xFF0D9488),
+              iconColor: Theme.of(context).colorScheme.primary,
               collapsedIconColor: Colors.grey,
               title: Text(
                 section.title,

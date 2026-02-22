@@ -11,6 +11,7 @@ import '../shared/cached_image_widget.dart';
 import 'widgets/medical_advice_modal.dart';
 import 'widgets/park_advice_modal.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
+import '../shared/floating_navigation_bar.dart';
 
 class PlaceListScreen extends ConsumerWidget {
   const PlaceListScreen({super.key, required this.category});
@@ -48,7 +49,9 @@ class PlaceListScreen extends ConsumerWidget {
             }
 
             return ListView.separated(
-              padding: const EdgeInsets.only(bottom: 200),
+              padding: EdgeInsets.only(
+                bottom: FloatingNavigationBar.totalHeight(context) + 16,
+              ),
               itemCount: universities.length,
               separatorBuilder: (_, __) => const Divider(height: 0),
               itemBuilder: (context, index) {
@@ -175,7 +178,9 @@ class PlaceListScreen extends ConsumerWidget {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 200),
+            padding: EdgeInsets.only(
+              bottom: FloatingNavigationBar.totalHeight(context) + 16,
+            ),
             itemCount: filteredPlaces.length,
             separatorBuilder: (_, __) => const Divider(height: 0),
             itemBuilder: (context, index) {

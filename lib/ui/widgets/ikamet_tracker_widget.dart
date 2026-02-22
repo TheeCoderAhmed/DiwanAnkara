@@ -63,12 +63,16 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
       firstDate: now,
       lastDate: now.add(const Duration(days: 3650)), // 10 years
       builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final primary = Theme.of(context).colorScheme.primary;
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
-              primary: const Color(0xFF0D9488),
-              surface: const Color(0xFF1E293B),
-            ),
+            colorScheme: isDark
+                ? ColorScheme.dark(
+                    primary: primary,
+                    surface: const Color(0xFF1E293B),
+                  )
+                : ColorScheme.light(primary: primary),
           ),
           child: child!,
         );
@@ -126,7 +130,10 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                   Colors.grey.shade50.withValues(alpha: 0.8),
                 ],
         ),
-        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(20)),
+        borderRadius:
+            ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                ?.borderRadius ??
+            BorderRadius.circular(20)),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.1)
@@ -154,7 +161,11 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: const Color(0xFF0D9488).withValues(alpha: 0.2),
-                borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+                borderRadius:
+                    ((Theme.of(context).cardTheme.shape
+                            as RoundedRectangleBorder?)
+                        ?.borderRadius ??
+                    BorderRadius.circular(12)),
               ),
               child: const Icon(
                 LucideIcons.calendar,
@@ -186,7 +197,11 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
-              borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+              borderRadius:
+                  ((Theme.of(context).cardTheme.shape
+                          as RoundedRectangleBorder?)
+                      ?.borderRadius ??
+                  BorderRadius.circular(12)),
             ),
           ),
         ),
@@ -206,7 +221,11 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: _statusColor.withValues(alpha: 0.2),
-                    borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+                    borderRadius:
+                        ((Theme.of(context).cardTheme.shape
+                                as RoundedRectangleBorder?)
+                            ?.borderRadius ??
+                        BorderRadius.circular(12)),
                   ),
                   child: Icon(
                     LucideIcons.calendar,
@@ -294,7 +313,11 @@ class _IkametTrackerWidgetState extends State<IkametTrackerWidget> {
                     ),
                     decoration: BoxDecoration(
                       color: _statusColor.withValues(alpha: 0.2),
-                      borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+                      borderRadius:
+                          ((Theme.of(context).cardTheme.shape
+                                  as RoundedRectangleBorder?)
+                              ?.borderRadius ??
+                          BorderRadius.circular(12)),
                     ),
                     child: Text(
                       _daysRemaining > 90

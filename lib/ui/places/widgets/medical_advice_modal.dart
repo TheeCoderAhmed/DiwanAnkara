@@ -10,6 +10,7 @@ class MedicalAdviceModal extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const MedicalAdviceModal(),
     );
@@ -125,7 +126,14 @@ class _MedicalAdviceModalState extends State<MedicalAdviceModal> {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+              padding: EdgeInsets.fromLTRB(
+                20,
+                0,
+                20,
+                // Ensure content clears the home indicator on all devices.
+                // Use max() so we always have at least 24px breathing room.
+                (MediaQuery.viewPaddingOf(context).bottom + 24).clamp(24.0, 80.0),
+              ),
               children: [
                 Row(
                   children: [

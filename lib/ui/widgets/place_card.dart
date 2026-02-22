@@ -58,11 +58,14 @@ class PlaceCard extends StatelessWidget {
             // --- IMAGE SECTION ---
             Expanded(
               flex: 3,
-              child: ClipRRect(
-                borderRadius: BorderRadius.vertical(
-                  top: (shape.borderRadius as BorderRadius).topLeft,
+              child: Hero(
+                tag: 'place_image_${place.id}',
+                child: ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: (shape.borderRadius as BorderRadius).topLeft,
+                  ),
+                  child: _buildImage(place.imageAsset),
                 ),
-                child: _buildImage(place.imageAsset),
               ),
             ),
             // --- TEXT SECTION ---

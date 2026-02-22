@@ -52,6 +52,14 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
+
+        <!-- Phase 5: Enable Impeller renderer for 120fps + no shader jank.
+             Impeller pre-compiles shaders at install time so there are zero
+             first-frame stutters. Requires Android API 29+ for Vulkan support;
+             falls back to OpenGL on older devices transparently. -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="true" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

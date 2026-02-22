@@ -91,6 +91,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 },
               ),
               GoRoute(
+                path: const AnnouncementDetailsRoute().path,
+                name: const AnnouncementDetailsRoute().name,
+                builder: (context, state) {
+                  final announcementId = state.pathParameters['id'] ?? '';
+                  final announcement = state.extra as Announcement?;
+                  return AnnouncementDetailScreen(
+                    announcementId: announcementId,
+                    announcement: announcement,
+                  );
+                },
+              ),
+              // Keep /events and /events/:id in home branch for push-nav
+              // from events_preview_widget (context.pushNamed(EventsRoute.name))
+              GoRoute(
+                path: EventsRoute.path,
+                name: EventsRoute.name,
+                builder: (_, __) => const EventsScreen(),
+              ),
+              GoRoute(
                 path: const EventDetailsRoute().path,
                 name: const EventDetailsRoute().name,
                 builder: (context, state) {
@@ -109,28 +128,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   );
                   return EventDetailsScreen(event: event);
                 },
-              ),
-              GoRoute(
-                path: const AnnouncementDetailsRoute().path,
-                name: const AnnouncementDetailsRoute().name,
-                builder: (context, state) {
-                  final announcementId = state.pathParameters['id'] ?? '';
-                  final announcement = state.extra as Announcement?;
-                  return AnnouncementDetailScreen(
-                    announcementId: announcementId,
-                    announcement: announcement,
-                  );
-                },
-              ),
-              GoRoute(
-                path: EventsRoute.path,
-                name: EventsRoute.name,
-                builder: (_, __) => const EventsScreen(),
-              ),
-              GoRoute(
-                path: const PreviousEventsRoute().path,
-                name: const PreviousEventsRoute().name,
-                builder: (_, __) => const PreviousEventsScreen(),
               ),
             ],
           ),
@@ -167,6 +164,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 7.2 – Events tab (branch 2)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: EventsTabRoute.path,
+                name: EventsTabRoute.name,
+                builder: (_, __) => const EventsScreen(),
+              ),
+              GoRoute(
+                path: const PreviousEventsRoute().path,
+                name: const PreviousEventsRoute().name,
+                builder: (_, __) => const PreviousEventsScreen(),
+              ),
+            ],
+          ),
+          // More tab (branch 3)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -330,17 +343,21 @@ class PreviousEventsRoute {
   String get location => path;
 }
 
+/// 7.2 — Dedicated root path for the Events shell tab (branch 3).
+class EventsTabRoute {
+  const EventsTabRoute();
+  static const name = 'events_tab';
+  static const path = '/events-tab';
+  static const location = path;
+}
+
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.navigationShell});
   final StatefulNavigationShell navigationShell;
 
   void _onDestinationSelected(BuildContext context, int index) {
-    // If it's the Directory tab (index 1), always reset to its root categories list.
-    // Also reset any other tab if it's already active.
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == 1 || index == navigationShell.currentIndex,
-    );
+    // Always reset to initial location when a tab is selected.
+    navigationShell.goBranch(index, initialLocation: true);
   }
 
   @override

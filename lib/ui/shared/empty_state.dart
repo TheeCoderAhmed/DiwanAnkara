@@ -9,27 +9,26 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mutedIcon = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.35);
+    final mutedText = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.45);
+
     return Center(
-      child: Opacity(
-        opacity: 0.5,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon ?? LucideIcons.inbox,
-              size: 64,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.3),
-            ),
+            Icon(icon ?? LucideIcons.inbox, size: 64, color: mutedIcon),
             const SizedBox(height: 16),
             Text(
               message,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: mutedText),
               textAlign: TextAlign.center,
             ),
           ],

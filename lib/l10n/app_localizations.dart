@@ -3777,6 +3777,54 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'الإصدار'**
   String get version;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In ar, this message translates to:
+  /// **'صباح الخير'**
+  String get goodMorning;
+
+  /// No description provided for @goodAfternoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'مساء الخير'**
+  String get goodAfternoon;
+
+  /// No description provided for @goodEvening.
+  ///
+  /// In ar, this message translates to:
+  /// **'مساء الخير'**
+  String get goodEvening;
+
+  /// No description provided for @goodNight.
+  ///
+  /// In ar, this message translates to:
+  /// **'طاب مساؤك'**
+  String get goodNight;
+
+  /// No description provided for @general.
+  ///
+  /// In ar, this message translates to:
+  /// **'عام'**
+  String get general;
+
+  /// No description provided for @community.
+  ///
+  /// In ar, this message translates to:
+  /// **'المجتمع'**
+  String get community;
+
+  /// No description provided for @support.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدعم'**
+  String get support;
+
+  /// No description provided for @eventsTab.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفعاليات'**
+  String get eventsTab;
 }
 
 class _AppLocalizationsDelegate

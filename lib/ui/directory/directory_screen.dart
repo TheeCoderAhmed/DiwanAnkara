@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../domain/models/categories.dart';
@@ -9,6 +10,7 @@ import '../../routing/app_router.dart';
 import '../shared/section_header.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
 import '../../data/firestore/firestore_providers.dart';
+import '../shared/floating_navigation_bar.dart';
 
 class DirectoryScreen extends ConsumerWidget {
   const DirectoryScreen({super.key});
@@ -31,12 +33,19 @@ class DirectoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).directory)),
+      appBar: AppBar(title: Text(l10n.directory)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 116),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          FloatingNavigationBar.totalHeight(context) + 16,
+        ),
         children: [
-          SectionHeader(title: AppLocalizations.of(context).sections),
+          SectionHeader(title: l10n.sections, horizontalPadding: 0),
+          const SizedBox(height: 8),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -52,11 +61,14 @@ class DirectoryScreen extends ConsumerWidget {
               return _CategoryCard(
                 title: _localizedLabel(context, cat),
                 icon: _iconFor(cat),
+                color: _colorFor(cat),
                 onTap: () async {
                   // Residency Guide - Query from AppSettings and open file directly
                   if (cat == 'Residency Guide') {
                     try {
-                      final appSettings = ref.read(appSettingsProvider).valueOrNull;
+                      final appSettings = ref
+                          .read(appSettingsProvider)
+                          .valueOrNull;
                       final String? fileUrl = appSettings?.residencyGuideUrl;
 
                       if (fileUrl == null || fileUrl.isEmpty) {
@@ -64,7 +76,9 @@ class DirectoryScreen extends ConsumerWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                AppLocalizations.of(context).fileLinkNotAvailable,
+                                AppLocalizations.of(
+                                  context,
+                                ).fileLinkNotAvailable,
                               ),
                             ),
                           );
@@ -72,7 +86,6 @@ class DirectoryScreen extends ConsumerWidget {
                         return;
                       }
 
-                      // Launch file URL immediately
                       final uri = Uri.parse(fileUrl);
                       await launchUrl(
                         uri,
@@ -95,7 +108,6 @@ class DirectoryScreen extends ConsumerWidget {
                   // Special handling for Housing - open PDF directly
                   if (cat == 'Housing') {
                     try {
-                      // Try multiple category variants for housing
                       final categoryVariants = ['دليل السكنات', 'السكنات'];
                       QuerySnapshot? snapshot;
 
@@ -124,17 +136,13 @@ class DirectoryScreen extends ConsumerWidget {
                       final doc = snapshot.docs.first;
                       final data = doc.data() as Map<String, dynamic>;
 
-                      // Check multiple PDF URL keys
                       String? pdfUrl = data['pdf_url'] as String?;
-                      if (pdfUrl == null || pdfUrl.isEmpty) {
+                      if (pdfUrl == null || pdfUrl.isEmpty)
                         pdfUrl = data['pdfUrl'] as String?;
-                      }
-                      if (pdfUrl == null || pdfUrl.isEmpty) {
+                      if (pdfUrl == null || pdfUrl.isEmpty)
                         pdfUrl = data['file_url'] as String?;
-                      }
-                      if (pdfUrl == null || pdfUrl.isEmpty) {
+                      if (pdfUrl == null || pdfUrl.isEmpty)
                         pdfUrl = data['fileUrl'] as String?;
-                      }
 
                       if (pdfUrl == null || pdfUrl.isEmpty) {
                         if (context.mounted) {
@@ -151,7 +159,6 @@ class DirectoryScreen extends ConsumerWidget {
                         return;
                       }
 
-                      // Launch PDF URL immediately
                       final uri = Uri.parse(pdfUrl);
                       await launchUrl(
                         uri,
@@ -223,54 +230,91 @@ class DirectoryScreen extends ConsumerWidget {
     };
   }
 
+  // 4.1 — Lucide icon set for all categories
   static IconData _iconFor(String key) {
     return switch (key) {
-      'Universities' => Icons.school_outlined,
-      'Hospitals' => Icons.local_hospital_outlined,
-      'Malls' => Icons.storefront_outlined,
-      'Restaurants' => Icons.restaurant_outlined,
-      'Markets' => Icons.shopping_basket_outlined,
-      'Historic' => Icons.account_balance_outlined,
-      'Libraries' => Icons.local_library_outlined,
-      'Transport' => Icons.directions_bus_outlined,
-      'Government Offices' => Icons.apartment_outlined,
-      'Housing' => Icons.home_outlined,
-      'Parks' => Icons.park_outlined,
-      'Activities' => Icons.celebration_outlined,
-      'Residency Guide' => Icons.picture_as_pdf_outlined,
-      _ => Icons.grid_view_outlined,
+      'Universities' => LucideIcons.graduationCap,
+      'Hospitals' => LucideIcons.stethoscope,
+      'Malls' => LucideIcons.shoppingBag,
+      'Restaurants' => LucideIcons.utensils,
+      'Markets' => LucideIcons.shoppingCart,
+      'Historic' => LucideIcons.landmark,
+      'Libraries' => LucideIcons.bookOpen,
+      'Transport' => LucideIcons.bus,
+      'Government Offices' => LucideIcons.building2,
+      'Housing' => LucideIcons.home,
+      'Parks' => LucideIcons.trees,
+      'Activities' => LucideIcons.partyPopper,
+      'Residency Guide' => LucideIcons.fileText,
+      _ => LucideIcons.layoutGrid,
+    };
+  }
+
+  // 4.2 — Category-specific accent colors
+  static Color _colorFor(String key) {
+    return switch (key) {
+      'Universities' => const Color(0xFF6366F1), // indigo
+      'Hospitals' => const Color(0xFFEF4444), // red
+      'Malls' => const Color(0xFFF59E0B), // amber
+      'Restaurants' => const Color(0xFFFF6B35), // orange
+      'Markets' => const Color(0xFF10B981), // emerald
+      'Historic' => const Color(0xFF8B5CF6), // violet
+      'Libraries' => const Color(0xFF3B82F6), // blue
+      'Transport' => const Color(0xFF0EA5E9), // sky
+      'Government Offices' => const Color(0xFF14B8A6), // teal
+      'Housing' => const Color(0xFF84CC16), // lime
+      'Parks' => const Color(0xFF22C55E), // green
+      'Activities' => const Color(0xFFEC4899), // pink
+      'Residency Guide' => const Color(0xFFF97316), // orange-600
+      _ => const Color(0xFF6B7280), // gray
     };
   }
 }
 
+// 4.2 — Colorful card with themed icon container
 class _CategoryCard extends StatelessWidget {
   const _CategoryCard({
     required this.title,
     required this.icon,
+    required this.color,
     required this.onTap,
   });
 
   final String title;
   final IconData icon;
+  final Color color;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 34),
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: isDark ? 0.2 : 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, size: 26, color: color),
+              ),
               const SizedBox(height: 10),
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

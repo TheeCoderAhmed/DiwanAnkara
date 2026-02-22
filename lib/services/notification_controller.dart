@@ -43,10 +43,12 @@ class NotificationController extends StateNotifier<List<AppNotification>> {
     String? id,
   }) async {
     debugPrint('🔔 NotificationController: addNotification called: "$title"');
-    
+
     final resolvedId = id ?? const Uuid().v4();
     if (state.any((n) => n.id == resolvedId)) {
-      debugPrint('🔔 NotificationController: Duplicate notification ignored ($resolvedId)');
+      debugPrint(
+        '🔔 NotificationController: Duplicate notification ignored ($resolvedId)',
+      );
       return;
     }
 

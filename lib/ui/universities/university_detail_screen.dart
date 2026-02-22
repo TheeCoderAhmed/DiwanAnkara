@@ -10,6 +10,7 @@ import '../../services/translation_service.dart';
 import '../shared/cached_image_widget.dart';
 import '../widgets/public_review_section.dart';
 import '../../data/firestore/firestore_providers.dart';
+import '../shared/floating_navigation_bar.dart';
 
 class UniversityDetailScreen extends ConsumerStatefulWidget {
   final UniversityModel university;
@@ -124,7 +125,8 @@ class _UniversityDetailScreenState
               ),
             ),
           ),
-          if (ref.watch(appSettingsProvider).valueOrNull?.enableComments ?? true)
+          if (ref.watch(appSettingsProvider).valueOrNull?.enableComments ??
+              true)
             SliverToBoxAdapter(
               child: PublicReviewSection(
                 targetId: uni.id,
@@ -132,7 +134,11 @@ class _UniversityDetailScreenState
                 targetName: uni.name,
               ),
             ),
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: FloatingNavigationBar.totalHeight(context) + 16,
+            ),
+          ),
         ],
       ),
     );

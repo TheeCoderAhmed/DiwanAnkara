@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// A premium editorial/paper background with texture, subtle page-fold
-/// gradients, and an "ink-on-paper" feel.
+/// Premium editorial/paper background with:
+/// - Ruled notebook lines for the "ink on paper" feel
+/// - Sepia cream base
+/// - Red margin rule (left edge) in light mode
+/// - Soft corner-glow reading-light gradient
 class PaperBackground extends StatelessWidget {
   const PaperBackground({super.key, this.scrollOffset = 0.0});
 
@@ -11,45 +14,45 @@ class PaperBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Paper Palette
-    // Cream: #FAF9F6, Ivory: #FFFBF2, Newsprint: #F4F1EA
-    // Ink/Dark: #1A1A1A, Charcoal: #2D2D2D
-    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFFAF9F6);
+    final bgColor = isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF8F1);
+
 
     return Stack(
       children: [
-        // Base Color
+        // ── 1. Cream/Charcoal base ─────────────────────────────────
         Container(color: bgColor),
 
-        // Paper Texture Overlay
+        // ── 2. Ruled notebook lines ────────────────────────────────
+        Positioned.fill(child: _RuledLinesPainter(isDark: isDark)),
+
+        // ── 3. Paper texture overlay ───────────────────────────────
         Positioned.fill(
           child: Opacity(
-            opacity: isDark ? 0.05 : 0.08,
+            opacity: isDark ? 0.04 : 0.07,
             child: Image.asset(
               'assets/images/recycled-paper.png',
               repeat: ImageRepeat.repeat,
               fit: BoxFit.none,
-              // Add a slight tint to the texture to make it feel more "aged" or "deep"
               color: isDark ? Colors.white : const Color(0xFFD4C9B0),
               colorBlendMode: BlendMode.multiply,
             ),
           ),
         ),
 
-        // Subtle Page Fold / Reading Light Glow
+        // ── 4. Top-right reading-lamp glow ─────────────────────────
         Positioned(
-          top: -100,
-          right: -100,
+          top: -80,
+          right: -80,
           child: Container(
-            width: 400,
-            height: 400,
+            width: 360,
+            height: 360,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
                   isDark
-                      ? Colors.white.withValues(alpha: 0.03)
-                      : const Color(0xFFFFFAE0).withValues(alpha: 0.4),
+                      ? Colors.white.withValues(alpha: 0.02)
+                      : const Color(0xFFFFF8DC).withValues(alpha: 0.45),
                   Colors.transparent,
                 ],
               ),
@@ -57,15 +60,75 @@ class PaperBackground extends StatelessWidget {
           ),
         ),
 
-        // Border/Margin Line (Editorial Feel)
+        // ── 5. Red margin rule (light mode only) ───────────────────
         if (!isDark)
           Positioned(
-            left: 40,
+            left: 52,
             top: 0,
             bottom: 0,
-            child: Container(width: 1, color: const Color(0xFFE8E2D0)),
+            child: Container(
+              width: 1,
+              color: const Color(0xFFEAB5B5).withValues(alpha: 0.6),
+            ),
           ),
+
+        // ── 6. Left page-edge shadow ───────────────────────────────
+        Positioned(
+          left: 0,
+          top: 0,
+          bottom: 0,
+          child: Container(
+            width: 6,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.black.withValues(alpha: isDark ? 0.15 : 0.05),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
+}
+
+/// CustomPaint widget that draws ruled horizontal lines across the entire screen
+class _RuledLinesPainter extends StatelessWidget {
+  const _RuledLinesPainter({required this.isDark});
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _LinesPainter(isDark: isDark),
+      size: Size.infinite,
+    );
+  }
+}
+
+class _LinesPainter extends CustomPainter {
+  const _LinesPainter({required this.isDark});
+  final bool isDark;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = isDark
+          ? const Color(0xFF252525).withValues(alpha: 0.95)
+          : const Color(0xFFDDD8C4).withValues(alpha: 0.55)
+      ..strokeWidth = 0.75;
+
+
+    const lineSpacing = 26.0;
+    var y = lineSpacing;
+    while (y < size.height) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+      y += lineSpacing;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_LinesPainter old) => old.isDark != isDark;
 }

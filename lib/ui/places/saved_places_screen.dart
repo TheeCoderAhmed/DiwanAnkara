@@ -10,6 +10,7 @@ import '../../services/favorites_provider.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
 import '../shared/ambient_background.dart';
 import '../shared/empty_state.dart';
+import '../shared/floating_navigation_bar.dart';
 
 class SavedPlacesScreen extends ConsumerWidget {
   const SavedPlacesScreen({super.key});
@@ -41,7 +42,12 @@ class SavedPlacesScreen extends ConsumerWidget {
             }
 
             return ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                FloatingNavigationBar.totalHeight(context) + 16,
+              ),
               itemCount: savedPlaces.length,
               itemBuilder: (context, index) {
                 final place = savedPlaces[index];

@@ -40,12 +40,14 @@ class EventsPreviewWidget extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     LucideIcons.calendarClock,
-                    color: Color(0xFF0D9488),
+                    color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
                 ),
@@ -73,7 +75,9 @@ class EventsPreviewWidget extends ConsumerWidget {
                 itemCount: upcomingEvents.take(5).length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(left: 16),
+                    padding: EdgeInsetsDirectional.only(
+                      start: index > 0 ? 16 : 0,
+                    ),
                     child: _MiniEventCard(event: upcomingEvents[index]),
                   );
                 },
@@ -154,10 +158,12 @@ class PreviousEventsWidget extends ConsumerWidget {
                 itemCount: previousEvents.take(5).length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(left: 16),
+                    padding: EdgeInsetsDirectional.only(
+                      start: index > 0 ? 16 : 0,
+                    ),
                     child: _MiniEventCard(
                       event: previousEvents[index],
-                      isGrayscale: true, // Optional visual distinction
+                      isGrayscale: true,
                       usePreviousEventsRoute: true,
                     ),
                   );
@@ -190,7 +196,8 @@ class _MiniEventCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final cardTheme = theme.cardTheme;
-    final shape = (cardTheme.shape as RoundedRectangleBorder?) ??
+    final shape =
+        (cardTheme.shape as RoundedRectangleBorder?) ??
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
 
     return GestureDetector(
@@ -202,7 +209,9 @@ class _MiniEventCard extends StatelessWidget {
       child: Container(
         width: 280,
         decoration: BoxDecoration(
-          color: cardTheme.color ?? (isDark ? const Color(0xFF1E293B) : Colors.white),
+          color:
+              cardTheme.color ??
+              (isDark ? const Color(0xFF1E293B) : Colors.white),
           borderRadius: shape.borderRadius,
           border: shape.side != BorderSide.none
               ? Border.fromBorderSide(shape.side)

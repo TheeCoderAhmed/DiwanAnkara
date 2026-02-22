@@ -94,7 +94,8 @@ class InAppMessageOverlay extends ConsumerWidget {
 BorderRadius _getBorderRadius(BuildContext context) {
   final cardTheme = Theme.of(context).cardTheme;
   if (cardTheme.shape is RoundedRectangleBorder) {
-    return (cardTheme.shape as RoundedRectangleBorder).borderRadius as BorderRadius;
+    return (cardTheme.shape as RoundedRectangleBorder).borderRadius
+        as BorderRadius;
   }
   return BorderRadius.circular(16);
 }
@@ -127,10 +128,7 @@ class _PremiumSmartImage extends StatelessWidget {
   final String imageUrl;
   final double height;
 
-  const _PremiumSmartImage({
-    required this.imageUrl,
-    required this.height,
-  });
+  const _PremiumSmartImage({required this.imageUrl, required this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -150,17 +148,14 @@ class _PremiumSmartImage extends StatelessWidget {
           // Layer 2: Frosted glass overlay
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.2),
-            ),
+            child: Container(color: Colors.black.withValues(alpha: 0.2)),
           ),
           // Layer 3: Centered main image (Contain)
           CachedNetworkImage(
             imageUrl: imageUrl,
             fit: BoxFit.contain,
-            placeholder: (_, __) => const Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
+            placeholder: (_, __) =>
+                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
             errorWidget: (_, __, ___) => const Center(
               child: Icon(Icons.broken_image, color: Colors.white24, size: 40),
             ),
@@ -268,7 +263,8 @@ class _TopBannerMessageState extends State<_TopBannerMessage>
                           if (msg.title.isNotEmpty)
                             Text(
                               msg.title,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
                                     color: txtColor,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -277,7 +273,8 @@ class _TopBannerMessageState extends State<_TopBannerMessage>
                             const SizedBox(height: 4),
                             Text(
                               msg.message,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
                                     color: txtColor.withValues(alpha: 0.85),
                                   ),
                               maxLines: 3,
@@ -366,10 +363,14 @@ class _ModalMessage extends StatelessWidget {
                   maxHeight: MediaQuery.of(context).size.height * 0.8,
                 ),
                 decoration: BoxDecoration(
-                  color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.85),
+                  color: (isDark ? Colors.black : Colors.white).withValues(
+                    alpha: 0.85,
+                  ),
                   borderRadius: borderRadius,
                   border: Border.all(
-                    color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
+                    color: (isDark ? Colors.white : Colors.black).withValues(
+                      alpha: 0.1,
+                    ),
                     width: 1,
                   ),
                   boxShadow: [
@@ -402,7 +403,8 @@ class _ModalMessage extends StatelessWidget {
                                       colors: [
                                         Colors.black.withValues(alpha: 0.4),
                                         Colors.transparent,
-                                        (isDark ? Colors.black : Colors.white).withValues(alpha: 0.85),
+                                        (isDark ? Colors.black : Colors.white)
+                                            .withValues(alpha: 0.85),
                                       ],
                                       stops: const [0, 0.4, 1.0],
                                     ),
@@ -414,9 +416,15 @@ class _ModalMessage extends StatelessWidget {
                                 right: 12,
                                 child: IconButton(
                                   onPressed: onDismiss,
-                                  icon: const Icon(Icons.close, color: Colors.white, size: 22),
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
                                   style: IconButton.styleFrom(
-                                    backgroundColor: Colors.black.withValues(alpha: 0.3),
+                                    backgroundColor: Colors.black.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     padding: const EdgeInsets.all(4),
                                     minimumSize: const Size(32, 32),
                                   ),
@@ -431,9 +439,14 @@ class _ModalMessage extends StatelessWidget {
                               padding: const EdgeInsets.all(12),
                               child: IconButton(
                                 onPressed: onDismiss,
-                                icon: Icon(Icons.close, color: txtColor.withValues(alpha: 0.6)),
+                                icon: Icon(
+                                  Icons.close,
+                                  color: txtColor.withValues(alpha: 0.6),
+                                ),
                                 style: IconButton.styleFrom(
-                                  backgroundColor: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                                  backgroundColor:
+                                      (isDark ? Colors.white : Colors.black)
+                                          .withValues(alpha: 0.05),
                                 ),
                               ),
                             ),
@@ -445,7 +458,10 @@ class _ModalMessage extends StatelessWidget {
                               if (message.title.isNotEmpty)
                                 Text(
                                   message.title,
-                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
                                         color: txtColor,
                                         fontWeight: FontWeight.bold,
                                         letterSpacing: -0.5,
@@ -456,7 +472,8 @@ class _ModalMessage extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 Text(
                                   message.message,
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
                                         color: txtColor.withValues(alpha: 0.8),
                                         height: 1.6,
                                       ),
@@ -625,10 +642,14 @@ class _CardMessageState extends State<_CardMessage>
           scale: _scaleAnimation,
           child: Container(
             decoration: BoxDecoration(
-              color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.8),
+              color: (isDark ? Colors.black : Colors.white).withValues(
+                alpha: 0.8,
+              ),
               borderRadius: borderRadius,
               border: Border.all(
-                color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
+                color: (isDark ? Colors.white : Colors.black).withValues(
+                  alpha: 0.1,
+                ),
                 width: 1,
               ),
               boxShadow: [
@@ -647,10 +668,7 @@ class _CardMessageState extends State<_CardMessage>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (hasImage)
-                      _PremiumSmartImage(
-                        imageUrl: imageUrl,
-                        height: 200,
-                      ),
+                      _PremiumSmartImage(imageUrl: imageUrl, height: 200),
                     Padding(
                       padding: const EdgeInsets.all(24),
                       child: Column(
@@ -666,7 +684,10 @@ class _CardMessageState extends State<_CardMessage>
                                     if (msg.title.isNotEmpty)
                                       Text(
                                         msg.title,
-                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge
+                                            ?.copyWith(
                                               color: txtColor,
                                               fontWeight: FontWeight.bold,
                                               letterSpacing: -0.5,
@@ -676,8 +697,13 @@ class _CardMessageState extends State<_CardMessage>
                                       const SizedBox(height: 10),
                                       Text(
                                         msg.message,
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                              color: txtColor.withValues(alpha: 0.7),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: txtColor.withValues(
+                                                alpha: 0.7,
+                                              ),
                                               height: 1.5,
                                             ),
                                         maxLines: 4,
@@ -696,7 +722,9 @@ class _CardMessageState extends State<_CardMessage>
                                   size: 20,
                                 ),
                                 style: IconButton.styleFrom(
-                                  backgroundColor: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                                  backgroundColor:
+                                      (isDark ? Colors.white : Colors.black)
+                                          .withValues(alpha: 0.05),
                                   padding: EdgeInsets.zero,
                                   minimumSize: const Size(36, 36),
                                 ),
@@ -765,9 +793,7 @@ class _ActionButton extends StatelessWidget {
           backgroundColor: btnBgColor,
           foregroundColor: btnTxtColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: borderRadius / 2,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: borderRadius / 2),
           elevation: 0,
         ),
         child: Text(

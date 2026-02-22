@@ -9,9 +9,11 @@ class ParkAdviceModal extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const ParkAdviceModal(),
     );
+
   }
 
   @override
@@ -37,7 +39,14 @@ class ParkAdviceModal extends StatelessWidget {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+              padding: EdgeInsets.fromLTRB(
+                20,
+                0,
+                20,
+                // Ensure content clears the home indicator on all devices.
+                (MediaQuery.viewPaddingOf(context).bottom + 24).clamp(24.0, 80.0),
+              ),
+
               children: [
                 Row(
                   children: [

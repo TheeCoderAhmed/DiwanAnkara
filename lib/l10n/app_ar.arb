@@ -640,5 +640,14 @@
   "themeLight": "فاتح",
   "themeDark": "داكن",
   "themeSystem": "تلقائي",
-  "version": "الإصدار"
+  "version": "الإصدار",
+  "goodMorning": "صباح الخير",
+  "goodAfternoon": "مساء الخير",
+  "goodEvening": "مساء الخير",
+  "goodNight": "طاب مساؤك",
+  "general": "عام",
+  "community": "المجتمع",
+  "support": "الدعم",
+  "eventsTab": "الفعاليات",
+  "searchResults": "نتائج البحث"
 }

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
+import '../shared/shimmer_wrapper.dart';
 
+/// 6.3 — Skeleton using the shared ShimmerWrapper (no duplicated color logic).
 class SkeletonPlaceCard extends StatelessWidget {
   const SkeletonPlaceCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
-    final highlightColor = isDark ? Colors.grey.shade700 : Colors.grey.shade100;
+    final baseColor = isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade300;
 
     return Container(
       width: 280,
@@ -22,9 +22,7 @@ class SkeletonPlaceCard extends StatelessWidget {
           // Image skeleton
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            child: Shimmer.fromColors(
-              baseColor: baseColor,
-              highlightColor: highlightColor,
+            child: ShimmerWrapper(
               child: Container(
                 height: 120,
                 width: double.infinity,
@@ -38,9 +36,7 @@ class SkeletonPlaceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Shimmer.fromColors(
-                  baseColor: baseColor,
-                  highlightColor: highlightColor,
+                ShimmerWrapper(
                   child: Container(
                     height: 20,
                     width: 200,
@@ -51,9 +47,7 @@ class SkeletonPlaceCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Shimmer.fromColors(
-                  baseColor: baseColor,
-                  highlightColor: highlightColor,
+                ShimmerWrapper(
                   child: Container(
                     height: 16,
                     width: 120,

@@ -87,90 +87,106 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final slides = _getSlides(context);
     final l10n = AppLocalizations.of(context);
 
+    final currentColor = slides[_currentPage].color;
+
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Skip button
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton(
-                onPressed: _completeOnboarding,
-                child: Text(l10n.onboardingSkip),
-              ),
-            ),
-            // Page view
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: slides.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return _buildSlide(slides[index]);
-                },
-              ),
-            ),
-            // Dots indicator
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  slides.length,
-                  (index) => Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: _currentPage == index ? 24 : 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: _currentPage == index
-                          ? const Color(0xFF0D9488)
-                          : Colors.grey.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
+      // 1.2 – Full-bleed animated gradient background per slide
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment.topCenter,
+            radius: 1.4,
+            colors: [currentColor.withValues(alpha: 0.08), Colors.transparent],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // 1.3 – RTL-aware skip button alignment
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton(
+                  onPressed: _completeOnboarding,
+                  child: Text(l10n.onboardingSkip),
                 ),
               ),
-            ),
-            // Next/Get Started button
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    if (_currentPage < slides.length - 1) {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.ease,
-                      );
-                    } else {
-                      _completeOnboarding();
-                    }
+              // Page view
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: slides.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
                   },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D9488),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  itemBuilder: (context, index) {
+                    return _buildSlide(slides[index]);
+                  },
+                ),
+              ),
+              // 1.4 – Animated progress dots
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(slides.length, (index) {
+                    final isActive = _currentPage == index;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: isActive ? 24 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.grey.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              // Next/Get Started button
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {
+                      if (_currentPage < slides.length - 1) {
+                        _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.ease,
+                        );
+                      } else {
+                        _completeOnboarding();
+                      }
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    _currentPage < slides.length - 1
-                        ? l10n.onboardingNext
-                        : l10n.onboardingStart,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    child: Text(
+                      _currentPage < slides.length - 1
+                          ? l10n.onboardingNext
+                          : l10n.onboardingStart,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -182,13 +198,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: slide.color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+          // 1.1 – Pulsing icon with TweenAnimationBuilder
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 1.0, end: 1.08),
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.easeInOut,
+            builder: (context, scale, child) =>
+                Transform.scale(scale: scale, child: child),
+            onEnd: () => setState(() {}), // retrigger for loop
+            child: Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: slide.color.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: slide.color.withValues(alpha: 0.25),
+                    blurRadius: 32,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: Icon(slide.icon, size: 80, color: slide.color),
             ),
-            child: Icon(slide.icon, size: 80, color: slide.color),
           ),
           const SizedBox(height: 48),
           Text(

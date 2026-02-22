@@ -2015,4 +2015,28 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get version => 'Sürüm';
+
+  @override
+  String get goodMorning => 'Günaydın';
+
+  @override
+  String get goodAfternoon => 'İyi günler';
+
+  @override
+  String get goodEvening => 'İyi akşamlar';
+
+  @override
+  String get goodNight => 'İyi geceler';
+
+  @override
+  String get general => 'Genel';
+
+  @override
+  String get community => 'Topluluk';
+
+  @override
+  String get support => 'Destek';
+
+  @override
+  String get eventsTab => 'Etkinlikler';
 }

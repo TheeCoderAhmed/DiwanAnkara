@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../domain/models/announcement.dart';
 import '../../data/firestore/firestore_providers.dart';
 import '../shared/cached_image_widget.dart';
+import '../shared/floating_navigation_bar.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
 
 class AnnouncementDetailScreen extends ConsumerStatefulWidget {
@@ -596,7 +597,10 @@ class _AnnouncementDetailScreenState
                             ),
                           ),
 
-                          const SizedBox(height: 100),
+                          SizedBox(
+                            height:
+                                FloatingNavigationBar.totalHeight(context) + 16,
+                          ),
                         ],
                       ),
                     ),

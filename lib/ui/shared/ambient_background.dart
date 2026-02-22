@@ -29,8 +29,10 @@ class AmbientBackground extends ConsumerWidget {
 
     return Stack(
       children: [
-        // Background layer based on style
-        _buildBackground(context, themeState, isLight),
+        // Phase 3: RepaintBoundary isolates the background to its own GPU
+        // compositing layer. Scrolling content can no longer pull the background
+        // into its repaint pass, saving a full-screen redraw every frame.
+        RepaintBoundary(child: _buildBackground(context, themeState, isLight)),
 
         // Content
         child,

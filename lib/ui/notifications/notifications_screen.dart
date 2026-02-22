@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../services/notification_controller.dart';
+import '../shared/floating_navigation_bar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
 
@@ -52,7 +53,12 @@ class NotificationsScreen extends ConsumerWidget {
               ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                FloatingNavigationBar.totalHeight(context) + 16,
+              ),
               itemCount: notifications.length,
               itemBuilder: (context, index) {
                 final notification = notifications[index];

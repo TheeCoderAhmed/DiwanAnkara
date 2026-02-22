@@ -29,13 +29,13 @@ import '../projects/project_details_page.dart';
 import '../shared/ambient_background.dart';
 import '../shared/cached_image_widget.dart';
 import '../shared/empty_state.dart';
+import '../shared/floating_navigation_bar.dart';
 import '../shared/glassmorphism_header.dart';
 import '../shared/skeleton_bento_card.dart';
 import '../shared/skeleton_place_card.dart';
 import '../widgets/ikamet_tracker_widget.dart';
 import '../widgets/place_card.dart';
 import '../widgets/student_hacks_widget.dart';
-import '../widgets/events_preview_widget.dart';
 import '../widgets/offline_banner.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -191,7 +191,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    l10n.hello,
+                                    _greeting(l10n),
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineMedium
@@ -244,11 +244,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         )
                                       : null,
                                   filled: true,
-                                  fillColor: Colors.white.withValues(
-                                    alpha: 0.1,
-                                  ),
+                                  fillColor:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white.withValues(alpha: 0.1)
+                                      : Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainerHighest
+                                            .withValues(alpha: 0.6),
                                   border: OutlineInputBorder(
-                                    borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius as BorderRadius?) ?? BorderRadius.circular(16),
+                                    borderRadius:
+                                        ((Theme.of(context).cardTheme.shape
+                                                    as RoundedRectangleBorder?)
+                                                ?.borderRadius
+                                            as BorderRadius?) ??
+                                        BorderRadius.circular(16),
                                     borderSide: BorderSide.none,
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
@@ -275,7 +285,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 horizontal: 20,
                               ),
                               child: Text(
-                                'نتائج البحث',
+                                l10n.searchResults,
                                 style: Theme.of(context).textTheme.titleLarge
                                     ?.copyWith(fontWeight: FontWeight.bold),
                               ),
@@ -300,8 +310,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                 ),
                               ),
-                            const SizedBox(
-                              height: 140,
+                            SizedBox(
+                              height: FloatingNavigationBar.totalHeight(
+                                context,
+                              ),
                             ), // Bottom padding for navbar
                           ],
                         ),
@@ -310,11 +322,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                     // Emergency Banner (ALWAYS visible if active)
                     if (appSettings?.emergencyBannerVisible == true &&
-                        appSettings?.emergencyBannerText.trim().isNotEmpty == true)
+                        appSettings?.emergencyBannerText.trim().isNotEmpty ==
+                            true)
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 16, 20, 0),
-                          child: _EmergencyBanner(text: appSettings!.emergencyBannerText),
+                          padding: EdgeInsets.fromLTRB(
+                            20,
+                            MediaQuery.paddingOf(context).top + 16,
+                            20,
+                            0,
+                          ),
+                          child: _EmergencyBanner(
+                            text: appSettings!.emergencyBannerText,
+                          ),
                         ),
                       ),
 
@@ -342,31 +362,92 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge
-                                          ?.copyWith(fontWeight: FontWeight.bold),
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ),
                                   const SizedBox(height: 16),
-                                  RepaintBoundary(
-                                    child: CarouselSlider.builder(
-                                      itemCount: announcements.length,
-                                      options: CarouselOptions(
-                                        height: 200,
-                                        autoPlay: true,
-                                        enlargeCenterPage: true,
-                                        viewportFraction: 0.9,
-                                        autoPlayInterval: const Duration(
-                                          seconds: 4,
-                                        ),
-                                        autoPlayAnimationDuration: const Duration(
-                                          milliseconds: 800,
-                                        ),
-                                      ),
-                                      itemBuilder: (context, index, realIndex) {
-                                        return _AnnouncementCardFromFirebase(
-                                          announcement: announcements[index],
-                                        );
-                                      },
-                                    ),
+                                  // 2.5 — Carousel with dot indicator
+                                  Builder(
+                                    builder: (context) {
+                                      final dotIndex = ValueNotifier<int>(0);
+                                      return Column(
+                                        children: [
+                                          RepaintBoundary(
+                                            child: CarouselSlider.builder(
+                                              itemCount: announcements.length,
+                                              options: CarouselOptions(
+                                                height: 200,
+                                                autoPlay: true,
+                                                enlargeCenterPage: true,
+                                                viewportFraction: 0.9,
+                                                autoPlayInterval:
+                                                    const Duration(seconds: 4),
+                                                autoPlayAnimationDuration:
+                                                    const Duration(
+                                                      milliseconds: 800,
+                                                    ),
+                                                onPageChanged: (index, reason) {
+                                                  dotIndex.value = index;
+                                                },
+                                              ),
+                                              itemBuilder:
+                                                  (context, index, realIndex) {
+                                                    return _AnnouncementCardFromFirebase(
+                                                      announcement:
+                                                          announcements[index],
+                                                    );
+                                                  },
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          // Animated dots
+                                          ValueListenableBuilder<int>(
+                                            valueListenable: dotIndex,
+                                            builder: (context, current, _) {
+                                              return Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: List.generate(
+                                                  announcements.length,
+                                                  (i) => AnimatedContainer(
+                                                    duration: const Duration(
+                                                      milliseconds: 250,
+                                                    ),
+                                                    curve: Curves.easeInOut,
+                                                    margin:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 3,
+                                                        ),
+                                                    width: current == i
+                                                        ? 20
+                                                        : 6,
+                                                    height: 6,
+                                                    decoration: BoxDecoration(
+                                                      color: current == i
+                                                          ? Theme.of(context)
+                                                                .colorScheme
+                                                                .primary
+                                                          : Theme.of(context)
+                                                                .colorScheme
+                                                                .onSurface
+                                                                .withValues(
+                                                                  alpha: 0.2,
+                                                                ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            3,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                   const SizedBox(height: 24),
                                 ],
@@ -390,7 +471,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                   child: Text(
                                     l10n.popularPlaces,
-                                    style: Theme.of(context).textTheme.titleLarge
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
                                         ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -421,30 +504,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
 
-                      // Upcoming Events Preview Widget
-                      if (appSettings?.enableEvents ?? true) ...[
-                        const SliverToBoxAdapter(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 8,
-                            ),
-                            child: RepaintBoundary(child: EventsPreviewWidget()),
-                          ),
-                        ),
-
-                        // Previous Events Widget
-                        const SliverToBoxAdapter(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 8,
-                            ),
-                            child: PreviousEventsWidget(),
-                          ),
-                        ),
-                      ],
-
                       // Ikamet Tracker Widget
                       if (appSettings?.enableIkametTracker ?? true)
                         const SliverToBoxAdapter(
@@ -453,7 +512,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               horizontal: 20,
                               vertical: 12,
                             ),
-                            child: RepaintBoundary(child: IkametTrackerWidget()),
+                            child: RepaintBoundary(
+                              child: IkametTrackerWidget(),
+                            ),
                           ),
                         ),
 
@@ -464,7 +525,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: RepaintBoundary(
                               child: CurrencyExchangeWidget(
-                                fallbackRates: appSettings?.currencyFallbackRates,
+                                fallbackRates:
+                                    appSettings?.currencyFallbackRates,
                               ),
                             ),
                           ),
@@ -497,7 +559,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge
-                                          ?.copyWith(fontWeight: FontWeight.bold),
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ),
                                   const SizedBox(height: 16),
@@ -549,7 +613,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge
-                                          ?.copyWith(fontWeight: FontWeight.bold),
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ),
                                   if (partners.isEmpty)
@@ -569,8 +635,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         partners,
                                       ),
                                     ),
-                                  const SizedBox(
-                                    height: 140,
+                                  SizedBox(
+                                    height: FloatingNavigationBar.totalHeight(
+                                      context,
+                                    ),
                                   ), // Bottom padding for navbar
                                 ],
                               );
@@ -612,7 +680,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       Brightness.dark
                                   ? Colors.grey.shade800
                                   : Colors.grey.shade300,
-                              borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(8)),
+                              borderRadius:
+                                  ((Theme.of(context).cardTheme.shape
+                                          as RoundedRectangleBorder?)
+                                      ?.borderRadius ??
+                                  BorderRadius.circular(8)),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -624,7 +696,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       Brightness.dark
                                   ? Colors.grey.shade800
                                   : Colors.grey.shade300,
-                              borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
+                              borderRadius:
+                                  ((Theme.of(context).cardTheme.shape
+                                          as RoundedRectangleBorder?)
+                                      ?.borderRadius ??
+                                  BorderRadius.circular(16)),
                             ),
                           ),
                         ],
@@ -695,6 +771,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         },
       ),
     );
+  }
+
+  /// Returns a time-of-day greeting using the l10n strings (2.1)
+  String _greeting(AppLocalizations l10n) {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return l10n.goodMorning;
+    if (hour >= 12 && hour < 17) return l10n.goodAfternoon;
+    if (hour >= 17 && hour < 21) return l10n.goodEvening;
+    return l10n.goodNight;
   }
 
   // Static method for background filtering via compute()
@@ -900,7 +985,10 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                   Colors.grey.shade50.withValues(alpha: 0.8),
                 ],
         ),
-        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(20)),
+        borderRadius:
+            ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                ?.borderRadius ??
+            BorderRadius.circular(20)),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.1)
@@ -928,7 +1016,11 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0D9488).withValues(alpha: 0.2),
-                      borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+                      borderRadius:
+                          ((Theme.of(context).cardTheme.shape
+                                  as RoundedRectangleBorder?)
+                              ?.borderRadius ??
+                          BorderRadius.circular(12)),
                     ),
                     child: const Icon(
                       LucideIcons.arrowLeftRight,
@@ -986,7 +1078,11 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFF0D9488),
-                  borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+                  borderRadius:
+                      ((Theme.of(context).cardTheme.shape
+                              as RoundedRectangleBorder?)
+                          ?.borderRadius ??
+                      BorderRadius.circular(12)),
                 ),
                 child: const Icon(
                   LucideIcons.arrowUpDown,
@@ -1016,7 +1112,11 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
               color: isDark
                   ? Colors.white.withValues(alpha: 0.05)
                   : Colors.grey.withValues(alpha: 0.1),
-              borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+              borderRadius:
+                  ((Theme.of(context).cardTheme.shape
+                          as RoundedRectangleBorder?)
+                      ?.borderRadius ??
+                  BorderRadius.circular(12)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1070,7 +1170,12 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                   filled: true,
                   fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
                   border: OutlineInputBorder(
-                    borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius as BorderRadius?) ?? BorderRadius.circular(12),
+                    borderRadius:
+                        ((Theme.of(context).cardTheme.shape
+                                    as RoundedRectangleBorder?)
+                                ?.borderRadius
+                            as BorderRadius?) ??
+                        BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
@@ -1116,7 +1221,11 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
                 ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor.withValues(alpha: 0.5),
-                  borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+                  borderRadius:
+                      ((Theme.of(context).cardTheme.shape
+                              as RoundedRectangleBorder?)
+                          ?.borderRadius ??
+                      BorderRadius.circular(12)),
                 ),
                 child: Text(
                   amount.toStringAsFixed(2),
@@ -1141,7 +1250,10 @@ class _CurrencyExchangeWidgetState extends State<CurrencyExchangeWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xFF0D9488).withValues(alpha: 0.2),
-        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+        borderRadius:
+            ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                ?.borderRadius ??
+            BorderRadius.circular(12)),
       ),
       child: DropdownButton<String>(
         value: value,
@@ -1251,7 +1363,10 @@ class _SearchResultTile extends ConsumerWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(8),
         leading: ClipRRect(
-          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(8)),
+          borderRadius:
+              ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                  ?.borderRadius ??
+              BorderRadius.circular(8)),
           child: SizedBox(
             width: 56,
             height: 56,
@@ -1317,7 +1432,10 @@ class _AnnouncementCardFromFirebase extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
+          borderRadius:
+              ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                  ?.borderRadius ??
+              BorderRadius.circular(16)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.2),
@@ -1327,7 +1445,10 @@ class _AnnouncementCardFromFirebase extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
+          borderRadius:
+              ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                  ?.borderRadius ??
+              BorderRadius.circular(16)),
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -1350,7 +1471,11 @@ class _AnnouncementCardFromFirebase extends StatelessWidget {
               // Gradient overlay for text readability
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
+                  borderRadius:
+                      ((Theme.of(context).cardTheme.shape
+                              as RoundedRectangleBorder?)
+                          ?.borderRadius ??
+                      BorderRadius.circular(16)),
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -1487,10 +1612,16 @@ class _ProjectCard extends StatelessWidget {
         width: 280,
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
+          borderRadius:
+              ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                  ?.borderRadius ??
+              BorderRadius.circular(16)),
         ),
         child: ClipRRect(
-          borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
+          borderRadius:
+              ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                  ?.borderRadius ??
+              BorderRadius.circular(16)),
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -1574,7 +1705,10 @@ class _EmergencyBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.red.shade50.withValues(alpha: 0.9),
         border: Border.all(color: Colors.red.shade300),
-        borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(12)),
+        borderRadius:
+            ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                ?.borderRadius ??
+            BorderRadius.circular(12)),
         boxShadow: [
           BoxShadow(
             color: Colors.red.withValues(alpha: 0.1),
@@ -1602,4 +1736,3 @@ class _EmergencyBanner extends StatelessWidget {
     ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2, end: 0);
   }
 }
-

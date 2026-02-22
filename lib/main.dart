@@ -18,10 +18,12 @@ void main() {
     () {
       WidgetsFlutterBinding.ensureInitialized();
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.transparent,
-      ));
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.transparent,
+        ),
+      );
 
       // Catch synchronous Flutter framework errors (widget build errors, etc.)
       FlutterError.onError = (FlutterErrorDetails details) {

@@ -13,7 +13,7 @@ import 'deep_link_service.dart';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('Handling background message: ${message.messageId}');
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     final prefs = await SharedPreferences.getInstance();
     final jsonStringList = prefs.getStringList('app_notifications') ?? [];
@@ -23,7 +23,8 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final body = message.notification?.body ?? message.data['body'] ?? '';
 
     final newNotification = {
-      'id': message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      'id':
+          message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
       'title': title,
       'body': body,
       'timestamp': (message.sentTime ?? DateTime.now()).toIso8601String(),
@@ -180,11 +181,11 @@ class NotificationService {
       debugPrint('Body: ${message.notification?.body}');
       debugPrint('Data: ${message.data}');
       debugPrint('===================================');
-      
+
       // Add to internal stream for history (across all platforms)
       _messageStreamController.add(message);
 
-      // Show local notification only on Android 
+      // Show local notification only on Android
       // (iOS handles foreground notifications natively via PresentationOptions)
       if (defaultTargetPlatform == TargetPlatform.android) {
         _showLocalNotification(message);
@@ -238,9 +239,7 @@ class NotificationService {
       );
 
       final title =
-          message.notification?.title ??
-          message.data['title'] ??
-          'إشعار جديد';
+          message.notification?.title ?? message.data['title'] ?? 'إشعار جديد';
       final body = message.notification?.body ?? message.data['body'] ?? '';
 
       debugPrint('Showing notification - Title: $title, Body: $body');
@@ -283,14 +282,16 @@ class NotificationService {
   /// Callback for local notification tap
   void _onNotificationTapped(NotificationResponse response) {
     debugPrint('Local notification tapped: ${response.id}');
-    
+
     final payload = response.payload;
     if (payload != null && payload.isNotEmpty) {
       try {
         final data = jsonDecode(payload) as Map<String, dynamic>;
         final String? deepLink = data['link'];
         if (deepLink != null && deepLink.toString().isNotEmpty) {
-          debugPrint('Deep link found in local notification payload: $deepLink');
+          debugPrint(
+            'Deep link found in local notification payload: $deepLink',
+          );
           DeepLinkService().handleDeepLink(deepLink.toString());
         }
       } catch (e) {

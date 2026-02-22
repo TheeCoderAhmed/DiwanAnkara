@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/models/event.dart' show AppEvent;
 
 import '../../domain/models/announcement.dart';
 import '../../domain/models/contributor.dart';
@@ -207,11 +208,12 @@ final submitCommentProvider =
     });
 
 // Comment deletion provider
-final deleteCommentProvider =
-    Provider<Future<bool> Function(String commentId)>((ref) {
-      final repo = ref.watch(firestoreRepositoryProvider);
-      return (commentId) => repo.deleteComment(commentId);
-    });
+final deleteCommentProvider = Provider<Future<bool> Function(String commentId)>(
+  (ref) {
+    final repo = ref.watch(firestoreRepositoryProvider);
+    return (commentId) => repo.deleteComment(commentId);
+  },
+);
 
 // Public reviews stream provider (for directory items)
 final publicReviewsProvider = StreamProvider.family<List<Comment>, String>((
@@ -220,4 +222,37 @@ final publicReviewsProvider = StreamProvider.family<List<Comment>, String>((
 ) {
   final repo = ref.watch(firestoreRepositoryProvider);
   return repo.watchPublicReviews(targetId);
+});
+
+// ─────────────────────────────────────────────────────────────
+// Derived event providers — memoized, never recompute unless
+// the underlying eventsStreamProvider emits a new list.
+// Avoids sorting/filtering inside build() on every setState.
+// ─────────────────────────────────────────────────────────────
+
+/// Upcoming events: date > now-1h, sorted ascending.
+final upcomingEventsProvider = Provider<List<AppEvent>>((ref) {
+  final events = ref.watch(eventsStreamProvider).valueOrNull ?? [];
+  final cutoff = DateTime.now().subtract(const Duration(hours: 1));
+  return events.where((e) => e.date.isAfter(cutoff)).toList()
+    ..sort((a, b) => a.date.compareTo(b.date));
+});
+
+/// Past events: date ≤ now-1h, sorted descending (most recent first).
+final pastEventsProvider = Provider<List<AppEvent>>((ref) {
+  final events = ref.watch(eventsStreamProvider).valueOrNull ?? [];
+  final cutoff = DateTime.now().subtract(const Duration(hours: 1));
+  return events.where((e) => e.date.isBefore(cutoff)).toList()
+    ..sort((a, b) => b.date.compareTo(a.date));
+});
+
+/// Map of normalised date → events on that day. Used by the calendar dot loader.
+final eventsByDayProvider = Provider<Map<DateTime, List<AppEvent>>>((ref) {
+  final events = ref.watch(eventsStreamProvider).valueOrNull ?? [];
+  final map = <DateTime, List<AppEvent>>{};
+  for (final e in events) {
+    final d = DateTime(e.date.year, e.date.month, e.date.day);
+    (map[d] ??= []).add(e);
+  }
+  return map;
 });

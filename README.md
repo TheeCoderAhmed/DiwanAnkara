@@ -6,10 +6,8 @@
 `<br>`
 **التطبيق الرسمي لاتحاد الطلاب اليمنيين في أنقرة**
 
-[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)]()
 [![Google Play](https://img.shields.io/badge/Google%20Play-Coming%20Soon-00ADF2?style=for-the-badge&logo=google-play&logoColor=white)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 [English](#-english) | [العربية](#-arabic)
 
@@ -17,120 +15,125 @@
 
 ---
 
-`<a id="english"></a>`
+<a id="english"></a>
 
 ## 🇬🇧 English
 
-### ✨ About the Project
+### ✨ About the App
 
-Welcome to **Diwan Ankara**, the official platform of the **Union of Yemeni Students in Ankara (اتحاد الطلاب اليمنيين)**. This application acts as a digital bridge, providing essential resources, real-time updates, and a unified space for the Yemeni student community and residents in Ankara.
+**Diwan Ankara** is the definitive digital companion for Yemeni students and residents living in Ankara. Developed as the official platform of the **Union of Yemeni Students in Ankara (اتحاد الطلاب اليمنيين في أنقرة)**, it serves as a centralized hub for community connection, educational resources, and essential local information.
 
-Whether you are looking for the latest university news, community events, or a directory of local services, **Diwan Ankara** has you covered.
-
-> [!TIP]
-> **🚀 Coming Soon:** We are working hard to bring **Diwan Ankara** to the **Google Play Store** very soon! Stay tuned!
+Moving to a new city, especially as a student, often involves navigating fragmented systems and language barriers. Diwan Ankara bridges this gap by gathering everything a student needs—from academic guidance to emergency services—into a single, premium mobile experience.
 
 ### 🚀 Key Features
 
-The app is packed with features designed to support the student community:
+#### 📢 Real-Time Community Dashboard
+Stay informed with a dynamic news feed that keeps the community synchronized.
+* **Critical Alerts**: An emergency banner system to push vital information instantly.
+* **Official Feed**: A dedicated hub for the latest announcements, union statements, and news.
+* **Popular Places**: Discover trending locations and community favorites right from the home screen.
 
-*   **📢 Announcements Hook**: Instantly receive the latest news, official statements, and important updates.
-*   **📅 Dynamic Events Calendar**: Keep track of workshops, gatherings, and celebrations.
-*   **🏛️ University Hub**: Detailed profiles for Ankara's universities, including official logos, campus banners, and academic guidance.
-*   **📍 Local Directory**: A curated guide to essential places (hospitals, parks, libraries) with specific medical and social advice modals.
-*   **🎨 Premium Themes**: Experience the app in beautiful **Paper** (light texture) or **Nordic** (serene dark) themes, with smooth ambient animations.
-*   **🔔 Smart Notifications**: Real-time push and in-app messaging system that ensures you never miss a beat.
-*   **🌍 Multi-Language Support**: Fully localized in Arabic, English, and Turkish with dynamic switching.
-*   **🏗️ Community Projects**: Browse ongoing union projects, committees, and student hack resources.
-*   **📄 Resource Library**: Built-in PDF viewer for official guides and student documentation.
+#### 📅 Events Portal
+Never miss an important community gathering, workshop, or celebration.
+* **Interactive Calendar**: A sticky, collapsible calendar header to browse events by date.
+* **Upcoming vs Past Events**: Easily switch between upcoming events and archives of past gatherings.
+* **Detailed Event Views**: Access rich information, timelines, and locations for every event.
 
-### 🛠️ Built With
+#### 🏛️ The Ultimate University Portal
+A comprehensive database of Ankara's educational landscape designed to help current and prospective students.
+* **Detailed Profiles**: Official logos, campus banners, and global rankings for all major institutions.
+* **Resource Access**: Direct integrated viewing of university introductory documents and program guides.
+* **Academic Insights**: Detailed information on established history and known specialties.
 
-We use a modern, robust tech stack to ensure performance, scalability, and security:
+#### 📍 Smart Local Directory
+Navigate the city with confidence using a curated guide tailored for the community.
+* **Essential Services**: Categorized listings for hospitals, government offices, libraries, and restaurants.
+* **Location Insights**: Custom guides providing medical advice, social tips, and practical information for specific areas.
+* **Public Spaces**: Comprehensive data on parks and activities, including entry fees, barbecue permissions, and historical context.
 
-| Category                   | Technology                                                                                                                         |
-| :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
-| **Framework**        | ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat&logo=Flutter&logoColor=white) **Flutter** (Dart)      |
-| **State Management** | ![Riverpod](https://img.shields.io/badge/Riverpod-%232D3748.svg?style=flat&logo=riverpod&logoColor=white) **flutter_riverpod** |
-| **Backend / BaaS**   | ![Firebase](https://img.shields.io/badge/Firebase-%23039BE5.svg?style=flat&logo=firebase) **Firestore, Cloud Messaging**       |
-| **Security**         | **Dart Define (Secure Secret Metadata)**                                                                                      |
-| **Navigation**       | **GoRouter**                                                                                                                 |
-| **UI Components**    | `flutter_animate`, `shimmer`, `google_fonts`, `lucide_icons`                                                               |
+#### 💬 Interactive Community Reviews
+Share your experiences and read what others have to say about local spots.
+* **Rich Reviews**: Leave detailed comments on places, including specific restaurant or university references.
+* **Visual Feedback**: Upload up to three images with your reviews to share your perspective.
+* **Star Ratings**: Provide quick 5-star ratings to help others find the best spots in town.
 
-### 🔐 Security & Secrets
+#### 📁 Digital Resource Center
+A robust digital library for all your academic and procedural needs.
+* **Built-in Document Viewer**: Read official student hacks, procedural guides, and academic PDFs directly within the app.
+* **On-the-fly Translation**: Seamless integration with translation services to help you understand Turkish documents or localized content.
 
-This project uses **Dart Define** to securely manage API keys and credentials. These are never committed to version control.
+#### 🎨 Premium Editorial Design
+Diwan Ankara features a custom design system inspired by high-end editorial layouts.
+* **Theme Modes**: Choose your preferred aesthetic, accommodating styles like **Paper** (light editorial), **Classic**, or **Nordic** (serene dark mode).
+* **Smooth Interactions**: Enjoy subtle, high-performance animations, edge-to-edge displays, and a "breathing" UI experience.
 
-1.  Copy `secrets.json.example` to `secrets.json`.
-2.  Fill in your Firebase API keys and other credentials.
-3.  The `secrets.json` file is automatically ignored by Git.
+#### 🌍 Full Multilingual Support
+Built for a diverse environment, the app offers deep localization in **Arabic, Turkish, and English**. Every description, title, and navigational element adapts to your preferred language seamlessly.
 
-### 🏁 Getting Started
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/your-username/yc_ankara_app.git
-    cd yc_ankara_app
-    ```
-2.  **Install dependencies**
-    ```bash
-    flutter pub get
-    ```
-3.  **Run the application** (Required: Use secrets file)
-    ```bash
-    flutter run --dart-define-from-file=secrets.json
-    ```
+#### 🔔 Integrated Communication
+* **Smart Messaging**: A unified hub for push notifications and persistent in-app messages so you never miss an update.
+* **Notification History**: Keep track of past announcements and alerts.
 
 ---
 
-`<a id="arabic"></a>`
+<a id="arabic"></a>
 
 ## 🇾🇪 العربية
 
-### ✨ عن المشروع
+### ✨ عن التطبيق
 
-مرحبًا بكم في **ديوان أنقرة**، المنصة الرسمية لـ **اتحاد الطلاب اليمنيين في أنقرة**. يعمل هذا التطبيق كجسر رقمي يوفر الموارد التعليمية والخدمية، والتحديثات الفورية، ومساحة موحدة للتفاعل بين الطلاب وأبناء الجالية اليمنية المقيمين في أنقرة.
+**ديوان أنقرة** هو الرفيق الرقمي الأمثل للطلاب والمقيمين اليمنيين في العاصمة التركية. تم تطويره كمنصة رسمية لـ **اتحاد الطلاب اليمنيين في أنقرة**، ليكون بمثابة مركز مركزي للتواصل المجتمعي، والموارد التعليمية، والمعلومات المحلية الأساسية.
 
-> [!TIP]
-> **🚀 قريباً:** نحن نعمل بجد لإطلاق **ديوان أنقرة** على **متجر جوجل بلاي** في القريب العاجل! انتظرونا!
+غالبًا ما يتطلب الانتقال إلى مدينة جديدة التنقل بين أنظمة مجزأة وحواجز لغوية. يأتي ديوان أنقرة ليسد هذه الفجوة من خلال جمع كل ما يحتاجه الطالب في تجربة هاتف محمول واحدة وفاخرة.
 
-### 🚀 المميزات الرئيسية
+### 🚀 المميزات والوظائف
 
-تطبيق متكامل بالمميزات المصممة لجعل الحياة أسهل وأكثر ترابطًا:
+#### 📢 لوحة معلومات مجتمعية فورية
+ابقَ على اطلاع دائم بآخر المستجدات من خلال واجهة تفاعلية تُبقي المجتمع على اتصال.
+* **تنبيهات الطوارئ**: نظام تنبيهات عاجلة لإيصال المعلومات الحيوية فوراً.
+* **تغذية الإعلانات**: ركن مخصص لآخر الأخبار والبيانات الرسمية الصادرة.
+* **الأماكن الشائعة**: اكتشف المواقع الرائجة والمفضلة لدى المجتمع مباشرة من الشاشة الرئيسية.
 
-* **📢 منصة الإعلانات**: احصل فورًا على آخر الأخبار والبيانات الرسمية والتحديثات المهمة.
-* **📅 تقويم الفعاليات**: تابع ورش العمل، والتجمعات، والاحتفالات.
-* **🏛️ بوابة الجامعات**: ملفات تعريفية شاملة لجامعات أنقرة، تشمل الشعارات الرسمية، وصور الحرم الجامعي، والإرشادات الأكاديمية.
-* **📍 الدليل المحلي**: دليل منسق للأماكن الحيوية (المستشفيات، الحدائق، المكتبات) مع توجيهات طبية واجتماعية مخصصة.
-* **🎨 واجهات فاخرة**: استمتع بواجهات فريدة مثل مظهر **"الورق" (Paper)** الملمسي أو **"نورديك" (Nordic)** الهادئ مع خلفيات متحركة.
-* **🔔 إشعارات ذكية**: نظام تنبيهات فورية ورسائل داخل التطبيق لضمان اطلاعك على كل جديد.
-* **🌍 دعم متعدد اللغات**: التطبيق مترجم بالكامل للعربية والإنجليزية والتركية مع إمكانية التغيير الفوري.
-* **🏗️ المشاريع والمبادرات**: استعرض مشاريع الاتحاد المستمرة، واللجان المختصة، ومصادر "Student Hacks" التعليمية.
-* **📄 مكتبة المصادر**: ميزة استعراض ملفات PDF للأدلة الرسمية والوثائق الطلابية مباشرة.
+#### 📅 بوابة الفعاليات
+لا تفوت أي تجمع مجتمعي، أو ورشة عمل، أو احتفال.
+* **تقويم تفاعلي**: تصفح الفعاليات بكل سهولة عبر التقويم المدمج.
+* **الفعاليات القادمة والسابقة**: تنقل بسلاسة بين الفعاليات المرتقبة وأرشيف الفعاليات السابقة.
+* **تفاصيل مرئية**: استعرض الوقت والموقع وتفاصيل كل نشاط بوضوح.
 
-### 🔐 الأمان وإدارة المفاتيح
+#### 🏛️ بوابة الجامعات المتكاملة
+قاعدة بيانات شاملة للمشهد التعليمي في أنقرة.
+* **ملفات تفصيلية**: شعارات رسمية، صور للحرم، والتصنيفات العالمية للجامعات.
+* **الوصول للمصادر**: استعراض مباشر لملفات التعريف وكتيبات البرامج الدراسية.
+* **نظرة أكاديمية**: معلومات حول التخصصات المشهورة.
 
-يستخدم هذا المشروع **Dart Define** لإدارة مفاتيح واجهة برمجة التطبيقات (API Keys) بشكل آمن. لا يتم رفع هذه المفاتيح مطلقاً إلى GitHub.
+#### 📍 الدليل المحلي الذكي
+دليل منسق بعناية ومخصص لاحتياجات المجتمع في أنقرة.
+* **الخدمات الأساسية**: قوائم مصنفة للمستشفيات، الدوائر الحكومية، المكتبات، والمطاعم.
+* **نصائح مخصصة**: معلومات دقيقة وتلميحات اجتماعية وطبية لأماكن محددة.
+* **المساحات العامة**: بيانات شاملة عن الحدائق وقوانين الشواء والأنشطة المتاحة.
 
-1.  قم بنسخ ملف `secrets.json.example` إلى `secrets.json`.
-2.  قم بتعبئة مفاتيح Firebase والبيانات السرية الأخرى.
-3.  يتم تجاهل ملف `secrets.json` تلقائياً بواسطة Git.
+#### 💬 تفاعل وتقييم مجتمعي
+شارك تجاربك واقرأ آراء الآخرين حول الأماكن المحلية.
+* **مراجعات غنية**: أضف تعليقات تفصيلية للجامعات أو المطاعم.
+* **مشاركة الصور**: ارفع حتى 3 صور مع تقييمك لمشاركة أفضل للحظاتك.
+* **التقييم بالنجوم**: استخدم نظام الخمس نجوم لمساعدة الآخرين في إيجاد الأفضل.
 
-### 🏁 ابدأ الاستخدام
+#### 📁 مركز المصادر الرقمية
+مكتبة مدمجة لملفات PDF والوثائق.
+* **قارئ مدمج**: تصفح أدلة الطلاب والكتيبات الإجرائية مباشرة داخل التطبيق.
+* **ترجمة فورية**: مساعدة متكاملة لترجمة المحتوى لفهم أعمق للوثائق.
 
-1. **نسخ المستودع**
-   ```bash
-   git clone https://github.com/your-username/yc_ankara_app.git
-   cd yc_ankara_app
-   ```
-2. **تثبيت الحزم والمكتبات**
-   ```bash
-   flutter pub get
-   ```
-3. **تشغيل التطبيق** (يتطلب ملف المفاتيح)
-   ```bash
-   flutter run --dart-define-from-file=secrets.json
-   ```
+#### 🎨 تصميم تحريري فاخر
+نظام تصميم مخصص مستوحى من المجلات الفاخرة.
+* **أنماط المظهر**: اختر بين نمط **الورق (Paper)**، **الكلاسيكي (Classic)**، ونمط **نورديك (Nordic)** الهادئ (الوضع الليلي).
+* **واجهة تفاعلية**: رسومات متحركة وتجربة شاشة تمتد للحواف (Edge-to-Edge).
+
+#### 🌍 دعم كامل للغات
+يوفر التطبيق ترجمة عميقة للغات **العربية، التركية، والإنجليزية**. تتكيف جميع الأوصاف مع لغتك المفضلة.
+
+#### 🔔 تواصل مدمج وفعال
+* **رسائل وإشعارات**: إشعارات فورية ورسائل داخلية لضمان وصول التحديثات الهامة.
+* **سجل الإشعارات**: تتبع الإعلانات السابقة والرجوع إليها في أي وقت.
 
 ---
 

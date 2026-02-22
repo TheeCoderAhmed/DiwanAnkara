@@ -48,7 +48,7 @@ class _VersionGuardState extends ConsumerState<VersionGuard> {
     }
 
     final appSettingsAsync = ref.watch(appSettingsProvider);
-    
+
     return appSettingsAsync.when(
       data: (settings) {
         if (_currentBuildNumber! < settings.minAppVersion) {
@@ -71,7 +71,7 @@ class _ForceUpdateScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -87,16 +87,16 @@ class _ForceUpdateScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.system_update_rounded, 
-                  size: 80, 
-                  color: Color(0xFF0D9488)
+                  Icons.system_update_rounded,
+                  size: 80,
+                  color: Color(0xFF0D9488),
                 ),
               ),
               const SizedBox(height: 32),
               Text(
                 'تحديث مهم مطلوب',
                 style: TextStyle(
-                  fontSize: 24, 
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: isDark ? Colors.white : Colors.black87,
                 ),

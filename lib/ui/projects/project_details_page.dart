@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui' as ui;
 
 import '../shared/cached_image_widget.dart';
+import '../shared/floating_navigation_bar.dart';
 import 'package:yc_ankara_app/l10n/app_localizations.dart';
 
 enum ProjectActionType {
@@ -272,7 +273,9 @@ class ProjectDetailsPage extends StatelessWidget {
                     ),
                   ).animate().fadeIn(delay: 400.ms),
 
-                  const SizedBox(height: 100),
+                  SizedBox(
+                    height: FloatingNavigationBar.totalHeight(context) + 16,
+                  ),
                 ],
               ),
             ),

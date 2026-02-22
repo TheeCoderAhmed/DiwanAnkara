@@ -24,7 +24,12 @@ class BentoCategoryCard extends StatelessWidget {
     final cardTheme = Theme.of(context).cardTheme;
     final shape =
         (cardTheme.shape as RoundedRectangleBorder?) ??
-        RoundedRectangleBorder(borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(24)));
+        RoundedRectangleBorder(
+          borderRadius:
+              ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)
+                  ?.borderRadius ??
+              BorderRadius.circular(24)),
+        );
 
     return GestureDetector(
       onTap: onTap,
@@ -100,7 +105,11 @@ class BentoCategoryCard extends StatelessWidget {
                           : color.withValues(
                               alpha: 0.15,
                             ), // Dark mode: existing style
-                      borderRadius: ((Theme.of(context).cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ?? BorderRadius.circular(16)),
+                      borderRadius:
+                          ((Theme.of(context).cardTheme.shape
+                                  as RoundedRectangleBorder?)
+                              ?.borderRadius ??
+                          BorderRadius.circular(16)),
                     ),
                     child: Icon(icon, color: color, size: isLarge ? 32 : 24),
                   ),

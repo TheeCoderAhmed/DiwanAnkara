@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
+import '../shared/shimmer_wrapper.dart';
 
+/// 6.3 — Skeleton using the shared ShimmerWrapper (no duplicated color logic).
 class SkeletonBentoCard extends StatelessWidget {
   const SkeletonBentoCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
-    final highlightColor = isDark ? Colors.grey.shade700 : Colors.grey.shade100;
+    final baseColor = isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade300;
 
     return Container(
       decoration: BoxDecoration(
@@ -28,9 +28,7 @@ class SkeletonBentoCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Icon skeleton
-            Shimmer.fromColors(
-              baseColor: baseColor,
-              highlightColor: highlightColor,
+            ShimmerWrapper(
               child: Container(
                 width: 48,
                 height: 48,
@@ -42,9 +40,7 @@ class SkeletonBentoCard extends StatelessWidget {
             ),
             const Spacer(),
             // Title skeleton
-            Shimmer.fromColors(
-              baseColor: baseColor,
-              highlightColor: highlightColor,
+            ShimmerWrapper(
               child: Container(
                 height: 20,
                 width: double.infinity,
